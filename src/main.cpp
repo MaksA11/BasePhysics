@@ -1,7 +1,13 @@
+#include <iostream>
+
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
 #include <imgui-SFML.h>
+
+#include "Core/Vec2.h"
+
+bp::Vec2 wektor;
 
 int main()
 {
@@ -26,6 +32,12 @@ int main()
         ImGui::SFML::Update(window, deltaClock.restart());
 
         ImGui::Begin("Hello");
+
+        wektor.x += 0.01 * deltaClock.getElapsedTime().asMicroseconds();
+        wektor.y -= 0.01 * deltaClock.getElapsedTime().asMicroseconds();
+        
+        std::string message = std::to_string(wektor.x) + ", " + std::to_string(wektor.y) + " - " + std::to_string(wektor.Magnitude());
+        ImGui::Text(message.c_str());
         ImGui::Text("Hello, World!");
         ImGui::End();
 
