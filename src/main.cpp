@@ -1,26 +1,26 @@
 #include <iostream>
 
-#include "Demo/Demo.h"
+#include "Demo/app.h"
 
 int main()
 {
-    Demo *demo = new Demo();
+    demo::App *app = new demo::App();
 	
-    demo->Init(640*2, 480*2, "BasePhysics Demo");
-    demo->Start();
+    app->Init(640*2, 480*2, "BasePhysics app");
+    app->Start();
 
-    while(demo->AppRunning())
+    while(app->AppRunning())
     {
-        demo->CalculateDeltaTime();
-        demo->Input();
-        demo->Update();
-        demo->RenderUI();
-        demo->Render();
+        app->CalculateDeltaTime();
+        app->Input();
+        app->Update();
+        app->RenderUI();
+        app->Render();
     }
 
-    demo->CleanUp();
+    app->CleanUp();
 
-    delete demo;
+    delete app;
 
     return EXIT_SUCCESS;
 }
