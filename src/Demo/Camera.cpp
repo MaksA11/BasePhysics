@@ -36,14 +36,19 @@ namespace demo
         window.setView(view);
     }
 
-    sf::Vector2i Camera::WorldSpaceToScreenSpace(bp::Vec2 position, sf::RenderWindow& window)
+    sf::Vector2i Camera::WorldToScreen(bp::Vec2 position, sf::RenderWindow& window)
     {
         sf::Vector2f world = {position.x, position.y};
         return window.mapCoordsToPixel(world, view);
     }
-    bp::Vec2 Camera::ScreenSpaceToWorldSpace(sf::Vector2i position, sf::RenderWindow& window)
+    bp::Vec2 Camera::ScreenToWorld(sf::Vector2i position, sf::RenderWindow& window)
     {
         sf::Vector2f world = window.mapPixelToCoords(position, view);
         return bp::Vec2(world.x, world.y);
+    }
+
+    std::string Camera::DebugInfo()
+    {
+        return "x: " + std::to_string(view.getCenter().x) + ", y: " + std::to_string(view.getCenter().y) + "\nzoom: " + std::to_string(zoom);
     }
 }

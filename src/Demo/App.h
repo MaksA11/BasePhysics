@@ -22,6 +22,8 @@ namespace demo
 			float deltaTime;
 			bool appRunning;
 
+			float fps;
+
 			Camera camera;
 
 			bp::PhysicsScene scene;

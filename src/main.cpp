@@ -6,7 +6,7 @@ int main()
 {
     demo::App *app = new demo::App();
 	
-    app->Init(640*2, 480*2, "BasePhysics app");
+    app->Init(1920, 1280, "BasePhysics app");
     app->Start();
 
     while(app->AppRunning())

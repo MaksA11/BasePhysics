@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -26,7 +28,9 @@ namespace demo
 
             void ApplyTo(sf::RenderWindow& window);
             
-            sf::Vector2i WorldSpaceToScreenSpace(bp::Vec2 position, sf::RenderWindow& window);
-            bp::Vec2 ScreenSpaceToWorldSpace(sf::Vector2i position, sf::RenderWindow& window);
+            sf::Vector2i WorldToScreen(bp::Vec2 position, sf::RenderWindow& window);
+            bp::Vec2 ScreenToWorld(sf::Vector2i position, sf::RenderWindow& window);
+
+            std::string DebugInfo();
     };
 }
