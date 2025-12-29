@@ -21,12 +21,12 @@ namespace bp
     }
     void PhysicsScene::RemoveRigidbody(Rigidbody *rb)
     {
-        int x;
+        
     }
 
     void PhysicsScene::Step(float deltaTime, unsigned int substeps)
     {
-        int x;
+        
     }
 
     const std::vector<Rigidbody *> &PhysicsScene::GetBodies() const

@@ -2,33 +2,41 @@
 
 namespace bp
 {
-    Rigidbody::Rigidbody(Vec2 position, float rotation, Vec2 size)
+    Rigidbody *Rigidbody::CreateCircleBody(Vec2 position, float rotation, float radius, float restitution, float friciton)
     {
-        this->position = position;
-        this->rotation = rotation;
-        this->size = size;
+        CircleShape shape = CircleShape(radius);
+        Collider collider = Collider(shape, restitution, friciton);
+        return new Rigidbody(position, rotation, collider);
     }
-
-    Rigidbody *Rigidbody::CreateRigidbody(Vec2 position, float rotation, Vec2 size)
+    Rigidbody *Rigidbody::CreateBoxBody(Vec2 position, float rotation, Vec2 size, float restitution, float friciton)
     {
-        return new Rigidbody(position, rotation, size);
+        BoxShape shape = BoxShape(size);
+        Collider collider = Collider(shape, restitution, friciton);
+        return new Rigidbody(position, rotation, collider);
+    }
+    Rigidbody *Rigidbody::CreatePolygonBody(Vec2 position, float rotation, std::vector<Vec2> vertices, float restitution, float friciton)
+    {
+        PolygonShape shape = PolygonShape(vertices);
+        Collider collider = Collider(shape, restitution, friciton);
+        return new Rigidbody(position, rotation, collider);
     }
 
     void Rigidbody::DeleteRigidbody(Rigidbody *rb, std::vector<Rigidbody *> &bodies)
     {
-        int x;
+        
     }
 
     Vec2 Rigidbody::GetPosition()
     {
         return position;
     }
-    Vec2 Rigidbody::GetSize()
-    {
-        return size;
-    }
     float Rigidbody::GetRotation()
     {
         return rotation;
+    }
+
+    Collider Rigidbody::GetCollider()
+    {
+        return collider;
     }
 }

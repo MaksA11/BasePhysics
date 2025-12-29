@@ -20,7 +20,7 @@ namespace demo
 
     void App::Start()
     {
-        scene.AddRigidbody(bp::Rigidbody::CreateRigidbody(bp::Vec2::Zero(), 0, bp::Vec2::One()));
+        scene.AddRigidbody(bp::Rigidbody::CreateBoxBody(bp::Vec2::Zero(), 0, bp::Vec2::One(), 0, 0));
     }
 
     void App::Update()
@@ -33,15 +33,34 @@ namespace demo
         window->clear(sf::Color(80, 90, 100));
 
         sf::RectangleShape rectangle;
+        sf::CircleShape circle;
+
         for(auto &rb : scene.GetBodies())
         {
-            rectangle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
-            rectangle.setSize(sf::Vector2f(rb->GetSize().x, rb->GetSize().y));
-            rectangle.setFillColor(sf::Color::White);
-            rectangle.setOutlineColor(sf::Color::Black);
-            rectangle.setOutlineThickness(0.067f); 
-            rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x / 2, rectangle.getSize().y / 2));
-            window->draw(rectangle);
+            if(rb->GetCollider().IsCircle())
+            {
+                circle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
+                circle.setRadius(rb->GetCollider().GetCircle()->radius);
+                circle.setFillColor(sf::Color::White);
+                circle.setOutlineColor(sf::Color::Black);
+                circle.setOutlineThickness(0.067f); 
+                circle.setOrigin(sf::Vector2f(circle.getRadius(), circle.getRadius()));
+                window->draw(circle);
+            }
+            else if(rb->GetCollider().IsBox())
+            {
+                rectangle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
+                rectangle.setSize(sf::Vector2f(rb->GetCollider().GetBox()->size.x, rb->GetCollider().GetBox()->size.y));
+                rectangle.setFillColor(sf::Color::White);
+                rectangle.setOutlineColor(sf::Color::Black);
+                rectangle.setOutlineThickness(0.067f); 
+                rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x / 2, rectangle.getSize().y / 2));
+                window->draw(rectangle);
+            }
+            else if(rb->GetCollider().IsPolygon())
+            {
+                // TODO: implement
+            }
         }
 
         ImGui::SFML::Render(*window);
@@ -79,7 +98,13 @@ namespace demo
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
-                    scene.AddRigidbody(bp::Rigidbody::CreateRigidbody(worldPos, 0, bp::Vec2::One()));
+                    scene.AddRigidbody(bp::Rigidbody::CreateBoxBody(worldPos, 0, bp::Vec2::One(), 0, 0));
+                }
+                if(event.mouseButton.button == sf::Mouse::Left)
+                {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+                    bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
+                    scene.AddRigidbody(bp::Rigidbody::CreateCircleBody(worldPos, 0, 0.5f, 0, 0));
                 }
             }
             
