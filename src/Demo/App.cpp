@@ -32,12 +32,12 @@ namespace demo
         preset.isStatic = false;
         preset.usesGravity = true;
 
-        scene.AddRigidbody(bp::Rigidbody::CreateRigidbody(preset));
+        scene.AddRigidbody(preset);
     }
 
     void App::Update()
     {
-        
+        scene.Step(deltaTime, 1);
     }
 
     void App::Render()
@@ -52,10 +52,10 @@ namespace demo
             if(rb->GetCollider().IsCircle())
             {
                 circle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
-                circle.setRadius(rb->GetCollider().GetCircle()->radius);
+                circle.setRadius(rb->GetCollider().GetCircle()->radius + 0.025f);
                 circle.setFillColor(sf::Color::White);
                 circle.setOutlineColor(sf::Color::Black);
-                circle.setOutlineThickness(0.067f); 
+                circle.setOutlineThickness(-0.067f);
                 circle.setOrigin(sf::Vector2f(circle.getRadius(), circle.getRadius()));
                 window->draw(circle);
             }
@@ -65,7 +65,7 @@ namespace demo
                 rectangle.setSize(sf::Vector2f(rb->GetCollider().GetBox()->size.x, rb->GetCollider().GetBox()->size.y));
                 rectangle.setFillColor(sf::Color::White);
                 rectangle.setOutlineColor(sf::Color::Black);
-                rectangle.setOutlineThickness(0.067f); 
+                rectangle.setOutlineThickness(-0.067f);
                 rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x / 2, rectangle.getSize().y / 2));
                 window->draw(rectangle);
             }
@@ -106,7 +106,7 @@ namespace demo
 
             if(event.type == sf::Event::MouseButtonPressed)
             {
-                if(event.mouseButton.button == sf::Mouse::Right)
+                if(event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
@@ -122,9 +122,9 @@ namespace demo
                     preset.friction = 0.1f;
                     preset.isStatic = false;
                     preset.usesGravity = true;
-                    scene.AddRigidbody(bp::Rigidbody::CreateRigidbody(preset));
+                    scene.AddRigidbody(preset);
                 }
-                if(event.mouseButton.button == sf::Mouse::Left)
+                if(event.mouseButton.button == sf::Mouse::Right)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
@@ -140,7 +140,7 @@ namespace demo
                     preset.friction = 0.1f;
                     preset.isStatic = false;
                     preset.usesGravity = true;
-                    scene.AddRigidbody(bp::Rigidbody::CreateRigidbody(preset));
+                    scene.AddRigidbody(preset);
                 }
             }
             
@@ -148,15 +148,25 @@ namespace demo
                 camera.Zoom(event.mouseWheelScroll.delta > 0 ? 1.1f : 0.9f);
         }
 
-        const float speed = 5.0f * deltaTime;
+        const float camSpeed = 5.0f * deltaTime;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-            camera.Move(sf::Vector2f(0.0f, -speed));
+            camera.Move(sf::Vector2f(0.0f, camSpeed));
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            camera.Move(sf::Vector2f(0.0f, speed));
+            camera.Move(sf::Vector2f(0.0f, -camSpeed));
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-            camera.Move(sf::Vector2f(-speed, 0.0f));
+            camera.Move(sf::Vector2f(-camSpeed, 0.0f));
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-            camera.Move(sf::Vector2f(speed, 0.0f));
+            camera.Move(sf::Vector2f(camSpeed, 0.0f));
+
+        const float rbSpeed = 5.0f * deltaTime;
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            scene.GetBodies()[0]->Move(bp::Vec2::Up() * rbSpeed);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+            scene.GetBodies()[0]->Move(-bp::Vec2::Up() * rbSpeed);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            scene.GetBodies()[0]->Move(bp::Vec2::Right() * rbSpeed);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            scene.GetBodies()[0]->Move(-bp::Vec2::Right() * rbSpeed);
     }
 
     void App::CalculateDeltaTime()

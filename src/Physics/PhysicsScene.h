@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "Rigidbody.h"
+#include "../Collision/Collider.h"
+#include "../Collision/Collisions.h"
 
 namespace bp
 {
@@ -16,7 +18,8 @@ namespace bp
             PhysicsScene();
             ~PhysicsScene();
 
-            void AddRigidbody(Rigidbody *rb);
+            Rigidbody *AddRigidbody(Rigidbody *rb);
+            Rigidbody *AddRigidbody(BodyPreset preset);
             void RemoveRigidbody(Rigidbody *rb);
 
             void Step(float deltaTime, unsigned int substeps);

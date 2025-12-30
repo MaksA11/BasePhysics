@@ -47,12 +47,14 @@ namespace bp
     {
         if(IsCircle())
             return (1.0f / 2.0f) * mass * GetCircle()->radius;
-        else if(IsBox())
+        if(IsBox())
         {
             Vec2 size = GetBox()->size;
             return (1.0f / 12.0f) * mass * (size.x * size.x + size.y * size.y);
         }
-        else if(IsPolygon())
-            return 0; // TODO: implement
+        if(IsPolygon())
+            return 0.0f; // TODO: implement
+
+        return 1.0f;
     }
 }

@@ -9,7 +9,7 @@ namespace demo
         this->windowSize = windowSize;
 
         view.setCenter(position.x, position.y);
-        view.setSize(windowSize.x / zoom, windowSize.y / zoom);
+        view.setSize(windowSize.x / zoom, -(windowSize.y / zoom));
     }
 
     void Camera::Move(sf::Vector2f delta)
@@ -23,12 +23,12 @@ namespace demo
     void Camera::Zoom(float factor)
     {
         zoom *= factor;
-        view.setSize(windowSize.x / zoom, windowSize.y / zoom);
+        view.setSize(windowSize.x / zoom, -(windowSize.y / zoom));
     }
     void Camera::SetScreenSize(sf::Vector2u size)
     {
         windowSize = size;
-        view.setSize(windowSize.x / zoom, windowSize.y / zoom);
+        view.setSize(windowSize.x / zoom, -(windowSize.y / zoom));
     }
     
     void Camera::ApplyTo(sf::RenderWindow& window)

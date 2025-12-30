@@ -42,4 +42,13 @@ namespace bp
     {
         return collider;
     }
+
+    void Rigidbody::Move(Vec2 delta)
+    {
+        position += delta;
+    }
+    void Rigidbody::MoveTo(Vec2 position)
+    {
+        this->position = position;
+    }
 }
