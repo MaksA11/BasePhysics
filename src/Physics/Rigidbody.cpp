@@ -2,28 +2,31 @@
 
 namespace bp
 {
-    Rigidbody *Rigidbody::CreateCircleBody(Vec2 position, float rotation, float radius, float restitution, float friciton)
+    Rigidbody *Rigidbody::CreateRigidbody(BodyPreset preset)
     {
-        CircleShape shape = CircleShape(radius);
-        Collider collider = Collider(shape, restitution, friciton);
-        return new Rigidbody(position, rotation, collider);
+        Collider collider = Collider(preset.shape, preset.restitution, preset.friction);
+        return new Rigidbody(preset, collider);
     }
-    Rigidbody *Rigidbody::CreateBoxBody(Vec2 position, float rotation, Vec2 size, float restitution, float friciton)
+    Rigidbody *Rigidbody::CreateCircleBody(Vec2 position, float rotation, float radius, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity)
     {
-        BoxShape shape = BoxShape(size);
-        Collider collider = Collider(shape, restitution, friciton);
-        return new Rigidbody(position, rotation, collider);
+        Collider collider = Collider(CircleShape(radius), restitution, friction);
+        return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
     }
-    Rigidbody *Rigidbody::CreatePolygonBody(Vec2 position, float rotation, std::vector<Vec2> vertices, float restitution, float friciton)
+    Rigidbody *Rigidbody::CreateBoxBody(Vec2 position, float rotation, Vec2 size, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity)
     {
-        PolygonShape shape = PolygonShape(vertices);
-        Collider collider = Collider(shape, restitution, friciton);
-        return new Rigidbody(position, rotation, collider);
+        Collider collider = Collider(BoxShape(size), restitution, friction);
+        return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
     }
 
     void Rigidbody::DeleteRigidbody(Rigidbody *rb, std::vector<Rigidbody *> &bodies)
     {
-        
+        auto it = std::find(bodies.begin(), bodies.end(), rb);
+
+        if(it != bodies.end())
+        {
+            delete rb;
+            bodies.erase(it);
+        }
     }
 
     Vec2 Rigidbody::GetPosition()

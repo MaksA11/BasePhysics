@@ -20,7 +20,19 @@ namespace demo
 
     void App::Start()
     {
-        scene.AddRigidbody(bp::Rigidbody::CreateBoxBody(bp::Vec2::Zero(), 0, bp::Vec2::One(), 0, 0));
+        bp::BodyPreset preset;
+        preset.position = bp::Vec2::Zero();
+        preset.rotation = 0.0f;
+        preset.mass = 1.0f;
+        preset.shape = bp::CircleShape(0.5f);
+        preset.linearDamping = 0.1f;
+        preset.angularDamping = 0.1f;
+        preset.restitution = 0.1f;
+        preset.friction = 0.1f;
+        preset.isStatic = false;
+        preset.usesGravity = true;
+
+        scene.AddRigidbody(bp::Rigidbody::CreateRigidbody(preset));
     }
 
     void App::Update()
@@ -98,13 +110,37 @@ namespace demo
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
-                    scene.AddRigidbody(bp::Rigidbody::CreateBoxBody(worldPos, 0, bp::Vec2::One(), 0, 0));
+
+                    bp::BodyPreset preset;
+                    preset.position = worldPos;
+                    preset.rotation = 0.0f;
+                    preset.mass = 1.0f;
+                    preset.shape = bp::CircleShape(0.5f);
+                    preset.linearDamping = 0.1f;
+                    preset.angularDamping = 0.1f;
+                    preset.restitution = 0.1f;
+                    preset.friction = 0.1f;
+                    preset.isStatic = false;
+                    preset.usesGravity = true;
+                    scene.AddRigidbody(bp::Rigidbody::CreateRigidbody(preset));
                 }
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
-                    scene.AddRigidbody(bp::Rigidbody::CreateCircleBody(worldPos, 0, 0.5f, 0, 0));
+                    
+                    bp::BodyPreset preset;
+                    preset.position = worldPos;
+                    preset.rotation = 0.0f;
+                    preset.mass = 1.0f;
+                    preset.shape = bp::BoxShape(bp::Vec2::One());
+                    preset.linearDamping = 0.1f;
+                    preset.angularDamping = 0.1f;
+                    preset.restitution = 0.1f;
+                    preset.friction = 0.1f;
+                    preset.isStatic = false;
+                    preset.usesGravity = true;
+                    scene.AddRigidbody(bp::Rigidbody::CreateRigidbody(preset));
                 }
             }
             

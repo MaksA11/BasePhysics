@@ -30,16 +30,29 @@ namespace bp
 
     AABB Collider::GetAABB(Vec2 pos) const
     {
-        if(const CircleShape* circle = GetCircle())
+        if(const CircleShape *circle = GetCircle())
         {
             float r = circle->radius;
             return AABB(pos - Vec2(r, r), pos + Vec2(r, r));
         }
-        if(const BoxShape* box = GetBox())
+        if(const BoxShape *box = GetBox())
             return AABB(pos - box->size / 2, pos + box->size / 2);
-        if(const PolygonShape* poly = GetPolygon())
+        if(const PolygonShape *poly = GetPolygon())
             return AABB(Vec2::Zero(), Vec2::Zero()); // TODO: implement
         
         return AABB(Vec2::Zero(), Vec2::Zero());
+    }
+
+    float Collider::CalculateInertia(float mass)
+    {
+        if(IsCircle())
+            return (1.0f / 2.0f) * mass * GetCircle()->radius;
+        else if(IsBox())
+        {
+            Vec2 size = GetBox()->size;
+            return (1.0f / 12.0f) * mass * (size.x * size.x + size.y * size.y);
+        }
+        else if(IsPolygon())
+            return 0; // TODO: implement
     }
 }

@@ -26,10 +26,10 @@ namespace demo
             void Zoom(float factor);
             void SetScreenSize(sf::Vector2u size);
 
-            void ApplyTo(sf::RenderWindow& window);
+            void ApplyTo(sf::RenderWindow &window);
             
-            sf::Vector2i WorldToScreen(bp::Vec2 position, sf::RenderWindow& window);
-            bp::Vec2 ScreenToWorld(sf::Vector2i position, sf::RenderWindow& window);
+            sf::Vector2i WorldToScreen(bp::Vec2 position, sf::RenderWindow &window);
+            bp::Vec2 ScreenToWorld(sf::Vector2i position, sf::RenderWindow &window);
 
             std::string DebugInfo();
     };

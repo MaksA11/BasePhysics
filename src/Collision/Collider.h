@@ -46,9 +46,7 @@ namespace bp
             float friction;
 
         public:
-            Collider(CircleShape shape, float restitution, float friction) : shape(shape), restitution(restitution), friction(friction) {}
-            Collider(BoxShape shape, float restitution, float friction) : shape(shape), restitution(restitution), friction(friction) {}
-            Collider(PolygonShape shape, float restitution, float friction) : shape(shape), restitution(restitution), friction(friction) {}
+            Collider(ColliderShape shape, float restitution, float friction) : shape(shape), restitution(restitution), friction(friction) {}
 
             bool IsCircle();
             bool IsBox();
@@ -59,5 +57,7 @@ namespace bp
             const PolygonShape *GetPolygon() const;
 
             AABB GetAABB(Vec2 pos) const;
+
+            float CalculateInertia(float mass);
     };
 }

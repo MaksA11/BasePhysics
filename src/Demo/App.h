@@ -8,6 +8,7 @@
 #include <imgui-SFML.h>
 
 #include "../Physics/PhysicsScene.h"
+#include "../Collision/Collider.h"
 
 #include "Camera.h"
 
