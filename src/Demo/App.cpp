@@ -24,7 +24,8 @@ namespace demo
         preset.position = bp::Vec2::Zero();
         preset.rotation = 0.0f;
         preset.mass = 1.0f;
-        preset.shape = bp::CircleShape(0.5f);
+        preset.shape = bp::BoxShape(bp::Vec2::One());
+        // preset.shape = bp::CircleShape(0.5f);
         preset.linearDamping = 0.1f;
         preset.angularDamping = 0.1f;
         preset.restitution = 0.1f;
@@ -38,6 +39,7 @@ namespace demo
     void App::Update()
     {
         scene.Step(deltaTime, 1);
+        scene.GetBodies()[0]->Rotate(bp::math::pi * 0.5f * deltaTime);
     }
 
     void App::Render()
@@ -52,7 +54,8 @@ namespace demo
             if(rb->GetCollider().IsCircle())
             {
                 circle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
-                circle.setRadius(rb->GetCollider().GetCircle()->radius + 0.025f);
+                circle.setRadius(rb->GetCollider().GetCircle()->radius);
+                circle.setRotation(-bp::math::ToDegrees(rb->GetRotation()));
                 circle.setFillColor(sf::Color::White);
                 circle.setOutlineColor(sf::Color::Black);
                 circle.setOutlineThickness(-0.067f);
@@ -63,11 +66,25 @@ namespace demo
             {
                 rectangle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
                 rectangle.setSize(sf::Vector2f(rb->GetCollider().GetBox()->size.x, rb->GetCollider().GetBox()->size.y));
+                rectangle.setRotation(-bp::math::ToDegrees(rb->GetRotation()));
                 rectangle.setFillColor(sf::Color::White);
                 rectangle.setOutlineColor(sf::Color::Black);
                 rectangle.setOutlineThickness(-0.067f);
                 rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x / 2, rectangle.getSize().y / 2));
                 window->draw(rectangle);
+
+                sf::CircleShape vertex;
+                bp::Vec2 *vertices = bp::collisions::GetBoxVertices(*rb->GetCollider().GetBox(), rb->GetPosition(), rb->GetRotation());
+                for(int i = 0; i < 4; i++)
+                {
+                    float radius = 0.05f;
+                    vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
+                    vertex.setRadius(radius);
+                    vertex.setFillColor(sf::Color::Green);
+                    vertex.setOrigin(sf::Vector2f(radius, radius));
+                    window->draw(vertex);
+                }
+                delete[] vertices;
             }
             else if(rb->GetCollider().IsPolygon())
             {

@@ -51,4 +51,9 @@ namespace bp
     {
         this->position = position;
     }
+    void Rigidbody::Rotate(float angle)
+    {
+        rotation += angle;
+        rotation = std::fmod(rotation, 360.0f);
+    }
 }

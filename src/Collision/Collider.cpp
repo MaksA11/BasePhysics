@@ -28,7 +28,7 @@ namespace bp
         return std::get_if<PolygonShape>(&this->shape);
     }
 
-    AABB Collider::GetAABB(Vec2 pos) const
+    const AABB Collider::GetAABB(Vec2 pos) const
     {
         if(const CircleShape *circle = GetCircle())
         {

@@ -20,6 +20,7 @@ namespace bp
     struct BoxShape
     {
         Vec2 size;
+        Vec2 vertices[4];
 
         BoxShape(Vec2 size)
         {
@@ -56,7 +57,7 @@ namespace bp
             const BoxShape *GetBox() const;
             const PolygonShape *GetPolygon() const;
 
-            AABB GetAABB(Vec2 pos) const;
+            const AABB GetAABB(Vec2 pos) const;
 
             float CalculateInertia(float mass);
     };

@@ -62,5 +62,6 @@ namespace bp
 
             void Move(Vec2 delta);
             void MoveTo(Vec2 position);
+            void Rotate(float angle);
     };
 }

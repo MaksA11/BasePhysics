@@ -47,7 +47,7 @@ namespace bp
 
                     if(bodyA->GetCollider().IsCircle() && bodyB->GetCollider().IsCircle())
                     {
-                        if(Collisions::IntersectCircles(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition(), normal, depth))
+                        if(collisions::IntersectCircles(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition(), normal, depth))
                         {
                             Vec2 translationVector = normal * depth;
 
@@ -55,6 +55,16 @@ namespace bp
                             bodies[j]->Move(translationVector * 0.5f);
                         }
                     }
+                    // if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsBox())
+                    // {
+                    //     if(collisions::IntersectBoxes())
+                    //     {
+                    //         Vec2 translationVector = normal * depth;
+
+                    //         bodies[i]->Move(-translationVector * 0.5f);
+                    //         bodies[j]->Move(translationVector * 0.5f);
+                    //     }
+                    // }
                 }
             }
         }
