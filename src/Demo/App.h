@@ -32,7 +32,7 @@ namespace demo
 		public:
 			App();
 
-			void Init(unsigned int width, unsigned int height, const char *name);
+			void Init(unsigned int width, unsigned int height, const char *name, bool fullscreen);
 
 			void Start();
 			void Update();

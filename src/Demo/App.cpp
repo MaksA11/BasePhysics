@@ -9,9 +9,9 @@ namespace demo
         fps = 0.0f;
     }
 
-    void App::Init(unsigned int width, unsigned int height, const char *name)
+    void App::Init(unsigned int width, unsigned int height, const char *name, bool fullscreen)
     {
-        window = new sf::RenderWindow(sf::VideoMode(width, height), name);
+        window = fullscreen ? new sf::RenderWindow(sf::VideoMode(width, height), name, sf::Style::Fullscreen) : new sf::RenderWindow(sf::VideoMode(width, height), name);
         ImGui::SFML::Init(*window);
         // window->setFramerateLimit(60);
         clock = sf::Clock();

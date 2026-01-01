@@ -55,16 +55,17 @@ namespace bp
                             bodies[j]->Move(translationVector * 0.5f);
                         }
                     }
-                    // if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsBox())
-                    // {
-                    //     if(collisions::IntersectBoxes())
-                    //     {
-                    //         Vec2 translationVector = normal * depth;
+                    if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsBox())
+                    {
+                        if(collisions::IntersectBoxes(*bodyA->GetCollider().GetBox(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
+                            bodyA->GetRotation(), bodyB->GetRotation(), normal, depth))
+                        {
+                            Vec2 translationVector = normal * depth;
 
-                    //         bodies[i]->Move(-translationVector * 0.5f);
-                    //         bodies[j]->Move(translationVector * 0.5f);
-                    //     }
-                    // }
+                            bodies[i]->Move(-translationVector * 0.5f);
+                            bodies[j]->Move(translationVector * 0.5f);
+                        }
+                    }
                 }
             }
         }
