@@ -14,6 +14,13 @@
 
 namespace demo
 {
+	enum WindowType
+	{
+		WINDOW = 0,
+		FULLSCREEN = 1,
+		BORDERLESS = 2
+	};
+
 	class App
 	{
 		private:
@@ -32,7 +39,7 @@ namespace demo
 		public:
 			App();
 
-			void Init(unsigned int width, unsigned int height, const char *name, bool fullscreen);
+			void Init(unsigned int width, unsigned int height, const char *name, WindowType windowType);
 
 			void Start();
 			void Update();

@@ -9,9 +9,20 @@ namespace demo
         fps = 0.0f;
     }
 
-    void App::Init(unsigned int width, unsigned int height, const char *name, bool fullscreen)
+    void App::Init(unsigned int width, unsigned int height, const char *name, WindowType windowType)
     {
-        window = fullscreen ? new sf::RenderWindow(sf::VideoMode(width, height), name, sf::Style::Fullscreen) : new sf::RenderWindow(sf::VideoMode(width, height), name);
+        if(windowType == WINDOW)
+            window = new sf::RenderWindow(sf::VideoMode(width, height), name);
+        else if(windowType == FULLSCREEN)
+            window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), name, sf::Style::Fullscreen);
+        else if(windowType == BORDERLESS)
+            window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), name, sf::Style::None);
+        else
+        {
+            std::cerr << "Unknown window type\n";
+            exit(1);
+        }
+
         ImGui::SFML::Init(*window);
         // window->setFramerateLimit(60);
         clock = sf::Clock();
@@ -39,7 +50,10 @@ namespace demo
     void App::Update()
     {
         scene.Step(deltaTime, 1);
-        scene.GetBodies()[0]->Rotate(bp::math::pi * 0.5f * deltaTime);
+        for(auto &rb : scene.GetBodies())
+        {
+            // rb->Rotate(bp::math::pi * 0.5f * deltaTime);
+        }
     }
 
     void App::Render()
@@ -73,18 +87,18 @@ namespace demo
                 rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x / 2, rectangle.getSize().y / 2));
                 window->draw(rectangle);
 
-                sf::CircleShape vertex;
-                bp::Vec2 *vertices = bp::collisions::GetBoxVertices(*rb->GetCollider().GetBox(), rb->GetPosition(), rb->GetRotation());
-                for(int i = 0; i < 4; i++)
-                {
-                    float radius = 0.05f;
-                    vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
-                    vertex.setRadius(radius);
-                    vertex.setFillColor(sf::Color::Green);
-                    vertex.setOrigin(sf::Vector2f(radius, radius));
-                    window->draw(vertex);
-                }
-                delete[] vertices;
+                // sf::CircleShape vertex;
+                // bp::Vec2 *vertices = bp::collisions::GetBoxVertices(*rb->GetCollider().GetBox(), rb->GetPosition(), rb->GetRotation());
+                // for(int i = 0; i < 4; i++)
+                // {
+                //     float radius = 0.05f;
+                //     vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
+                //     vertex.setRadius(radius);
+                //     vertex.setFillColor(sf::Color::Green);
+                //     vertex.setOrigin(sf::Vector2f(radius, radius));
+                //     window->draw(vertex);
+                // }
+                // delete[] vertices;
             }
             else if(rb->GetCollider().IsPolygon())
             {
@@ -168,21 +182,21 @@ namespace demo
         const float camSpeed = 5.0f * deltaTime;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
             camera.Move(sf::Vector2f(0.0f, camSpeed));
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
             camera.Move(sf::Vector2f(0.0f, -camSpeed));
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
             camera.Move(sf::Vector2f(-camSpeed, 0.0f));
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
             camera.Move(sf::Vector2f(camSpeed, 0.0f));
 
         const float rbSpeed = 5.0f * deltaTime;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
             scene.GetBodies()[0]->Move(bp::Vec2::Up() * rbSpeed);
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
             scene.GetBodies()[0]->Move(-bp::Vec2::Up() * rbSpeed);
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
             scene.GetBodies()[0]->Move(bp::Vec2::Right() * rbSpeed);
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
             scene.GetBodies()[0]->Move(-bp::Vec2::Right() * rbSpeed);
     }
 

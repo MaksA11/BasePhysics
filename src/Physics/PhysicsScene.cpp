@@ -55,11 +55,34 @@ namespace bp
                             bodies[j]->Move(translationVector * 0.5f);
                         }
                     }
-                    if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsBox())
+                    else if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsBox())
                     {
                         if(collisions::IntersectBoxes(*bodyA->GetCollider().GetBox(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
                             bodyA->GetRotation(), bodyB->GetRotation(), normal, depth))
                         {
+                            Vec2 translationVector = normal * depth;
+
+                            bodies[i]->Move(-translationVector * 0.5f);
+                            bodies[j]->Move(translationVector * 0.5f);
+                        }
+                    }
+                    else if(bodyA->GetCollider().IsCircle() && bodyB->GetCollider().IsBox())
+                    {
+                        if(collisions::IntersectCircleBox(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
+                            bodyB->GetRotation(), normal, depth))
+                        {
+                            Vec2 translationVector = normal * depth;
+
+                            bodies[i]->Move(-translationVector * 0.5f);
+                            bodies[j]->Move(translationVector * 0.5f);
+                        }
+                    }
+                    else if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsCircle())
+                    {
+                        if(collisions::IntersectCircleBox(*bodyB->GetCollider().GetCircle(), *bodyA->GetCollider().GetBox(), bodyB->GetPosition(), bodyA->GetPosition(),
+                            bodyA->GetRotation(), normal, depth))
+                        {
+                            normal = -normal;
                             Vec2 translationVector = normal * depth;
 
                             bodies[i]->Move(-translationVector * 0.5f);

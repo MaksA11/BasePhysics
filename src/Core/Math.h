@@ -42,4 +42,11 @@ namespace bp::math
 
         return Vec2(x, y);
     }
+
+    inline void Swap(float &val1, float &val2)
+    {
+        float temp = val1;
+        val1 = val2;
+        val2 = temp;
+    }
 }
