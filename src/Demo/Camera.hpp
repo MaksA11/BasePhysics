@@ -5,7 +5,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "../Core/Vec2.h"
+#include "../Core/Vec2.hpp"
 
 namespace demo
 {

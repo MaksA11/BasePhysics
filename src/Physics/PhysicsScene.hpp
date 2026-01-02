@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "Rigidbody.h"
-#include "../Collision/Collider.h"
-#include "../Collision/Collisions.h"
+#include "Rigidbody.hpp"
+#include "../Collision/Collider.hpp"
+#include "../Collision/Collisions.hpp"
 
 namespace bp
 {

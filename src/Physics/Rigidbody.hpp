@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../Core/Vec2.h"
-#include "../Collision/Collider.h"
+#include "../Core/Vec2.hpp"
+#include "../Collision/Collider.hpp"
 
 namespace bp
 {

@@ -1,12 +1,8 @@
-#pragma once
-
-#include "../Core/Vec2.h"
-#include "../Core/Math.h"
-#include "Collider.h"
+#include "Collisions.hpp"
 
 namespace bp::collisions
 {
-    inline Vec2 *GetBoxVertices(const BoxShape &box, Vec2 position, float rotation)
+    Vec2 *GetBoxVertices(const BoxShape &box, Vec2 position, float rotation)
     {
         float left = -box.size.x * 0.5f;
         float right = left + box.size.x;
@@ -30,7 +26,7 @@ namespace bp::collisions
         return transformedVertices;
     }
 
-    inline void ProjectVertices(Vec2 vertices[], Vec2 axis, float &outMin, float &outMax)
+    void ProjectVertices(Vec2 vertices[], Vec2 axis, float &outMin, float &outMax)
     {
         outMin = FLT_MAX;
         outMax = -FLT_MAX;
@@ -46,7 +42,7 @@ namespace bp::collisions
                 outMax = proj;
         }
     }
-    inline void ProjectCircle(Vec2 center, float radius, Vec2 axis, float &outMin, float &outMax)
+    void ProjectCircle(Vec2 center, float radius, Vec2 axis, float &outMin, float &outMax)
     {
         Vec2 direction = axis.Normalized();
 
@@ -60,7 +56,7 @@ namespace bp::collisions
             math::Swap(outMin, outMax);
     }
 
-    inline int FindClosestPointIndex(Vec2 center, Vec2 vertices[])
+    int FindClosestPointIndex(Vec2 center, Vec2 vertices[])
     {
         int result = -1;
         float minDistSq = FLT_MAX;
@@ -80,7 +76,7 @@ namespace bp::collisions
         return result;
     }
 
-    inline bool IntersectCircles(const CircleShape &a, const CircleShape &b, Vec2 posA, Vec2 posB, Vec2 &outNormal, float &outDepth)
+    bool IntersectCircles(const CircleShape &a, const CircleShape &b, Vec2 posA, Vec2 posB, Vec2 &outNormal, float &outDepth)
     {
         outNormal = Vec2::Zero();
         outDepth = 0.0f;
@@ -99,7 +95,7 @@ namespace bp::collisions
 
         return true;
     }
-    inline bool IntersectBoxes(const BoxShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotA, float rotB, Vec2 &outNormal, float &outDepth)
+    bool IntersectBoxes(const BoxShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotA, float rotB, Vec2 &outNormal, float &outDepth)
     {
         outNormal = Vec2::Zero();
         outDepth = FLT_MAX;
@@ -151,7 +147,7 @@ namespace bp::collisions
 
         return true;
     }
-    inline bool IntersectCircleBox(const CircleShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotB, Vec2 &outNormal, float &outDepth)
+    bool IntersectCircleBox(const CircleShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotB, Vec2 &outNormal, float &outDepth)
     {
         outNormal = Vec2::Zero();
         outDepth = FLT_MAX;
@@ -223,7 +219,7 @@ namespace bp::collisions
         return true;
     }
 
-    inline bool IntersectAABBs(const AABB &a, const AABB &b)
+    bool IntersectAABBs(const AABB &a, const AABB &b)
     {
         if(a.max.x <= b.min.x || b.max.x <= a.min.x || a.max.y <= b.min.y || b.max.y <= a.min.y)
             return false;

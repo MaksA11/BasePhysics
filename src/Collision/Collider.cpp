@@ -1,4 +1,4 @@
-#include "Collider.h"
+#include "Collider.hpp"
 
 namespace bp
 {

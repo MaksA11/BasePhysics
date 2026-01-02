@@ -7,10 +7,10 @@
 #include <imgui.h>
 #include <imgui-SFML.h>
 
-#include "../Physics/PhysicsScene.h"
-#include "../Collision/Collider.h"
+#include "../Physics/PhysicsScene.hpp"
+#include "../Collision/Collider.hpp"
 
-#include "Camera.h"
+#include "Camera.hpp"
 
 namespace demo
 {

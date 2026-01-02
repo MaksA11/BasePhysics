@@ -1,4 +1,4 @@
-#include "PhysicsScene.h"
+#include "PhysicsScene.hpp"
 
 namespace bp
 {

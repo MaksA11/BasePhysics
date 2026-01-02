@@ -3,8 +3,8 @@
 #include <vector>
 #include <variant>
 
-#include "../Core/Vec2.h"
-#include "AABB.h"
+#include "../Core/Vec2.hpp"
+#include "AABB.hpp"
 
 namespace bp
 {
