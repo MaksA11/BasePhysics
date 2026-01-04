@@ -47,6 +47,19 @@ namespace demo
         return bp::Vec2(world.x, world.y);
     }
 
+    float Camera::GetZoom()
+    {
+        return zoom;
+    }
+    sf::Vector2f Camera::GetPosition()
+    {
+        return view.getCenter();
+    }
+    sf::Vector2f Camera::GetViewSize()
+    {
+        return view.getSize();
+    }
+
     std::string Camera::DebugInfo()
     {
         return "x: " + std::to_string(view.getCenter().x) + ", y: " + std::to_string(view.getCenter().y) + "\nzoom: " + std::to_string(zoom);

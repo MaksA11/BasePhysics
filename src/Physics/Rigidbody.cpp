@@ -54,6 +54,6 @@ namespace bp
     void Rigidbody::Rotate(float angle)
     {
         rotation += angle;
-        rotation = std::fmod(rotation, 360.0f);
+        rotation = std::fmod(rotation, math::ToRadians(360.0f));
     }
 }

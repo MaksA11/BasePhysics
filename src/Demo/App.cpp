@@ -7,6 +7,7 @@ namespace demo
         deltaTime = 0.0f;
         appRunning = true;
         fps = 0.0f;
+        isDragging = false;
     }
 
     void App::Init(unsigned int width, unsigned int height, const char *name, WindowType windowType)
@@ -20,7 +21,7 @@ namespace demo
         else
         {
             std::cerr << "Unknown window type\n";
-            exit(1);
+            exit(EXIT_FAILURE);
         }
 
         ImGui::SFML::Init(*window);
@@ -50,9 +51,28 @@ namespace demo
     void App::Update()
     {
         scene.Step(deltaTime, 1);
+
+        sf::Vector2f center = camera.GetPosition();
+        sf::Vector2f size = camera.GetViewSize();
+
+        float halfX = size.x * 0.5f;
+        float halfY = std::abs(size.y) * 0.5f;
+
         for(auto &rb : scene.GetBodies())
         {
-            // rb->Rotate(bp::math::pi * 0.5f * deltaTime);
+            bp::Vec2 pos = rb->GetPosition();
+
+            if(pos.x > center.x + halfX)
+                pos.x = center.x - halfX;
+            else if(pos.x < center.x - halfX)
+                pos.x = center.x + halfX;
+
+            if(pos.y > center.y + halfY)
+                pos.y = center.y - halfY;
+            else if(pos.y < center.y - halfY)
+                pos.y = center.y + halfY;
+
+            rb->MoveTo(pos);
         }
     }
 
@@ -84,7 +104,7 @@ namespace demo
                 rectangle.setFillColor(sf::Color::White);
                 rectangle.setOutlineColor(sf::Color::Black);
                 rectangle.setOutlineThickness(-0.067f);
-                rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x / 2, rectangle.getSize().y / 2));
+                rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x * 0.5f, rectangle.getSize().y * 0.5f));
                 window->draw(rectangle);
 
                 // sf::CircleShape vertex;
@@ -120,6 +140,10 @@ namespace demo
         ImGui::Separator();
         ImGui::Text("Body count");
         ImGui::Text(std::to_string(scene.GetBodies().size()).c_str());
+        ImGui::Separator();
+        ImGui::Text("Body[0]");
+        ImGui::Text(("x: " + std::to_string(scene.GetBodies()[0]->GetPosition().x) + ", y: " + std::to_string(scene.GetBodies()[0]->GetPosition().y) +
+            "\nrot: " + std::to_string(scene.GetBodies()[0]->GetRotation())).c_str());
         ImGui::Separator();
         ImGui::Text("FPS");
         ImGui::Text(std::to_string(fps).c_str());
@@ -173,31 +197,52 @@ namespace demo
                     preset.usesGravity = true;
                     scene.AddRigidbody(preset);
                 }
+                if(event.mouseButton.button == sf::Mouse::Middle)
+                {
+                    isDragging = true;
+                    lastMousePos = sf::Mouse::getPosition(*window);
+                }                
+            }
+            if(event.type == sf::Event::MouseButtonReleased)
+            {
+                if(event.mouseButton.button == sf::Mouse::Middle)
+                    isDragging = false;
             }
             
             if(event.type == sf::Event::MouseWheelScrolled)
                 camera.Zoom(event.mouseWheelScroll.delta > 0 ? 1.1f : 0.9f);
         }
-
-        const float camSpeed = 5.0f * deltaTime;
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-            camera.Move(sf::Vector2f(0.0f, camSpeed));
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            camera.Move(sf::Vector2f(0.0f, -camSpeed));
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-            camera.Move(sf::Vector2f(-camSpeed, 0.0f));
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-            camera.Move(sf::Vector2f(camSpeed, 0.0f));
+        
+        if(isDragging)
+        {
+            sf::Vector2i currentMousePos = sf::Mouse::getPosition(*window);
+            sf::Vector2i delta = lastMousePos - currentMousePos;
+            
+            float worldDeltaX = delta.x / camera.GetZoom();
+            float worldDeltaY = -delta.y / camera.GetZoom();
+            
+            camera.Move(sf::Vector2f(worldDeltaX, worldDeltaY));
+            
+            lastMousePos = currentMousePos;
+        }
 
         const float rbSpeed = 5.0f * deltaTime;
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
             scene.GetBodies()[0]->Move(bp::Vec2::Up() * rbSpeed);
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
             scene.GetBodies()[0]->Move(-bp::Vec2::Up() * rbSpeed);
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
             scene.GetBodies()[0]->Move(bp::Vec2::Right() * rbSpeed);
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
             scene.GetBodies()[0]->Move(-bp::Vec2::Right() * rbSpeed);
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+            scene.GetBodies()[0]->Rotate(bp::math::pi * 0.5f * deltaTime);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+            scene.GetBodies()[0]->Rotate(bp::math::pi * -0.5f * deltaTime);
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+            appRunning = false;
     }
 
     void App::CalculateDeltaTime()

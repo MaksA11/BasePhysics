@@ -36,6 +36,9 @@ namespace demo
 
 			bp::PhysicsScene scene;
 
+			sf::Vector2i lastMousePos;
+			bool isDragging;
+
 		public:
 			App();
 

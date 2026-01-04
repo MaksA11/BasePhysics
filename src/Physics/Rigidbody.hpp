@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../Core/Vec2.hpp"
+#include "../Core/Math.hpp"
 #include "../Collision/Collider.hpp"
 
 namespace bp

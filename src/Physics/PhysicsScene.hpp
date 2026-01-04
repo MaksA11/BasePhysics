@@ -21,6 +21,7 @@ namespace bp
             Rigidbody *AddRigidbody(Rigidbody *rb);
             Rigidbody *AddRigidbody(BodyPreset preset);
             void RemoveRigidbody(Rigidbody *rb);
+            void RemoveRigidbody(int index);
 
             void Step(float deltaTime, unsigned int substeps);
 

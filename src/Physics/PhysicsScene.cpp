@@ -30,6 +30,10 @@ namespace bp
     {
         Rigidbody::DeleteRigidbody(rb, bodies);
     }
+    void PhysicsScene::RemoveRigidbody(int index)
+    {
+        Rigidbody::DeleteRigidbody(bodies[index], bodies);
+    }
 
     void PhysicsScene::Step(float deltaTime, unsigned int substeps)
     {

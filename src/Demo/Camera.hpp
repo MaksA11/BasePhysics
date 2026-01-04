@@ -31,6 +31,10 @@ namespace demo
             sf::Vector2i WorldToScreen(bp::Vec2 position, sf::RenderWindow &window);
             bp::Vec2 ScreenToWorld(sf::Vector2i position, sf::RenderWindow &window);
 
+            float GetZoom();
+            sf::Vector2f GetPosition();
+            sf::Vector2f GetViewSize();
+
             std::string DebugInfo();
     };
 }
