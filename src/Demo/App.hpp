@@ -11,6 +11,7 @@
 #include "../Collision/Collider.hpp"
 
 #include "Camera.hpp"
+#include "Random.hpp"
 
 namespace demo
 {
@@ -38,6 +39,8 @@ namespace demo
 
 			sf::Vector2i lastMousePos;
 			bool isDragging;
+			
+			std::vector<sf::Color> colors;
 
 		public:
 			App();

@@ -28,6 +28,8 @@ namespace demo
         // window->setFramerateLimit(60);
         clock = sf::Clock();
         camera = Camera(bp::Vec2::Zero(), window->getSize(), 50);
+
+        random::Init();
     }
 
     void App::Start()
@@ -46,6 +48,27 @@ namespace demo
         preset.usesGravity = true;
 
         scene.AddRigidbody(preset);
+        colors.push_back(random::RandomColor());
+
+        for(int i = 0; i < 30; i++)
+        {
+            sf::Vector2f center = camera.GetPosition();
+            sf::Vector2f size = camera.GetViewSize();
+            float halfX = size.x * 0.5f;
+            float halfY = std::abs(size.y) * 0.5f;
+            float padding = 0.5f;
+
+            preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
+                random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
+
+            if(random::RandomBool())
+                preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
+            else
+                preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
+
+            scene.AddRigidbody(preset);
+            colors.push_back(random::RandomColor());
+        }
     }
 
     void App::Update()
@@ -83,6 +106,7 @@ namespace demo
         sf::RectangleShape rectangle;
         sf::CircleShape circle;
 
+        int i = 0;
         for(auto &rb : scene.GetBodies())
         {
             if(rb->GetCollider().IsCircle())
@@ -90,7 +114,7 @@ namespace demo
                 circle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
                 circle.setRadius(rb->GetCollider().GetCircle()->radius);
                 circle.setRotation(-bp::math::ToDegrees(rb->GetRotation()));
-                circle.setFillColor(sf::Color::White);
+                circle.setFillColor(colors[i]);
                 circle.setOutlineColor(sf::Color::Black);
                 circle.setOutlineThickness(-0.067f);
                 circle.setOrigin(sf::Vector2f(circle.getRadius(), circle.getRadius()));
@@ -101,7 +125,7 @@ namespace demo
                 rectangle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
                 rectangle.setSize(sf::Vector2f(rb->GetCollider().GetBox()->size.x, rb->GetCollider().GetBox()->size.y));
                 rectangle.setRotation(-bp::math::ToDegrees(rb->GetRotation()));
-                rectangle.setFillColor(sf::Color::White);
+                rectangle.setFillColor(colors[i]);
                 rectangle.setOutlineColor(sf::Color::Black);
                 rectangle.setOutlineThickness(-0.067f);
                 rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x * 0.5f, rectangle.getSize().y * 0.5f));
@@ -124,6 +148,8 @@ namespace demo
             {
                 // TODO: implement
             }
+
+            i++;
         }
 
         ImGui::SFML::Render(*window);
@@ -170,7 +196,7 @@ namespace demo
                     preset.position = worldPos;
                     preset.rotation = 0.0f;
                     preset.mass = 1.0f;
-                    preset.shape = bp::CircleShape(0.5f);
+                    preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
                     preset.linearDamping = 0.1f;
                     preset.angularDamping = 0.1f;
                     preset.restitution = 0.1f;
@@ -178,6 +204,8 @@ namespace demo
                     preset.isStatic = false;
                     preset.usesGravity = true;
                     scene.AddRigidbody(preset);
+
+                    colors.push_back(random::RandomColor());
                 }
                 if(event.mouseButton.button == sf::Mouse::Right)
                 {
@@ -188,7 +216,7 @@ namespace demo
                     preset.position = worldPos;
                     preset.rotation = 0.0f;
                     preset.mass = 1.0f;
-                    preset.shape = bp::BoxShape(bp::Vec2::One());
+                    preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
                     preset.linearDamping = 0.1f;
                     preset.angularDamping = 0.1f;
                     preset.restitution = 0.1f;
@@ -196,6 +224,8 @@ namespace demo
                     preset.isStatic = false;
                     preset.usesGravity = true;
                     scene.AddRigidbody(preset);
+
+                    colors.push_back(random::RandomColor());
                 }
                 if(event.mouseButton.button == sf::Mouse::Middle)
                 {
