@@ -2,15 +2,15 @@
 
 namespace bp
 {
-    bool Collider::IsCircle()
+    bool Collider::IsCircle() const
     {
         return std::holds_alternative<CircleShape>(this->shape);
     }
-    bool Collider::IsBox()
+    bool Collider::IsBox() const
     {
         return std::holds_alternative<BoxShape>(this->shape);
     }
-    bool Collider::IsPolygon()
+    bool Collider::IsPolygon() const
     {
         return std::holds_alternative<PolygonShape>(this->shape);
     }
@@ -26,6 +26,15 @@ namespace bp
     const PolygonShape *Collider::GetPolygon() const
     {
         return std::get_if<PolygonShape>(&this->shape);
+    }
+
+    float Collider::GetRestitution() const
+    {
+        return restitution;
+    }
+    float Collider::GetFriction() const
+    {
+        return friction;
     }
 
     const AABB Collider::GetAABB(Vec2 pos) const
@@ -46,7 +55,7 @@ namespace bp
     float Collider::CalculateInertia(float mass)
     {
         if(IsCircle())
-            return (1.0f / 2.0f) * mass * GetCircle()->radius;
+            return (1.0f / 2.0f) * mass * GetCircle()->radius * GetCircle()->radius;
         if(IsBox())
         {
             Vec2 size = GetBox()->size;

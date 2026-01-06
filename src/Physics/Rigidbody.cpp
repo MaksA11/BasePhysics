@@ -56,4 +56,37 @@ namespace bp
         rotation += angle;
         rotation = std::fmod(rotation, math::ToRadians(360.0f));
     }
+
+    void Rigidbody::SetProperties(const BodyPreset &preset)
+    {
+        position = preset.position;
+        rotation = preset.rotation;
+        mass = preset.mass;
+        linearDamping = preset.linearDamping;
+        angularDamping = preset.angularDamping;
+        isStatic = preset.isStatic;
+        usesGravity = preset.usesGravity;
+        collider = Collider(preset.shape, preset.restitution, preset.friction);
+        inertia = collider.CalculateInertia(mass);
+    }
+    BodyPreset Rigidbody::GetProperties() const
+    {
+        BodyPreset preset;
+        preset.position = position;
+        preset.rotation = rotation;
+        if(collider.IsCircle())
+            preset.shape = *collider.GetCircle();
+        else if(collider.IsBox())
+            preset.shape = *collider.GetBox();
+        else if(collider.IsPolygon())
+            preset.shape = *collider.GetPolygon();
+        preset.mass = mass;
+        preset.linearDamping = linearDamping;
+        preset.angularDamping = angularDamping;
+        preset.restitution = collider.GetRestitution();
+        preset.friction = collider.GetFriction();
+        preset.isStatic = isStatic;
+        preset.usesGravity = usesGravity;
+        return preset;
+    }
 }

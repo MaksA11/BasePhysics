@@ -49,13 +49,16 @@ namespace bp
         public:
             Collider(ColliderShape shape, float restitution, float friction) : shape(shape), restitution(restitution), friction(friction) {}
 
-            bool IsCircle();
-            bool IsBox();
-            bool IsPolygon();
+            bool IsCircle() const;
+            bool IsBox() const;
+            bool IsPolygon() const;
 
             const CircleShape *GetCircle() const;
             const BoxShape *GetBox() const;
             const PolygonShape *GetPolygon() const;
+
+            float GetRestitution() const;
+            float GetFriction() const;
 
             const AABB GetAABB(Vec2 pos) const;
 
