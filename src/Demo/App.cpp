@@ -119,6 +119,15 @@ namespace demo
                 circle.setOutlineThickness(-0.067f);
                 circle.setOrigin(sf::Vector2f(circle.getRadius(), circle.getRadius()));
                 window->draw(circle);
+
+                bp::Vec2 va = bp::math::Transform(bp::Vec2::Zero(), rb->GetPosition(), rb->GetRotation());
+                bp::Vec2 vb = bp::math::Transform(bp::Vec2(circle.getRadius(), 0.0f), rb->GetPosition(), rb->GetRotation());
+                sf::Vertex line[] = {
+                    sf::Vertex(sf::Vector2f(va.x, va.y), sf::Color::Black),
+                    sf::Vertex(sf::Vector2f(vb.x, vb.y), sf::Color::Black)
+                };
+
+                window->draw(line, 2, sf::Lines);
             }
             else if(rb->GetCollider().IsBox())
             {
@@ -131,18 +140,18 @@ namespace demo
                 rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x * 0.5f, rectangle.getSize().y * 0.5f));
                 window->draw(rectangle);
 
-                // sf::CircleShape vertex;
-                // bp::Vec2 *vertices = bp::collisions::GetBoxVertices(*rb->GetCollider().GetBox(), rb->GetPosition(), rb->GetRotation());
-                // for(int i = 0; i < 4; i++)
-                // {
-                //     float radius = 0.05f;
-                //     vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
-                //     vertex.setRadius(radius);
-                //     vertex.setFillColor(sf::Color::Green);
-                //     vertex.setOrigin(sf::Vector2f(radius, radius));
-                //     window->draw(vertex);
-                // }
-                // delete[] vertices;
+                sf::CircleShape vertex;
+                bp::Vec2 *vertices = bp::collisions::GetBoxVertices(*rb->GetCollider().GetBox(), rb->GetPosition(), rb->GetRotation());
+                for(int i = 0; i < 4; i++)
+                {
+                    float radius = 0.05f;
+                    vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
+                    vertex.setRadius(radius);
+                    vertex.setFillColor(sf::Color::Green);
+                    vertex.setOrigin(sf::Vector2f(radius, radius));
+                    window->draw(vertex);
+                }
+                delete[] vertices;
             }
             else if(rb->GetCollider().IsPolygon())
             {
@@ -266,9 +275,9 @@ namespace demo
         else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
             scene.GetBodies()[0]->Move(-bp::Vec2::Right() * rbSpeed);
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::R))
-            scene.GetBodies()[0]->Rotate(bp::math::pi * 0.5f * deltaTime);
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+            scene.GetBodies()[0]->Rotate(bp::math::pi * 0.5f * deltaTime);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
             scene.GetBodies()[0]->Rotate(bp::math::pi * -0.5f * deltaTime);
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))

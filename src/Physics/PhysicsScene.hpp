@@ -5,6 +5,7 @@
 #include "Rigidbody.hpp"
 #include "../Collision/Collider.hpp"
 #include "../Collision/Collisions.hpp"
+#include "../Collision/ContactManifold.hpp"
 
 namespace bp
 {
@@ -13,6 +14,11 @@ namespace bp
         private:
             Vec2 gravity;
             std::vector<Rigidbody *> bodies;
+            std::vector<ContactManifold> contacts;
+
+            void DetectCollisions();
+            void SeparateBodies();
+            void ResolveCollisions();
 
         public:
             PhysicsScene();

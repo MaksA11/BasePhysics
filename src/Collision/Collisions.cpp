@@ -26,6 +26,41 @@ namespace bp::collisions
         return transformedVertices;
     }
 
+    bool Collide(Rigidbody *bodyA, Rigidbody *bodyB, Vec2 &outNormal, float &outDepth)
+    {
+        outNormal = Vec2::Zero();
+        outDepth = 0.0f;
+
+        if(bodyA->GetCollider().IsCircle() && bodyB->GetCollider().IsCircle())
+        {
+            if(collisions::IntersectCircles(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition(), outNormal, outDepth))
+                return true;
+        }
+        else if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsBox())
+        {
+            if(collisions::IntersectBoxes(*bodyA->GetCollider().GetBox(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
+                bodyA->GetRotation(), bodyB->GetRotation(), outNormal, outDepth))
+                return true;
+        }
+        else if(bodyA->GetCollider().IsCircle() && bodyB->GetCollider().IsBox())
+        {
+            if(collisions::IntersectCircleBox(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
+                bodyB->GetRotation(), outNormal, outDepth))
+                return true;
+        }
+        else if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsCircle())
+        {
+            if(collisions::IntersectCircleBox(*bodyB->GetCollider().GetCircle(), *bodyA->GetCollider().GetBox(), bodyB->GetPosition(), bodyA->GetPosition(),
+                bodyA->GetRotation(), outNormal, outDepth))
+            {
+                outNormal = -outNormal;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     void ProjectVertices(Vec2 vertices[], Vec2 axis, float &outMin, float &outMax)
     {
         outMin = FLT_MAX;

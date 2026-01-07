@@ -2,11 +2,14 @@
 
 #include "../Core/Vec2.hpp"
 #include "../Core/Math.hpp"
+#include "../Physics/Rigidbody.hpp"
 #include "Collider.hpp"
 
 namespace bp::collisions
 {
     Vec2 *GetBoxVertices(const BoxShape &box, Vec2 position, float rotation);
+    
+    bool Collide(Rigidbody *bodyA, Rigidbody *bodyB, Vec2 &outNormal, float &outDepth);
 
     void ProjectVertices(Vec2 vertices[], Vec2 axis, float &outMin, float &outMax);
     void ProjectCircle(Vec2 center, float radius, Vec2 axis, float &outMin, float &outMax);

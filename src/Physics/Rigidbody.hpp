@@ -33,8 +33,7 @@ namespace bp
                 : position(position), rotation(rotation), collider(collider), mass(mass), inertia(collider.CalculateInertia(mass)),
                 linearDamping(linearDamping), angularDamping(angularDamping), isStatic(isStatic), usesGravity(usesGravity) {}
             Rigidbody(BodyPreset preset, Collider collider)
-                : position(preset.position), rotation(preset.rotation), collider(collider), mass(preset.mass),
-                inertia(collider.CalculateInertia(preset.mass)),
+                : position(preset.position), rotation(preset.rotation), collider(collider), mass(preset.mass), inertia(collider.CalculateInertia(preset.mass)),
                 linearDamping(linearDamping), angularDamping(angularDamping), isStatic(isStatic), usesGravity(usesGravity) {}
 
             Vec2 position;

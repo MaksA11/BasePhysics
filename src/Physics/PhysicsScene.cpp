@@ -39,62 +39,42 @@ namespace bp
     {
         for(int currentSubstep = 0; currentSubstep < substeps; currentSubstep++)
         {
-            for(int i = 0; i < bodies.size() - 1; i++)
+            DetectCollisions();
+            SeparateBodies();
+            ResolveCollisions();
+        }
+    }
+
+    void PhysicsScene::DetectCollisions()
+    {
+        contacts.clear();
+
+        for(int i = 0; i < bodies.size() - 1; i++)
+        {
+            for(int j = i + 1; j < bodies.size(); j++)
             {
-                for(int j = i + 1; j < bodies.size(); j++)
-                {
-                    Vec2 normal;
-                    float depth;
+                Vec2 normal;
+                float depth;
 
-                    Rigidbody *bodyA = bodies[i];
-                    Rigidbody *bodyB = bodies[j];
-
-                    if(bodyA->GetCollider().IsCircle() && bodyB->GetCollider().IsCircle())
-                    {
-                        if(collisions::IntersectCircles(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition(), normal, depth))
-                        {
-                            Vec2 translationVector = normal * depth;
-
-                            bodies[i]->Move(-translationVector * 0.5f);
-                            bodies[j]->Move(translationVector * 0.5f);
-                        }
-                    }
-                    else if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsBox())
-                    {
-                        if(collisions::IntersectBoxes(*bodyA->GetCollider().GetBox(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
-                            bodyA->GetRotation(), bodyB->GetRotation(), normal, depth))
-                        {
-                            Vec2 translationVector = normal * depth;
-
-                            bodies[i]->Move(-translationVector * 0.5f);
-                            bodies[j]->Move(translationVector * 0.5f);
-                        }
-                    }
-                    else if(bodyA->GetCollider().IsCircle() && bodyB->GetCollider().IsBox())
-                    {
-                        if(collisions::IntersectCircleBox(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
-                            bodyB->GetRotation(), normal, depth))
-                        {
-                            Vec2 translationVector = normal * depth;
-
-                            bodies[i]->Move(-translationVector * 0.5f);
-                            bodies[j]->Move(translationVector * 0.5f);
-                        }
-                    }
-                    else if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsCircle())
-                    {
-                        if(collisions::IntersectCircleBox(*bodyB->GetCollider().GetCircle(), *bodyA->GetCollider().GetBox(), bodyB->GetPosition(), bodyA->GetPosition(),
-                            bodyA->GetRotation(), normal, depth))
-                        {
-                            normal = -normal;
-                            Vec2 translationVector = normal * depth;
-
-                            bodies[i]->Move(-translationVector * 0.5f);
-                            bodies[j]->Move(translationVector * 0.5f);
-                        }
-                    }
-                }
+                if(collisions::Collide(bodies[i], bodies[j], normal, depth))
+                    contacts.push_back(ContactManifold(i, j, normal, depth, Vec2::Zero()));
             }
+        }
+    }
+    void PhysicsScene::SeparateBodies()
+    {
+        for(auto contact : contacts)
+        {
+            Vec2 translationVector = contact.normal * contact.depth;
+            bodies[contact.rbIndex1]->Move(-translationVector * 0.5f);
+            bodies[contact.rbIndex2]->Move(translationVector * 0.5f);
+        }
+    }
+    void PhysicsScene::ResolveCollisions()
+    {
+        for(auto contact : contacts)
+        {
+            
         }
     }
 
