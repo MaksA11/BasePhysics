@@ -55,9 +55,17 @@ namespace bp
             {
                 Vec2 normal;
                 float depth;
+                std::vector<Vec2> contactPoints;
 
-                if(collisions::Collide(bodies[i], bodies[j], normal, depth))
-                    contacts.push_back(ContactManifold(i, j, normal, depth, Vec2::Zero()));
+                if(collisions::Collide(bodies[i], bodies[j], normal, depth, contactPoints))
+                {
+                    if(contactPoints.size() == 1)
+                        contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0]));
+                    else if(contactPoints.size() == 2)
+                        contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0], contactPoints[1]));
+                    else
+                        contacts.push_back(ContactManifold(i, j, normal, depth, Vec2::Zero()));
+                }
             }
         }
     }
@@ -81,5 +89,9 @@ namespace bp
     const std::vector<Rigidbody *> &PhysicsScene::GetBodies() const
     {
         return bodies;
+    }
+    const std::vector<ContactManifold> &PhysicsScene::GetContacts() const
+    {
+        return contacts;
     }
 }

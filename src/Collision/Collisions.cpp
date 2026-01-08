@@ -26,7 +26,7 @@ namespace bp::collisions
         return transformedVertices;
     }
 
-    bool Collide(Rigidbody *bodyA, Rigidbody *bodyB, Vec2 &outNormal, float &outDepth)
+    bool Collide(Rigidbody *bodyA, Rigidbody *bodyB, Vec2 &outNormal, float &outDepth, std::vector<Vec2> &outContacts)
     {
         outNormal = Vec2::Zero();
         outDepth = 0.0f;
@@ -34,19 +34,35 @@ namespace bp::collisions
         if(bodyA->GetCollider().IsCircle() && bodyB->GetCollider().IsCircle())
         {
             if(collisions::IntersectCircles(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition(), outNormal, outDepth))
+            {
+                outContacts.push_back(FindCirclesContactPoint(*bodyA->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition()));
                 return true;
+            }
         }
         else if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsBox())
         {
             if(collisions::IntersectBoxes(*bodyA->GetCollider().GetBox(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
                 bodyA->GetRotation(), bodyB->GetRotation(), outNormal, outDepth))
+            {
+                // std::vector<Vec2> contacts = FindBoxesContactPoints(*bodyA->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition());
+
+                // for(int i = 0; i < contacts.size(); i++)
+                // {
+                //     outContacts.push_back(contacts[i]);
+                // }
+
                 return true;
+            }
         }
         else if(bodyA->GetCollider().IsCircle() && bodyB->GetCollider().IsBox())
         {
             if(collisions::IntersectCircleBox(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
                 bodyB->GetRotation(), outNormal, outDepth))
+            {
+                // outContacts.push_back(FindCircleBoxContactPoint(*bodyA->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition()));
+
                 return true;
+            }
         }
         else if(bodyA->GetCollider().IsBox() && bodyB->GetCollider().IsCircle())
         {
@@ -54,6 +70,9 @@ namespace bp::collisions
                 bodyA->GetRotation(), outNormal, outDepth))
             {
                 outNormal = -outNormal;
+                
+                // outContacts.push_back(FindCircleBoxContactPoint(*bodyB->GetCollider().GetCircle(), bodyB->GetPosition(), bodyA->GetPosition()));
+
                 return true;
             }
         }
@@ -260,5 +279,23 @@ namespace bp::collisions
             return false;
 
         return true;
+    }
+
+    Vec2 FindCirclesContactPoint(const CircleShape &a, Vec2 posA, Vec2 posB)
+    {
+        Vec2 direction = posB - posA;
+        direction.Normalize();
+        return posA + direction * a.radius;
+    }
+
+    Vec2 FindCircleBoxContactPoint(const CircleShape &a, Vec2 posA, Vec2 posB)
+    {
+        return Vec2::Zero();
+    }
+
+    std::vector<Vec2> FindBoxesContactPoints(const CircleShape &a, Vec2 posA, Vec2 posB)
+    {
+        std::vector<Vec2> temp;
+        return temp; // TODO: implement
     }
 }

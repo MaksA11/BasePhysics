@@ -38,8 +38,8 @@ namespace demo
         preset.position = bp::Vec2::Zero();
         preset.rotation = 0.0f;
         preset.mass = 1.0f;
-        preset.shape = bp::BoxShape(bp::Vec2::One());
-        // preset.shape = bp::CircleShape(0.5f);
+        // preset.shape = bp::BoxShape(bp::Vec2::One());
+        preset.shape = bp::CircleShape(0.5f);
         preset.linearDamping = 0.1f;
         preset.angularDamping = 0.1f;
         preset.restitution = 0.1f;
@@ -159,6 +159,21 @@ namespace demo
             }
 
             i++;
+        }
+
+        for(auto &contact : scene.GetContacts())
+        {
+            sf::CircleShape circle;
+            float radius = 0.05f;
+
+            for(int i = 0; i < contact.contactPoints.size(); i++)
+            {
+                circle.setPosition(sf::Vector2f(contact.contactPoints[i].x, contact.contactPoints[i].y));
+                circle.setRadius(radius);
+                circle.setFillColor(sf::Color::Magenta);
+                circle.setOrigin(sf::Vector2f(radius, radius));
+                window->draw(circle);
+            }
         }
 
         ImGui::SFML::Render(*window);
