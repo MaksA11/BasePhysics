@@ -25,6 +25,24 @@ namespace bp::collisions
 
         return transformedVertices;
     }
+    float PointSegmentDistance(Vec2 point, Vec2 segmentA, Vec2 segmentB, Vec2 &outClosestPoint)
+    {
+        Vec2 segment = segmentB - segmentA;
+        Vec2 startToPoint = point - segmentA;
+
+        float proj = math::Dot(startToPoint, segment);
+        float lengthSquared = segment.MagnitudeSquared();
+        float d = proj / lengthSquared;
+
+        if(d <= 0)
+            outClosestPoint = segmentA;
+        else if(d >= 1)
+            outClosestPoint = segmentB;
+        else
+            outClosestPoint = segmentA + segment * d;
+
+        return math::DistanceSquared(point, outClosestPoint);
+    }
 
     bool Collide(Rigidbody *bodyA, Rigidbody *bodyB, Vec2 &outNormal, float &outDepth, std::vector<Vec2> &outContacts)
     {
@@ -59,8 +77,8 @@ namespace bp::collisions
             if(collisions::IntersectCircleBox(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
                 bodyB->GetRotation(), outNormal, outDepth))
             {
-                // outContacts.push_back(FindCircleBoxContactPoint(*bodyA->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition()));
-
+                outContacts.push_back(FindCircleBoxContactPoint(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetBox(),
+                    bodyA->GetPosition(), bodyB->GetPosition(), bodyB->GetRotation()));
                 return true;
             }
         }
@@ -70,9 +88,8 @@ namespace bp::collisions
                 bodyA->GetRotation(), outNormal, outDepth))
             {
                 outNormal = -outNormal;
-                
-                // outContacts.push_back(FindCircleBoxContactPoint(*bodyB->GetCollider().GetCircle(), bodyB->GetPosition(), bodyA->GetPosition()));
-
+                outContacts.push_back(FindCircleBoxContactPoint(*bodyB->GetCollider().GetCircle(), *bodyA->GetCollider().GetBox(),
+                    bodyB->GetPosition(), bodyA->GetPosition(), bodyA->GetRotation()));
                 return true;
             }
         }
@@ -287,12 +304,30 @@ namespace bp::collisions
         direction.Normalize();
         return posA + direction * a.radius;
     }
-
-    Vec2 FindCircleBoxContactPoint(const CircleShape &a, Vec2 posA, Vec2 posB)
+    Vec2 FindCircleBoxContactPoint(const CircleShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotB)
     {
-        return Vec2::Zero();
-    }
+        float minDistSq = FLT_MAX;
+        Vec2 contact = Vec2::Zero();
 
+        Vec2 *verts = GetBoxVertices(b, posB, rotB);
+
+        for(int i = 0; i < 4; i++)
+        {
+            Vec2 vert1 = verts[i];
+            Vec2 vert2 = verts[(i + 1) % 4];
+
+            Vec2 cp;
+            float distanceSq = PointSegmentDistance(posA, vert1, vert2, cp);
+
+            if(distanceSq < minDistSq)
+            {
+                minDistSq = distanceSq;
+                contact = cp;
+            }
+        }
+
+        return contact;
+    }
     std::vector<Vec2> FindBoxesContactPoints(const CircleShape &a, Vec2 posA, Vec2 posB)
     {
         std::vector<Vec2> temp;

@@ -8,6 +8,7 @@
 namespace bp::collisions
 {
     Vec2 *GetBoxVertices(const BoxShape &box, Vec2 position, float rotation);
+    float PointSegmentDistance(Vec2 point, Vec2 segmentA, Vec2 segmentB, Vec2 &outClosestPoint);
     
     bool Collide(Rigidbody *bodyA, Rigidbody *bodyB, Vec2 &outNormal, float &outDepth, std::vector<Vec2> &outContacts);
 
@@ -22,6 +23,6 @@ namespace bp::collisions
     bool IntersectAABBs(const AABB &a, const AABB &b);
 
     Vec2 FindCirclesContactPoint(const CircleShape &a, Vec2 posA, Vec2 posB);
-    Vec2 FindCircleBoxContactPoint(const CircleShape &a, Vec2 posA, Vec2 posB);
+    Vec2 FindCircleBoxContactPoint(const CircleShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotB);
     std::vector<Vec2> FindBoxesContactPoints(const CircleShape &a, Vec2 posA, Vec2 posB);
 }
