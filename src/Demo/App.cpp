@@ -42,7 +42,7 @@ namespace demo
         // preset.shape = bp::CircleShape(0.5f);
         preset.linearDamping = 0.1f;
         preset.angularDamping = 0.1f;
-        preset.restitution = 0.1f;
+        preset.restitution = 1;
         preset.friction = 0.1f;
         preset.isStatic = false;
         preset.usesGravity = true;
@@ -50,25 +50,25 @@ namespace demo
         scene.AddRigidbody(preset);
         colors.push_back(random::RandomColor());
 
-        // for(int i = 0; i < 30; i++)
-        // {
-        //     sf::Vector2f center = camera.GetPosition();
-        //     sf::Vector2f size = camera.GetViewSize();
-        //     float halfX = size.x * 0.5f;
-        //     float halfY = std::abs(size.y) * 0.5f;
-        //     float padding = 0.5f;
+        for(int i = 0; i < 30; i++)
+        {
+            sf::Vector2f center = camera.GetPosition();
+            sf::Vector2f size = camera.GetViewSize();
+            float halfX = size.x * 0.5f;
+            float halfY = std::abs(size.y) * 0.5f;
+            float padding = 0.5f;
 
-        //     preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
-        //         random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
+            preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
+                random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
 
-        //     if(random::RandomBool())
-        //         preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
-        //     else
-        //         preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
+            if(random::RandomBool())
+                preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
+            else
+                preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
 
-        //     scene.AddRigidbody(preset);
-        //     colors.push_back(random::RandomColor());
-        // }
+            scene.AddRigidbody(preset);
+            colors.push_back(random::RandomColor());
+        }
 
         preset.position = bp::Vec2(0.0f, -12.0f);
         preset.shape = bp::BoxShape(bp::Vec2(40.0f, 1.0f));
@@ -80,7 +80,7 @@ namespace demo
 
     void App::Update()
     {
-        scene.Step(deltaTime, 24);
+        scene.Step(deltaTime, 8);
 
         sf::Vector2f center = camera.GetPosition();
         sf::Vector2f size = camera.GetViewSize();
@@ -92,20 +92,20 @@ namespace demo
         {
             bp::Vec2 pos = rb->GetPosition();
 
-            // if(pos.x > center.x + halfX)
-            //     pos.x = center.x - halfX;
-            // else if(pos.x < center.x - halfX)
-            //     pos.x = center.x + halfX;
+            if(pos.x > center.x + halfX)
+                pos.x = center.x - halfX;
+            else if(pos.x < center.x - halfX)
+                pos.x = center.x + halfX;
 
-            // if(pos.y > center.y + halfY)
-            //     pos.y = center.y - halfY;
-            // else if(pos.y < center.y - halfY)
-            //     pos.y = center.y + halfY;
+            if(pos.y > center.y + halfY)
+                pos.y = center.y - halfY;
+            else if(pos.y < center.y - halfY)
+                pos.y = center.y + halfY;
 
-            // rb->MoveTo(pos);
+            rb->MoveTo(pos);
 
-            if((pos.x > center.x + halfX || pos.x < center.x - halfX || pos.y > center.y + halfY || pos.y < center.y - halfY) && rb != scene.GetBodies()[0])
-                scene.RemoveRigidbody(rb);
+            // if((pos.x > center.x + halfX || pos.x < center.x - halfX || pos.y > center.y + halfY || pos.y < center.y - halfY) && rb != scene.GetBodies()[0])
+            //     scene.RemoveRigidbody(rb);
         }
     }
 
@@ -168,15 +168,17 @@ namespace demo
                 // TODO: implement
             }
 
-            float radius = 0.05f;
-            circle.setPosition(sf::Vector2f(rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation()).max.x, rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation()).max.y));
-            circle.setRadius(radius);
-            circle.setFillColor(sf::Color::Red);
-            circle.setOrigin(sf::Vector2f(radius, radius));
-            window->draw(circle);
-            circle.setFillColor(sf::Color::Red);
-            circle.setPosition(sf::Vector2f(rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation()).min.x, rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation()).min.y));
-            window->draw(circle);
+            auto aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
+            sf::Vector2f size(aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y);
+            sf::Vector2f position(aabb.min.x, aabb.min.y);
+            rectangle.setPosition(position);
+            rectangle.setSize(size);
+            rectangle.setFillColor(sf::Color::Transparent);
+            rectangle.setOutlineColor(sf::Color::Red);
+            rectangle.setOutlineThickness(0.04f);
+            rectangle.setOrigin(0.0f, 0.0f);
+            rectangle.setRotation(0.0f);
+            window->draw(rectangle);
 
             i++;
         }
@@ -216,7 +218,8 @@ namespace demo
         ImGui::Separator();
         ImGui::Text("Body[0]");
         ImGui::Text(("x: " + std::to_string(scene.GetBodies()[0]->GetPosition().x) + ", y: " + std::to_string(scene.GetBodies()[0]->GetPosition().y) +
-            "\nrot: " + std::to_string(scene.GetBodies()[0]->GetRotation())).c_str());
+            "\nrot: " + std::to_string(scene.GetBodies()[0]->GetRotation()) +
+            "\nvel: " + std::to_string(scene.GetBodies()[0]->GetLinearVelocity().x) + ", y: " + std::to_string(scene.GetBodies()[0]->GetLinearVelocity().y)).c_str());
         ImGui::Separator();
         ImGui::Text("FPS");
         ImGui::Text(std::to_string(fps).c_str());
@@ -303,15 +306,15 @@ namespace demo
             lastMousePos = currentMousePos;
         }
 
-        const float rbSpeed = 5.0f * deltaTime;
+        const float rbForce = 15.0 * deltaTime;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-            scene.GetBodies()[0]->Move(bp::Vec2::Up() * rbSpeed);
+            scene.GetBodies()[0]->ApplyImpulse(bp::Vec2::Up() * rbForce);
         else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            scene.GetBodies()[0]->Move(-bp::Vec2::Up() * rbSpeed);
+            scene.GetBodies()[0]->ApplyImpulse(-bp::Vec2::Up() * rbForce);
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-            scene.GetBodies()[0]->Move(bp::Vec2::Right() * rbSpeed);
+            scene.GetBodies()[0]->ApplyImpulse(bp::Vec2::Right() * rbForce);
         else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-            scene.GetBodies()[0]->Move(-bp::Vec2::Right() * rbSpeed);
+            scene.GetBodies()[0]->ApplyImpulse(-bp::Vec2::Right() * rbForce);
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
             scene.GetBodies()[0]->Rotate(bp::math::pi * 0.5f * deltaTime);

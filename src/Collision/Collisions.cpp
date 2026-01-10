@@ -107,7 +107,7 @@ namespace bp::collisions
                     return false;
                 }
 
-                float axisDepth = fmin(max2 - min1, max1 - min2);
+                float axisDepth = std::min(max2 - min1, max1 - min2);
                 if(axisDepth < outDepth)
                 {
                     outDepth = axisDepth;

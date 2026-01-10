@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Rigidbody.hpp"
 #include "../Collision/Collider.hpp"
 #include "../Collision/Collisions.hpp"
 #include "../Collision/ContactManifold.hpp"
+#include "Rigidbody.hpp"
 
 namespace bp
 {
@@ -17,8 +17,8 @@ namespace bp
             std::vector<ContactManifold> contacts;
 
             void DetectCollisions();
-            void SeparateBodies();
-            void ResolveCollisions();
+            void SeparateBodies(ContactManifold contact);
+            void ResolveCollisions(ContactManifold contact);
 
         public:
             PhysicsScene();

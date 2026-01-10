@@ -49,6 +49,22 @@ namespace bp
             void MoveTo(Vec2 position);
             void Rotate(float angle);
 
+            Vec2 GetLinearVelocity();
+            void SetLinearVelocity(Vec2 velocity);
+            float GetAngularVelocity();
+            void SetAngularVelocity(float velocity);
+
+            void ApplyImpulse(Vec2 impulse);
+            void ApplyAngularImpulse(float impulse);
+
+            void ApplyForce(Vec2 force);
+            void ApplyTorque(float torque);
+
+            float GetMass();
+            float GetInverseMass();
+            float GetInertia();
+            float GetInverseInertia();
+
             void PhysicsStep(float deltaTime, unsigned int substeps, Vec2 gravity);
 
             bool IsStatic();

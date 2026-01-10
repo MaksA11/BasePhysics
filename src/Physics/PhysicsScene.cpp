@@ -39,10 +39,13 @@ namespace bp
     {
         for(int currentSubstep = 0; currentSubstep < substeps; currentSubstep++)
         {
-            StepBodies(deltaTime, substeps);
             DetectCollisions();
-            SeparateBodies();
-            ResolveCollisions();
+            for(auto contact : contacts)
+            {
+                SeparateBodies(contact);
+                ResolveCollisions(contact);
+            }
+            StepBodies(deltaTime, substeps);
         }
     }
     void PhysicsScene::StepBodies(float deltaTime, unsigned int substeps)
@@ -67,38 +70,46 @@ namespace bp
 
                 if(collisions::Collide(bodies[i], bodies[j], normal, depth, contactPoints))
                 {
-                    contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0]));
+                    if(contactPoints.size() == 1)
+                        contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0]));
                     if(contactPoints.size() == 2)
                         contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0], contactPoints[1]));
                 }
             }
         }
     }
-    void PhysicsScene::SeparateBodies()
+    void PhysicsScene::SeparateBodies(ContactManifold contact)
     {
-        for(auto contact : contacts)
-        {
-            Vec2 translationVector = contact.normal * contact.depth;
-            Rigidbody *rb1 = bodies[contact.rbIndex1];
-            Rigidbody *rb2 = bodies[contact.rbIndex2];
+        Vec2 translationVector = contact.normal * contact.depth;
+        Rigidbody *rb1 = bodies[contact.rbIndex1];
+        Rigidbody *rb2 = bodies[contact.rbIndex2];
 
-            if(rb1->IsStatic())
-                rb2->Move(translationVector);
-            else if(rb2->IsStatic())
-                rb1->Move(-translationVector);
-            else
-            {
-                rb1->Move(-translationVector * 0.5f);
-                rb2->Move(translationVector * 0.5f);
-            }
+        if(rb1->IsStatic())
+            rb2->Move(translationVector);
+        else if(rb2->IsStatic())
+            rb1->Move(-translationVector);
+        else
+        {
+            rb1->Move(-translationVector * 0.5f);
+            rb2->Move(translationVector * 0.5f);
         }
     }
-    void PhysicsScene::ResolveCollisions()
+    void PhysicsScene::ResolveCollisions(ContactManifold contact)
     {
-        for(auto contact : contacts)
-        {
-            
-        }
+        Rigidbody *rb1 = bodies[contact.rbIndex1];
+        Rigidbody *rb2 = bodies[contact.rbIndex2];
+
+        Vec2 relativeVelocity = rb2->GetLinearVelocity() - rb1->GetLinearVelocity();
+
+        float velAlongNormal = math::Dot(relativeVelocity, contact.normal);
+        if(velAlongNormal > -0.01f)
+            return;
+
+        float e = std::min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
+        float j = (-(1.0f + e) * math::Dot(relativeVelocity, contact.normal)) / (rb1->GetInverseMass() + rb2->GetInverseMass());
+
+        rb1->ApplyImpulse(-contact.normal * j);
+        rb2->ApplyImpulse(contact.normal * j);
     }
 
     const std::vector<Rigidbody *> &PhysicsScene::GetBodies() const

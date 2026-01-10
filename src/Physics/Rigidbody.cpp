@@ -57,6 +57,58 @@ namespace bp
         rotation = std::fmod(rotation, math::ToRadians(360.0f));
     }
 
+    Vec2 Rigidbody::GetLinearVelocity()
+    {
+        return linearVelocity;
+    }
+    void Rigidbody::SetLinearVelocity(Vec2 velocity)
+    {
+        linearVelocity = velocity;
+    }
+    float Rigidbody::GetAngularVelocity()
+    {
+        return angularVelocity;
+    }
+    void Rigidbody::SetAngularVelocity(float velocity)
+    {
+        angularVelocity = velocity;
+    }
+
+    void Rigidbody::ApplyImpulse(Vec2 impulse)
+    {
+        linearVelocity += impulse / mass;
+    }
+    void Rigidbody::ApplyAngularImpulse(float impulse)
+    {
+        angularVelocity += impulse / mass;
+    }
+
+    void Rigidbody::ApplyForce(Vec2 force)
+    {
+        linearVelocity += force / mass;
+    }
+    void Rigidbody::ApplyTorque(float torque)
+    {
+        angularVelocity += torque / mass;
+    }
+    
+    float Rigidbody::GetMass()
+    {
+        return mass;
+    }
+    float Rigidbody::GetInverseMass()
+    {
+        return 1.0f / mass;
+    }
+    float Rigidbody::GetInertia()
+    {
+        return inertia;
+    }
+    float Rigidbody::GetInverseInertia()
+    {
+        return 1.0f / inertia;
+    }
+
     void Rigidbody::PhysicsStep(float deltaTime, unsigned int substeps, Vec2 gravity)
     {
         if(isStatic)
@@ -65,12 +117,18 @@ namespace bp
         deltaTime /= (float)substeps;
 
         Vec2 acceleration = force / mass;
-        linearVelocity = linearVelocity + acceleration * deltaTime;
-        if(usesGravity)
-            linearVelocity = linearVelocity + gravity * deltaTime;
+        linearVelocity += acceleration * deltaTime;
+        // linearVelocity *= linearDamping;
+
+        float angularAcceleration = torque / inertia;
+        angularVelocity += angularAcceleration * deltaTime;
+        // angularVelocity *= angularDamping;
+
+        // if(usesGravity)
+        //     linearVelocity += gravity * deltaTime;
 
         Move(linearVelocity * deltaTime);
-        Rotate(-angularVelocity * deltaTime);
+        Rotate(angularVelocity * deltaTime);
 
         force = Vec2::Zero();
     }
