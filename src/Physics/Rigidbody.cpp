@@ -38,7 +38,7 @@ namespace bp
         return rotation;
     }
 
-    Collider Rigidbody::GetCollider()
+    const Collider& Rigidbody::GetCollider() const
     {
         return collider;
     }

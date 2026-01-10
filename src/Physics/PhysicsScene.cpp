@@ -59,6 +59,7 @@ namespace bp
     void PhysicsScene::DetectCollisions()
     {
         contacts.clear();
+        contacts.shrink_to_fit();
 
         for(int i = 0; i < bodies.size() - 1; i++)
         {
