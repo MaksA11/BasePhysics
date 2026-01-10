@@ -57,6 +57,33 @@ namespace bp
         rotation = std::fmod(rotation, math::ToRadians(360.0f));
     }
 
+    void Rigidbody::PhysicsStep(float deltaTime, unsigned int substeps, Vec2 gravity)
+    {
+        if(isStatic)
+		    return;
+
+        deltaTime /= (float)substeps;
+
+        Vec2 acceleration = force / mass;
+        linearVelocity = linearVelocity + acceleration * deltaTime;
+        if(usesGravity)
+            linearVelocity = linearVelocity + gravity * deltaTime;
+
+        Move(linearVelocity * deltaTime);
+        Rotate(-angularVelocity * deltaTime);
+
+        force = Vec2::Zero();
+    }
+
+    bool Rigidbody::IsStatic()
+    {
+        return isStatic;
+    }
+    bool Rigidbody::UsesGravity()
+    {
+        return usesGravity;
+    }
+
     void Rigidbody::SetProperties(const BodyPreset &preset)
     {
         position = preset.position;

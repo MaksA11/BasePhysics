@@ -39,9 +39,17 @@ namespace bp
     {
         for(int currentSubstep = 0; currentSubstep < substeps; currentSubstep++)
         {
+            StepBodies(deltaTime, substeps);
             DetectCollisions();
             SeparateBodies();
             ResolveCollisions();
+        }
+    }
+    void PhysicsScene::StepBodies(float deltaTime, unsigned int substeps)
+    {
+        for(auto &rb : bodies)
+        {
+            rb->PhysicsStep(deltaTime, substeps, gravity);
         }
     }
 
@@ -59,12 +67,9 @@ namespace bp
 
                 if(collisions::Collide(bodies[i], bodies[j], normal, depth, contactPoints))
                 {
-                    if(contactPoints.size() == 1)
-                        contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0]));
-                    else if(contactPoints.size() == 2)
+                    contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0]));
+                    if(contactPoints.size() == 2)
                         contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0], contactPoints[1]));
-                    else
-                        contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0]));
                 }
             }
         }
@@ -74,16 +79,26 @@ namespace bp
         for(auto contact : contacts)
         {
             Vec2 translationVector = contact.normal * contact.depth;
-            bodies[contact.rbIndex1]->Move(-translationVector * 0.5f);
-            bodies[contact.rbIndex2]->Move(translationVector * 0.5f);
+            Rigidbody *rb1 = bodies[contact.rbIndex1];
+            Rigidbody *rb2 = bodies[contact.rbIndex2];
+
+            if(rb1->IsStatic())
+                rb2->Move(translationVector);
+            else if(rb2->IsStatic())
+                rb1->Move(-translationVector);
+            else
+            {
+                rb1->Move(-translationVector * 0.5f);
+                rb2->Move(translationVector * 0.5f);
+            }
         }
     }
     void PhysicsScene::ResolveCollisions()
     {
-        for(auto contact : contacts)
-        {
+        // for(auto contact : contacts)
+        // {
             
-        }
+        // }
     }
 
     const std::vector<Rigidbody *> &PhysicsScene::GetBodies() const

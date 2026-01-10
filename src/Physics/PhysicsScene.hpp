@@ -30,6 +30,7 @@ namespace bp
             void RemoveRigidbody(int index);
 
             void Step(float deltaTime, unsigned int substeps);
+            void StepBodies(float deltaTime, unsigned int substeps);
 
             const std::vector<Rigidbody *> &GetBodies() const;
             const std::vector<ContactManifold> &GetContacts() const;

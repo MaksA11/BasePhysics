@@ -50,30 +50,37 @@ namespace demo
         scene.AddRigidbody(preset);
         colors.push_back(random::RandomColor());
 
-        for(int i = 0; i < 30; i++)
-        {
-            sf::Vector2f center = camera.GetPosition();
-            sf::Vector2f size = camera.GetViewSize();
-            float halfX = size.x * 0.5f;
-            float halfY = std::abs(size.y) * 0.5f;
-            float padding = 0.5f;
+        // for(int i = 0; i < 30; i++)
+        // {
+        //     sf::Vector2f center = camera.GetPosition();
+        //     sf::Vector2f size = camera.GetViewSize();
+        //     float halfX = size.x * 0.5f;
+        //     float halfY = std::abs(size.y) * 0.5f;
+        //     float padding = 0.5f;
 
-            preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
-                random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
+        //     preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
+        //         random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
 
-            if(random::RandomBool())
-                preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
-            else
-                preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
+        //     if(random::RandomBool())
+        //         preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
+        //     else
+        //         preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
 
-            scene.AddRigidbody(preset);
-            colors.push_back(random::RandomColor());
-        }
+        //     scene.AddRigidbody(preset);
+        //     colors.push_back(random::RandomColor());
+        // }
+
+        preset.position = bp::Vec2(0.0f, -12.0f);
+        preset.shape = bp::BoxShape(bp::Vec2(40.0f, 1.0f));
+        preset.isStatic = true;
+
+        scene.AddRigidbody(preset);
+        colors.push_back(random::RandomColor());
     }
 
     void App::Update()
     {
-        scene.Step(deltaTime, 1);
+        scene.Step(deltaTime, 24);
 
         sf::Vector2f center = camera.GetPosition();
         sf::Vector2f size = camera.GetViewSize();
