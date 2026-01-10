@@ -50,6 +50,16 @@ namespace bp::math
         val2 = temp;
     }
 
+    inline float Clamp(float val, float min, float max)
+    {
+        if(val > max)
+            return max;
+        if(val < min)
+            return min;
+            
+        return val;
+    }
+
     inline bool NearlyEqual(float val1, float val2)
     {
         return abs(val1 - val2) < 0.0005f;

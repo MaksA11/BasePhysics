@@ -17,8 +17,8 @@ namespace bp
             std::vector<ContactManifold> contacts;
 
             void DetectCollisions();
-            void SeparateBodies(ContactManifold contact);
-            void ResolveCollisions(ContactManifold contact);
+            void SeparateBodies(const ContactManifold &contact);
+            void ResolveCollision(const ContactManifold &contact);
 
         public:
             PhysicsScene();
@@ -30,7 +30,6 @@ namespace bp
             void RemoveRigidbody(int index);
 
             void Step(float deltaTime, unsigned int substeps);
-            void StepBodies(float deltaTime, unsigned int substeps);
 
             const std::vector<Rigidbody *> &GetBodies() const;
             const std::vector<ContactManifold> &GetContacts() const;

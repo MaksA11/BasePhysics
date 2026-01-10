@@ -80,16 +80,16 @@ namespace bp
     }
     void Rigidbody::ApplyAngularImpulse(float impulse)
     {
-        angularVelocity += impulse / mass;
+        angularVelocity += impulse / inertia;
     }
 
     void Rigidbody::ApplyForce(Vec2 force)
     {
-        linearVelocity += force / mass;
+        this->force += force / mass;
     }
     void Rigidbody::ApplyTorque(float torque)
     {
-        angularVelocity += torque / mass;
+        this->torque += torque / inertia;
     }
     
     float Rigidbody::GetMass()
@@ -98,6 +98,8 @@ namespace bp
     }
     float Rigidbody::GetInverseMass()
     {
+        if(isStatic)
+            return 0.0f;
         return 1.0f / mass;
     }
     float Rigidbody::GetInertia()
@@ -106,6 +108,8 @@ namespace bp
     }
     float Rigidbody::GetInverseInertia()
     {
+        if(isStatic)
+            return 0.0f;
         return 1.0f / inertia;
     }
 
@@ -124,8 +128,8 @@ namespace bp
         angularVelocity += angularAcceleration * deltaTime;
         // angularVelocity *= angularDamping;
 
-        // if(usesGravity)
-        //     linearVelocity += gravity * deltaTime;
+        if(usesGravity)
+            linearVelocity += gravity * deltaTime;
 
         Move(linearVelocity * deltaTime);
         Rotate(angularVelocity * deltaTime);
