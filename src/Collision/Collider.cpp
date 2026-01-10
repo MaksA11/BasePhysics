@@ -37,7 +37,7 @@ namespace bp
         return friction;
     }
 
-    const AABB Collider::GetAABB(Vec2 pos) const
+    const AABB Collider::GetAABB(Vec2 pos, float rot) const
     {
         if(const CircleShape *circle = GetCircle())
         {
@@ -45,7 +45,28 @@ namespace bp
             return AABB(pos - Vec2(r, r), pos + Vec2(r, r));
         }
         if(const BoxShape *box = GetBox())
-            return AABB(pos - box->size / 2, pos + box->size / 2);
+        {
+            Vec2 min = Vec2(FLT_MAX, FLT_MAX);
+		    Vec2 max = Vec2(-FLT_MAX, -FLT_MAX);
+
+            Vec2 *verts = geometry::GetBoxVertices(*box, pos, rot);
+
+            for(int i = 0; i < 4; i++)
+			{
+				if(verts[i].x < min.x)
+					min.x = verts[i].x;
+				if(verts[i].x> max.x)
+					max.x = verts[i].x;
+				if(verts[i].y < min.y)
+					min.y = verts[i].y;
+				if(verts[i].y > max.y)
+					max.y = verts[i].y;
+			}
+
+            delete[] verts;
+
+            return AABB(min, max);
+        }
         if(const PolygonShape *poly = GetPolygon())
             return AABB(Vec2::Zero(), Vec2::Zero()); // TODO: implement
         

@@ -92,17 +92,20 @@ namespace demo
         {
             bp::Vec2 pos = rb->GetPosition();
 
-            if(pos.x > center.x + halfX)
-                pos.x = center.x - halfX;
-            else if(pos.x < center.x - halfX)
-                pos.x = center.x + halfX;
+            // if(pos.x > center.x + halfX)
+            //     pos.x = center.x - halfX;
+            // else if(pos.x < center.x - halfX)
+            //     pos.x = center.x + halfX;
 
-            if(pos.y > center.y + halfY)
-                pos.y = center.y - halfY;
-            else if(pos.y < center.y - halfY)
-                pos.y = center.y + halfY;
+            // if(pos.y > center.y + halfY)
+            //     pos.y = center.y - halfY;
+            // else if(pos.y < center.y - halfY)
+            //     pos.y = center.y + halfY;
 
-            rb->MoveTo(pos);
+            // rb->MoveTo(pos);
+
+            if((pos.x > center.x + halfX || pos.x < center.x - halfX || pos.y > center.y + halfY || pos.y < center.y - halfY) && rb != scene.GetBodies()[0])
+                scene.RemoveRigidbody(rb);
         }
     }
 
@@ -148,7 +151,7 @@ namespace demo
                 window->draw(rectangle);
 
                 sf::CircleShape vertex;
-                bp::Vec2 *vertices = bp::collisions::GetBoxVertices(*rb->GetCollider().GetBox(), rb->GetPosition(), rb->GetRotation());
+                bp::Vec2 *vertices = bp::geometry::GetBoxVertices(*rb->GetCollider().GetBox(), rb->GetPosition(), rb->GetRotation());
                 for(int i = 0; i < 4; i++)
                 {
                     float radius = 0.05f;
@@ -164,6 +167,16 @@ namespace demo
             {
                 // TODO: implement
             }
+
+            float radius = 0.05f;
+            circle.setPosition(sf::Vector2f(rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation()).max.x, rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation()).max.y));
+            circle.setRadius(radius);
+            circle.setFillColor(sf::Color::Red);
+            circle.setOrigin(sf::Vector2f(radius, radius));
+            window->draw(circle);
+            circle.setFillColor(sf::Color::Red);
+            circle.setPosition(sf::Vector2f(rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation()).min.x, rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation()).min.y));
+            window->draw(circle);
 
             i++;
         }

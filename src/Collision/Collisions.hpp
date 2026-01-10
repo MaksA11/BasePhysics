@@ -2,20 +2,13 @@
 
 #include "../Core/Vec2.hpp"
 #include "../Core/Math.hpp"
+#include "../Core/Geometry.hpp"
 #include "../Physics/Rigidbody.hpp"
 #include "Collider.hpp"
 
 namespace bp::collisions
-{
-    Vec2 *GetBoxVertices(const BoxShape &box, Vec2 position, float rotation);
-    float PointSegmentDistance(Vec2 point, Vec2 segmentA, Vec2 segmentB, Vec2 &outClosestPoint);
-    
+{   
     bool Collide(Rigidbody *bodyA, Rigidbody *bodyB, Vec2 &outNormal, float &outDepth, std::vector<Vec2> &outContacts);
-
-    void ProjectVertices(Vec2 vertices[], Vec2 axis, float &outMin, float &outMax);
-    void ProjectCircle(Vec2 center, float radius, Vec2 axis, float &outMin, float &outMax);
-
-    int FindClosestPointIndex(Vec2 center, Vec2 vertices[]);
 
     bool IntersectCircles(const CircleShape &a, const CircleShape &b, Vec2 posA, Vec2 posB, Vec2 &outNormal, float &outDepth);
     bool IntersectBoxes(const BoxShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotA, float rotB, Vec2 &outNormal, float &outDepth);

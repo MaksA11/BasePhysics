@@ -95,10 +95,10 @@ namespace bp
     }
     void PhysicsScene::ResolveCollisions()
     {
-        // for(auto contact : contacts)
-        // {
+        for(auto contact : contacts)
+        {
             
-        // }
+        }
     }
 
     const std::vector<Rigidbody *> &PhysicsScene::GetBodies() const

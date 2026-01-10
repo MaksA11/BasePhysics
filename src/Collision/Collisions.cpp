@@ -2,48 +2,6 @@
 
 namespace bp::collisions
 {
-    Vec2 *GetBoxVertices(const BoxShape &box, Vec2 position, float rotation)
-    {
-        float left = -box.size.x * 0.5f;
-        float right = left + box.size.x;
-        float bottom = -box.size.y * 0.5f;
-        float top = bottom + box.size.y;
-
-        Vec2 vertices[4];
-        vertices[0] = Vec2(left, top);
-        vertices[1] = Vec2(right, top);
-        vertices[2] = Vec2(right, bottom);
-        vertices[3] = Vec2(left, bottom);
-
-        Vec2 *transformedVertices = new Vec2[4];
-
-        for(int i = 0; i < 4; i++)
-		{
-			Vec2 vertex = vertices[i];
-			transformedVertices[i] = math::Transform(vertex, position, rotation);
-		}
-
-        return transformedVertices;
-    }
-    float PointSegmentDistance(Vec2 point, Vec2 segmentA, Vec2 segmentB, Vec2 &outClosestPoint)
-    {
-        Vec2 segment = segmentB - segmentA;
-        Vec2 startToPoint = point - segmentA;
-
-        float proj = math::Dot(startToPoint, segment);
-        float lengthSquared = segment.MagnitudeSquared();
-        float d = proj / lengthSquared;
-
-        if(d <= 0)
-            outClosestPoint = segmentA;
-        else if(d >= 1)
-            outClosestPoint = segmentB;
-        else
-            outClosestPoint = segmentA + segment * d;
-
-        return math::DistanceSquared(point, outClosestPoint);
-    }
-
     bool Collide(Rigidbody *bodyA, Rigidbody *bodyB, Vec2 &outNormal, float &outDepth, std::vector<Vec2> &outContacts)
     {
         outNormal = Vec2::Zero();
@@ -96,56 +54,6 @@ namespace bp::collisions
         return false;
     }
 
-    void ProjectVertices(Vec2 vertices[], Vec2 axis, float &outMin, float &outMax)
-    {
-        outMin = FLT_MAX;
-        outMax = -FLT_MAX;
-
-        for(int i = 0; i < 4; i++)
-        {
-            Vec2 vert = vertices[i];
-            float proj = math::Dot(vert, axis);
-
-            if(proj < outMin)
-                outMin = proj;
-            if(proj > outMax)
-                outMax = proj;
-        }
-    }
-    void ProjectCircle(Vec2 center, float radius, Vec2 axis, float &outMin, float &outMax)
-    {
-        Vec2 direction = axis.Normalized();
-
-        Vec2 p1 = center + (direction * radius);
-        Vec2 p2 = center - (direction * radius);
-
-        outMin = math::Dot(p1, axis);
-        outMax = math::Dot(p2, axis);
-
-        if(outMin > outMax)
-            math::Swap(outMin, outMax);
-    }
-
-    int FindClosestPointIndex(Vec2 center, Vec2 vertices[])
-    {
-        int result = -1;
-        float minDistSq = FLT_MAX;
-
-        for(int i = 0; i < 4; i++)
-        {
-            Vec2 vert = vertices[i];
-            float distSq = math::DistanceSquared(vert, center);
-
-            if(distSq < minDistSq)
-            {
-                minDistSq = distSq;
-                result = i;
-            }
-        }
-
-        return result;
-    }
-
     bool IntersectCircles(const CircleShape &a, const CircleShape &b, Vec2 posA, Vec2 posB, Vec2 &outNormal, float &outDepth)
     {
         outNormal = Vec2::Zero();
@@ -171,8 +79,8 @@ namespace bp::collisions
         outDepth = FLT_MAX;
 
         Vec2 *verts[2];
-        verts[0] = GetBoxVertices(a, posA, rotA);
-        verts[1] = GetBoxVertices(b, posB, rotB);
+        verts[0] = geometry::GetBoxVertices(a, posA, rotA);
+        verts[1] = geometry::GetBoxVertices(b, posB, rotB);
         
         for(int i = 0; i < 2; i++)
         {
@@ -188,8 +96,8 @@ namespace bp::collisions
                 float min1, max1;
                 float min2, max2;
 
-                ProjectVertices(verts[0], axis, min1, max1);
-                ProjectVertices(verts[1], axis, min2, max2);
+                geometry::ProjectVertices(verts[0], axis, min1, max1);
+                geometry::ProjectVertices(verts[1], axis, min2, max2);
 
                 if(min1 >= max2 || min2 >= max1)
                 {
@@ -222,7 +130,7 @@ namespace bp::collisions
         outNormal = Vec2::Zero();
         outDepth = FLT_MAX;
 
-        Vec2 *verts = GetBoxVertices(b, posB, rotB);
+        Vec2 *verts = geometry::GetBoxVertices(b, posB, rotB);
         
         Vec2 axis = Vec2::Zero();
         float axisDepth = 0;
@@ -238,8 +146,8 @@ namespace bp::collisions
             axis = Vec2(-edge.y, edge.x);
             axis.Normalize();
 
-            ProjectVertices(verts, axis, min1, max1);
-            ProjectCircle(posA, a.radius, axis, min2, max2);
+            geometry::ProjectVertices(verts, axis, min1, max1);
+            geometry::ProjectCircle(posA, a.radius, axis, min2, max2);
 
             if(min1 >= max2 || min2 >= max1)
             {
@@ -256,14 +164,14 @@ namespace bp::collisions
             }
         }
 
-        int cpIndex = FindClosestPointIndex(posA, verts);
+        int cpIndex = geometry::FindClosestPointIndex(posA, verts);
         Vec2 cp = verts[cpIndex];
 
         axis = cp - posA;
         axis.Normalize();
 
-        ProjectVertices(verts, axis, min1, max1);
-        ProjectCircle(posA, a.radius, axis, min2, max2);
+        geometry::ProjectVertices(verts, axis, min1, max1);
+        geometry::ProjectCircle(posA, a.radius, axis, min2, max2);
 
         if(min1 >= max2 || min2 >= max1)
         {
@@ -307,7 +215,7 @@ namespace bp::collisions
         float minDistSq = FLT_MAX;
         Vec2 contact = Vec2::Zero();
 
-        Vec2 *verts = GetBoxVertices(b, posB, rotB);
+        Vec2 *verts = geometry::GetBoxVertices(b, posB, rotB);
 
         for(int i = 0; i < 4; i++)
         {
@@ -315,7 +223,7 @@ namespace bp::collisions
             Vec2 vert2 = verts[(i + 1) % 4];
 
             Vec2 cp;
-            float distanceSq = PointSegmentDistance(posA, vert1, vert2, cp);
+            float distanceSq = geometry::PointSegmentDistance(posA, vert1, vert2, cp);
 
             if(distanceSq < minDistSq)
             {
@@ -334,8 +242,8 @@ namespace bp::collisions
         
         float minDistSq = FLT_MAX;
 
-        Vec2 *vertsA = GetBoxVertices(a, posA, rotA);
-        Vec2 *vertsB = GetBoxVertices(b, posB, rotB);
+        Vec2 *vertsA = geometry::GetBoxVertices(a, posA, rotA);
+        Vec2 *vertsB = geometry::GetBoxVertices(b, posB, rotB);
 
         for(int i = 0; i < 4; i++)
         {
@@ -347,7 +255,7 @@ namespace bp::collisions
                 Vec2 vert2 = vertsB[(j + 1) % 4];
 
                 Vec2 cp;
-                float distanceSq = PointSegmentDistance(vert, vert1, vert2, cp);
+                float distanceSq = geometry::PointSegmentDistance(vert, vert1, vert2, cp);
 
                 if(math::NearlyEqual(distanceSq, minDistSq))
                 {
@@ -375,7 +283,7 @@ namespace bp::collisions
                 Vec2 vert2 = vertsA[(j + 1) % 4];
 
                 Vec2 cp;
-                float distanceSq = PointSegmentDistance(vert, vert1, vert2, cp);
+                float distanceSq = geometry::PointSegmentDistance(vert, vert1, vert2, cp);
 
                 if(math::NearlyEqual(distanceSq, minDistSq))
                 {

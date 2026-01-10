@@ -1,44 +1,14 @@
 #pragma once
 
 #include <vector>
-#include <variant>
 
 #include "../Core/Vec2.hpp"
+#include "../Core/Geometry.hpp"
+#include "ColliderShapes.hpp"
 #include "AABB.hpp"
 
 namespace bp
 {
-    struct CircleShape
-    {
-        float radius;
-
-        CircleShape(float radius)
-        {
-            this->radius = radius;
-        }
-    };
-    struct BoxShape
-    {
-        Vec2 size;
-        Vec2 vertices[4];
-
-        BoxShape(Vec2 size)
-        {
-            this->size = size;
-        }
-    };
-    struct PolygonShape
-    {
-        std::vector<Vec2> vertices;
-
-        PolygonShape(std::vector<Vec2> vertices)
-        {
-            this->vertices = vertices;
-        }
-    };
-
-    using ColliderShape = std::variant<CircleShape, BoxShape, PolygonShape>;
-
     class Collider
     {
         private:
@@ -60,7 +30,7 @@ namespace bp
             float GetRestitution() const;
             float GetFriction() const;
 
-            const AABB GetAABB(Vec2 pos) const;
+            const AABB GetAABB(Vec2 pos, float rot) const;
 
             float CalculateInertia(float mass);
     };
