@@ -49,4 +49,13 @@ namespace bp::math
         val1 = val2;
         val2 = temp;
     }
+
+    inline bool NearlyEqual(float val1, float val2)
+    {
+        return abs(val1 - val2) < 0.0005f;
+    }
+    inline bool NearlyEqual(Vec2 val1, Vec2 val2)
+    {
+        return DistanceSquared(val1, val2) < 0.0005f * 0.0005f;
+    }
 }

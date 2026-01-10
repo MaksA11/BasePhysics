@@ -38,8 +38,8 @@ namespace demo
         preset.position = bp::Vec2::Zero();
         preset.rotation = 0.0f;
         preset.mass = 1.0f;
-        // preset.shape = bp::BoxShape(bp::Vec2::One());
-        preset.shape = bp::CircleShape(0.5f);
+        preset.shape = bp::BoxShape(bp::Vec2::One());
+        // preset.shape = bp::CircleShape(0.5f);
         preset.linearDamping = 0.1f;
         preset.angularDamping = 0.1f;
         preset.restitution = 0.1f;
@@ -190,6 +190,9 @@ namespace demo
         ImGui::Separator();
         ImGui::Text("Body count");
         ImGui::Text(std::to_string(scene.GetBodies().size()).c_str());
+        ImGui::Separator();
+        ImGui::Text("Contacts");
+        ImGui::Text(std::to_string(scene.GetContacts().size()).c_str());
         ImGui::Separator();
         ImGui::Text("Body[0]");
         ImGui::Text(("x: " + std::to_string(scene.GetBodies()[0]->GetPosition().x) + ", y: " + std::to_string(scene.GetBodies()[0]->GetPosition().y) +

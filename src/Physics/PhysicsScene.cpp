@@ -64,7 +64,7 @@ namespace bp
                     else if(contactPoints.size() == 2)
                         contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0], contactPoints[1]));
                     else
-                        contacts.push_back(ContactManifold(i, j, normal, depth, Vec2::Zero()));
+                        contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0]));
                 }
             }
         }

@@ -24,5 +24,5 @@ namespace bp::collisions
 
     Vec2 FindCirclesContactPoint(const CircleShape &a, Vec2 posA, Vec2 posB);
     Vec2 FindCircleBoxContactPoint(const CircleShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotB);
-    std::vector<Vec2> FindBoxesContactPoints(const CircleShape &a, Vec2 posA, Vec2 posB);
+    int FindBoxesContactPoints(const BoxShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotA, float rotB, Vec2 &outContact1, Vec2 &outContact2);
 }

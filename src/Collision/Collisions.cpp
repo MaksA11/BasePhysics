@@ -62,13 +62,12 @@ namespace bp::collisions
             if(collisions::IntersectBoxes(*bodyA->GetCollider().GetBox(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
                 bodyA->GetRotation(), bodyB->GetRotation(), outNormal, outDepth))
             {
-                // std::vector<Vec2> contacts = FindBoxesContactPoints(*bodyA->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition());
-
-                // for(int i = 0; i < contacts.size(); i++)
-                // {
-                //     outContacts.push_back(contacts[i]);
-                // }
-
+                Vec2 contact1, contact2;
+                int contactCount = FindBoxesContactPoints(*bodyA->GetCollider().GetBox(), *bodyB->GetCollider().GetBox(), bodyA->GetPosition(), bodyB->GetPosition(),
+                    bodyA->GetRotation(), bodyB->GetRotation(), contact1, contact2);
+                outContacts.push_back(contact1);
+                if(contactCount == 2)
+                    outContacts.push_back(contact2);
                 return true;
             }
         }
@@ -289,7 +288,6 @@ namespace bp::collisions
 
         return true;
     }
-
     bool IntersectAABBs(const AABB &a, const AABB &b)
     {
         if(a.max.x <= b.min.x || b.max.x <= a.min.x || a.max.y <= b.min.y || b.max.y <= a.min.y)
@@ -328,9 +326,77 @@ namespace bp::collisions
 
         return contact;
     }
-    std::vector<Vec2> FindBoxesContactPoints(const CircleShape &a, Vec2 posA, Vec2 posB)
+    int FindBoxesContactPoints(const BoxShape &a, const BoxShape &b, Vec2 posA, Vec2 posB, float rotA, float rotB, Vec2 &outContact1, Vec2 &outContact2)
     {
-        std::vector<Vec2> temp;
-        return temp; // TODO: implement
+        int contactCount = 0;
+        outContact1 = Vec2::Zero();
+        outContact2 = Vec2::Zero();
+        
+        float minDistSq = FLT_MAX;
+
+        Vec2 *vertsA = GetBoxVertices(a, posA, rotA);
+        Vec2 *vertsB = GetBoxVertices(b, posB, rotB);
+
+        for(int i = 0; i < 4; i++)
+        {
+            Vec2 vert = vertsA[i];
+
+            for(int j = 0; j < 4; j++)
+            {
+                Vec2 vert1 = vertsB[j];
+                Vec2 vert2 = vertsB[(j + 1) % 4];
+
+                Vec2 cp;
+                float distanceSq = PointSegmentDistance(vert, vert1, vert2, cp);
+
+                if(math::NearlyEqual(distanceSq, minDistSq))
+                {
+                    if(!math::NearlyEqual(cp, outContact1))
+                    {
+                        contactCount = 2;
+                        outContact2 = cp;
+                    }
+                }
+                else if(distanceSq < minDistSq)
+                {
+                    minDistSq = distanceSq;
+                    contactCount = 1;
+                    outContact1 = cp;
+                }
+            }
+        }
+        for(int i = 0; i < 4; i++)
+        {
+            Vec2 vert = vertsB[i];
+
+            for(int j = 0; j < 4; j++)
+            {
+                Vec2 vert1 = vertsA[j];
+                Vec2 vert2 = vertsA[(j + 1) % 4];
+
+                Vec2 cp;
+                float distanceSq = PointSegmentDistance(vert, vert1, vert2, cp);
+
+                if(math::NearlyEqual(distanceSq, minDistSq))
+                {
+                    if(!math::NearlyEqual(cp, outContact1))
+                    {
+                        contactCount = 2;
+                        outContact2 = cp;
+                    }
+                }
+                else if(distanceSq < minDistSq)
+                {
+                    minDistSq = distanceSq;
+                    contactCount = 1;
+                    outContact1 = cp;
+                }
+            }
+        }
+
+        delete[] vertsA;
+        delete[] vertsB;
+
+        return contactCount;
     }
 }
