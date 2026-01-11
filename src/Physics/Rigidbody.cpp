@@ -76,19 +76,27 @@ namespace bp
 
     void Rigidbody::ApplyImpulse(Vec2 impulse)
     {
+        if(isStatic)
+            return;
         linearVelocity += impulse / mass;
     }
     void Rigidbody::ApplyAngularImpulse(float impulse)
     {
+        if(isStatic)
+            return;
         angularVelocity += impulse / inertia;
     }
 
     void Rigidbody::ApplyForce(Vec2 force)
     {
+        if(isStatic)
+            return;
         this->force += force / mass;
     }
     void Rigidbody::ApplyTorque(float torque)
     {
+        if(isStatic)
+            return;
         this->torque += torque / inertia;
     }
     

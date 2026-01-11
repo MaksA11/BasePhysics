@@ -108,15 +108,8 @@ namespace bp
         float e = std::min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
         float j = (-(1.0f + e) * math::Dot(relativeVelocity, contact.normal)) / (rb1->GetInverseMass() + rb2->GetInverseMass());
 
-        if(rb1->IsStatic())
-            rb2->ApplyImpulse(contact.normal * j);
-        else if(rb2->IsStatic())
-            rb1->ApplyImpulse(-contact.normal * j);
-        else
-        {
-            rb1->ApplyImpulse(-contact.normal * j);
-            rb2->ApplyImpulse(contact.normal * j);
-        }
+        rb1->ApplyImpulse(-contact.normal * j);
+        rb2->ApplyImpulse(contact.normal * j);
     }
 
     const std::vector<Rigidbody *> &PhysicsScene::GetBodies() const
