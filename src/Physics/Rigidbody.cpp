@@ -122,11 +122,15 @@ namespace bp
 
         Vec2 acceleration = force / mass;
         linearVelocity += acceleration * deltaTime;
-        // linearVelocity *= linearDamping;
+
+        float damping = 1 - math::Clamp(linearDamping, 0.0f, 1.0f);
+        linearVelocity *= damping;
 
         float angularAcceleration = torque / inertia;
         angularVelocity += angularAcceleration * deltaTime;
-        // angularVelocity *= angularDamping;
+
+        damping = 1 - math::Clamp(angularDamping, 0.0f, 1.0f);
+        angularVelocity *= angularDamping;
 
         if(usesGravity)
             linearVelocity += gravity * deltaTime;

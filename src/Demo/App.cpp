@@ -40,8 +40,8 @@ namespace demo
         preset.mass = 1.0f;
         preset.shape = bp::BoxShape(bp::Vec2::One());
         // preset.shape = bp::CircleShape(0.5f);
-        preset.linearDamping = 0.1f;
-        preset.angularDamping = 0.1f;
+        preset.linearDamping = 0.001f;
+        preset.angularDamping = 0.001f;
         preset.restitution = 0.5f;
         preset.friction = 0.1f;
         preset.isStatic = false;
@@ -70,10 +70,8 @@ namespace demo
             colors.push_back(random::RandomColor());
         }
 
-        preset.position = bp::Vec2(0.0f, -12.0f);
-        preset.shape = bp::BoxShape(bp::Vec2(40.0f, 1.0f));
-        // preset.mass = 100000000000000000.0f;
-        // preset.usesGravity = false;
+        preset.position = bp::Vec2(0.0f, -14.0f);
+        preset.shape = bp::BoxShape(bp::Vec2(52.0f, 4.0f));
         preset.isStatic = true;
 
         scene.AddRigidbody(preset);
@@ -239,24 +237,26 @@ namespace demo
 
             if(event.type == sf::Event::MouseButtonPressed)
             {
+                bp::BodyPreset preset;
+                preset.rotation = 0.0f;
+                preset.mass = 1.0f;
+                preset.shape = bp::BoxShape(bp::Vec2::One());
+                preset.linearDamping = 0.001f;
+                preset.angularDamping = 0.001f;
+                preset.restitution = 0.5f;
+                preset.friction = 0.1f;
+                preset.isStatic = false;
+                preset.usesGravity = true;
+
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
 
-                    bp::BodyPreset preset;
-                    preset.position = worldPos;
-                    preset.rotation = 0.0f;
-                    preset.mass = 1.0f;
                     preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
-                    preset.linearDamping = 0.1f;
-                    preset.angularDamping = 0.1f;
-                    preset.restitution = 0.1f;
-                    preset.friction = 0.1f;
-                    preset.isStatic = false;
-                    preset.usesGravity = true;
-                    scene.AddRigidbody(preset);
+                    preset.position = worldPos;
 
+                    scene.AddRigidbody(preset);
                     colors.push_back(random::RandomColor());
                 }
                 if(event.mouseButton.button == sf::Mouse::Right)
@@ -264,19 +264,10 @@ namespace demo
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
                     
-                    bp::BodyPreset preset;
-                    preset.position = worldPos;
-                    preset.rotation = 0.0f;
-                    preset.mass = 1.0f;
                     preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
-                    preset.linearDamping = 0.1f;
-                    preset.angularDamping = 0.1f;
-                    preset.restitution = 0.1f;
-                    preset.friction = 0.1f;
-                    preset.isStatic = false;
-                    preset.usesGravity = true;
-                    scene.AddRigidbody(preset);
+                    preset.position = worldPos;
 
+                    scene.AddRigidbody(preset);
                     colors.push_back(random::RandomColor());
                 }
                 if(event.mouseButton.button == sf::Mouse::Middle)
