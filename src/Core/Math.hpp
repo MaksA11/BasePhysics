@@ -31,6 +31,10 @@ namespace bp::math
     {
         return std::sqrt(DistanceSquared(vec1, vec2));
     }
+    inline Vec2 Perpendicular(Vec2 vec)
+    {
+        return Vec2(-vec.y, vec.x);
+    }
 
     inline Vec2 Transform(Vec2 vertexPosition, Vec2 position, float angle)
     {

@@ -100,16 +100,57 @@ namespace bp
         Rigidbody *rb1 = bodies[contact.rbIndex1];
         Rigidbody *rb2 = bodies[contact.rbIndex2];
 
-        Vec2 relativeVelocity = rb2->GetLinearVelocity() - rb1->GetLinearVelocity();
+        const Vec2 &normal = contact.normal;
+        const std::vector<Vec2> &contacts = contact.contactPoints;
 
-        if(math::Dot(relativeVelocity, contact.normal) > 0.0f)
-            return;
+        Vec2 impulses[2];
+        Vec2 r1s[2];
+        Vec2 r2s[2];
 
         float e = std::min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
-        float j = (-(1.0f + e) * math::Dot(relativeVelocity, contact.normal)) / (rb1->GetInverseMass() + rb2->GetInverseMass());
 
-        rb1->ApplyImpulse(-contact.normal * j);
-        rb2->ApplyImpulse(contact.normal * j);
+        for(int i = 0; i < contacts.size(); i++)
+        {
+            Vec2 r1 = contacts[i] - rb1->GetPosition();
+            Vec2 r2 = contacts[i] - rb2->GetPosition();
+
+            r1s[i] = r1;
+            r2s[i] = r2;
+
+            Vec2 r1Perp = math::Perpendicular(r1);
+            Vec2 r2Perp = math::Perpendicular(r2);
+
+            Vec2 vel1 = r1Perp * rb1->GetAngularVelocity();
+            Vec2 vel2 = r2Perp * rb2->GetAngularVelocity();
+
+            Vec2 relativeVel = (rb2->GetLinearVelocity() + vel2) - (rb1->GetLinearVelocity() + vel1);
+
+            float contactVelMag = math::Dot(relativeVel, contact.normal);
+            if(contactVelMag > 0.0f)
+            {
+                impulses[i] = Vec2::Zero();
+                continue;
+            }
+
+            float r1PerpDotNormal = math::Dot(r1Perp, normal);
+            float r2PerpDotNormal = math::Dot(r2Perp, normal);
+
+            float j = (-(1.0f + e) * contactVelMag) /
+                (rb1->GetInverseMass() + rb2->GetInverseMass() +
+                (r1PerpDotNormal * r1PerpDotNormal) * rb1->GetInverseInertia() +
+                (r2PerpDotNormal * r2PerpDotNormal) * rb2->GetInverseInertia());
+            
+            j /= (float)contacts.size();
+
+            impulses[i] = normal * j;
+        }
+        for(int i = 0; i < contacts.size(); i++)
+        {
+            rb1->ApplyImpulse(-impulses[i]);
+            rb1->ApplyAngularImpulse(-math::Cross(impulses[i], r1s[i]));
+            rb2->ApplyImpulse(impulses[i]);
+            rb2->ApplyAngularImpulse(math::Cross(impulses[i], r2s[i]));
+        }
     }
 
     const std::vector<Rigidbody *> &PhysicsScene::GetBodies() const

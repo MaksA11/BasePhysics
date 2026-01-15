@@ -50,25 +50,25 @@ namespace demo
         scene.AddRigidbody(preset);
         colors.push_back(random::RandomColor());
 
-        for(int i = 0; i < 50; i++)
-        {
-            sf::Vector2f center = camera.GetPosition();
-            sf::Vector2f size = camera.GetViewSize();
-            float halfX = size.x * 0.5f;
-            float halfY = std::abs(size.y) * 0.5f;
-            float padding = 0.5f;
+        // for(int i = 0; i < 50; i++)
+        // {
+        //     sf::Vector2f center = camera.GetPosition();
+        //     sf::Vector2f size = camera.GetViewSize();
+        //     float halfX = size.x * 0.5f;
+        //     float halfY = std::abs(size.y) * 0.5f;
+        //     float padding = 0.5f;
 
-            preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
-                random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
+        //     preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
+        //         random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
 
-            if(random::RandomBool())
-                preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
-            else
-                preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
+        //     if(random::RandomBool())
+        //         preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
+        //     else
+        //         preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
 
-            scene.AddRigidbody(preset);
-            colors.push_back(random::RandomColor());
-        }
+        //     scene.AddRigidbody(preset);
+        //     colors.push_back(random::RandomColor());
+        // }
 
         preset.position = bp::Vec2(0.0f, -14.0f);
         preset.shape = bp::BoxShape(bp::Vec2(52.0f, 4.0f));
@@ -219,7 +219,8 @@ namespace demo
         ImGui::Text("Body[0]");
         ImGui::Text(("x: " + std::to_string(scene.GetBodies()[0]->GetPosition().x) + ", y: " + std::to_string(scene.GetBodies()[0]->GetPosition().y) +
             "\nrot: " + std::to_string(scene.GetBodies()[0]->GetRotation()) +
-            "\nvel: " + std::to_string(scene.GetBodies()[0]->GetLinearVelocity().x) + ", y: " + std::to_string(scene.GetBodies()[0]->GetLinearVelocity().y)).c_str());
+            "\nvel: " + std::to_string(scene.GetBodies()[0]->GetLinearVelocity().x) + ", y: " + std::to_string(scene.GetBodies()[0]->GetLinearVelocity().y) +
+            "\nangvel: " + std::to_string(scene.GetBodies()[0]->GetAngularVelocity())).c_str());
         ImGui::Separator();
         ImGui::Text("FPS");
         ImGui::Text(std::to_string(fps).c_str());
