@@ -41,8 +41,8 @@ namespace bp::math
         float cosA = cos(angle);
         float sinA = sin(angle);
 
-        float x = cosA * vertexPosition.x + sinA * vertexPosition.y + position.x;
-        float y = -sinA * vertexPosition.x + cosA * vertexPosition.y + position.y;
+        float x = cosA * vertexPosition.x - sinA * vertexPosition.y + position.x;
+        float y = sinA * vertexPosition.x + cosA * vertexPosition.y + position.y;
 
         return Vec2(x, y);
     }

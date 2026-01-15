@@ -123,7 +123,7 @@ namespace demo
             {
                 circle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
                 circle.setRadius(rb->GetCollider().GetCircle()->radius);
-                circle.setRotation(-bp::math::ToDegrees(rb->GetRotation()));
+                circle.setRotation(bp::math::ToDegrees(rb->GetRotation()));
                 circle.setFillColor(colors[i]);
                 circle.setOutlineColor(sf::Color::Black);
                 circle.setOutlineThickness(-0.067f);
@@ -143,7 +143,7 @@ namespace demo
             {
                 rectangle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
                 rectangle.setSize(sf::Vector2f(rb->GetCollider().GetBox()->size.x, rb->GetCollider().GetBox()->size.y));
-                rectangle.setRotation(-bp::math::ToDegrees(rb->GetRotation()));
+                rectangle.setRotation(bp::math::ToDegrees(rb->GetRotation()));
                 rectangle.setFillColor(colors[i]);
                 rectangle.setOutlineColor(sf::Color::Black);
                 rectangle.setOutlineThickness(-0.067f);
