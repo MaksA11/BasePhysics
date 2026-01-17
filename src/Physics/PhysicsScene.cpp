@@ -106,8 +106,11 @@ namespace bp
         Vec2 impulses[2];
         Vec2 r1s[2];
         Vec2 r2s[2];
+        float js[2];
 
         float e = std::min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
+        float sf = sqrt(rb1->GetCollider().GetFriction() * rb2->GetCollider().GetFriction());
+        float df = 0.8f * sf;
 
         for(int i = 0; i < contacts.size(); i++)
         {
@@ -125,24 +128,71 @@ namespace bp
 
             Vec2 relativeVel = (rb2->GetLinearVelocity() + vel2) - (rb1->GetLinearVelocity() + vel1);
 
-            float contactVelMag = math::Dot(relativeVel, contact.normal);
+            float contactVelMag = math::Dot(relativeVel, normal);
             if(contactVelMag > 0.0f)
             {
                 impulses[i] = Vec2::Zero();
+                js[i] = 0.0f;
                 continue;
             }
 
-            float r1PerpDotNormal = math::Dot(r1Perp, normal);
-            float r2PerpDotNormal = math::Dot(r2Perp, normal);
+            float r1PerpDotN = math::Dot(r1Perp, normal);
+            float r2PerpDotN = math::Dot(r2Perp, normal);
 
             float j = (-(1.0f + e) * contactVelMag) /
                 (rb1->GetInverseMass() + rb2->GetInverseMass() +
-                (r1PerpDotNormal * r1PerpDotNormal) * rb1->GetInverseInertia() +
-                (r2PerpDotNormal * r2PerpDotNormal) * rb2->GetInverseInertia());
-            
-            j /= (float)contacts.size();
+                (r1PerpDotN * r1PerpDotN) * rb1->GetInverseInertia() +
+                (r2PerpDotN * r2PerpDotN) * rb2->GetInverseInertia());
 
-            impulses[i] = normal * j;
+            js[i] = j;
+            impulses[i] = j * normal;
+        }
+        for(int i = 0; i < contacts.size(); i++)
+        {
+            rb1->ApplyImpulse(-impulses[i]);
+            rb1->ApplyAngularImpulse(math::Cross(r1s[i], -impulses[i]));
+            rb2->ApplyImpulse(impulses[i]);
+            rb2->ApplyAngularImpulse(math::Cross(r2s[i], impulses[i]));
+        }
+
+        for(int i = 0; i < contacts.size(); i++)
+        {
+            Vec2 r1 = contacts[i] - rb1->GetPosition();
+            Vec2 r2 = contacts[i] - rb2->GetPosition();
+
+            r1s[i] = r1;
+            r2s[i] = r2;
+
+            Vec2 r1Perp = math::Perpendicular(r1);
+            Vec2 r2Perp = math::Perpendicular(r2);
+
+            Vec2 vel1 = r1Perp * rb1->GetAngularVelocity();
+            Vec2 vel2 = r2Perp * rb2->GetAngularVelocity();
+
+            Vec2 relativeVel = (rb2->GetLinearVelocity() + vel2) - (rb1->GetLinearVelocity() + vel1);
+
+            Vec2 tangent = relativeVel - math::Dot(relativeVel, normal) * normal;
+            if(math::NearlyEqual(tangent, Vec2::Zero()))
+            {
+                impulses[i] = Vec2::Zero();
+                js[i] = 0.0f;
+                continue;
+            }
+            
+            tangent.Normalize();
+
+            float r1PerpDotT = math::Dot(r1Perp, tangent);
+            float r2PerpDotT = math::Dot(r2Perp, tangent);
+
+            float jt = (-math::Dot(relativeVel, tangent)) /
+                (rb1->GetInverseMass() + rb2->GetInverseMass() +
+                (r1PerpDotT * r1PerpDotT) * rb1->GetInverseInertia() +
+                (r2PerpDotT * r2PerpDotT) * rb2->GetInverseInertia());
+
+            if(std::abs(jt) <= js[i] * sf)
+                impulses[i] = jt * tangent;
+            else
+                impulses[i] = -js[i] * tangent * df;
         }
         for(int i = 0; i < contacts.size(); i++)
         {

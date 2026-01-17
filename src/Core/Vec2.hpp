@@ -77,6 +77,10 @@ namespace bp
         {
             return Vec2(x * scalar, y * scalar);
         }
+        friend Vec2 operator * (float scalar, const Vec2& vec)
+        {
+            return Vec2(vec.x * scalar, vec.y * scalar);
+        }
         Vec2 operator / (const float scalar) const
         {
             if(scalar == 0)

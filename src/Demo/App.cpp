@@ -34,7 +34,6 @@ namespace demo
 
     void App::Start()
     {
-        bp::BodyPreset preset;
         preset.position = bp::Vec2::Zero();
         preset.rotation = 0.0f;
         preset.mass = 1.0f;
@@ -42,8 +41,8 @@ namespace demo
         // preset.shape = bp::CircleShape(0.5f);
         preset.linearDamping = 0.001f;
         preset.angularDamping = 0.001f;
-        preset.restitution = 0.5f;
-        preset.friction = 0.1f;
+        preset.restitution = 0.3f;
+        preset.friction = 0.5f;
         preset.isStatic = false;
         preset.usesGravity = true;
 
@@ -76,6 +75,8 @@ namespace demo
 
         scene.AddRigidbody(preset);
         colors.push_back(random::RandomColor());
+
+        preset.isStatic = false;
     }
 
     void App::Update()
@@ -238,17 +239,6 @@ namespace demo
 
             if(event.type == sf::Event::MouseButtonPressed)
             {
-                bp::BodyPreset preset;
-                preset.rotation = 0.0f;
-                preset.mass = 1.0f;
-                preset.shape = bp::BoxShape(bp::Vec2::One());
-                preset.linearDamping = 0.001f;
-                preset.angularDamping = 0.001f;
-                preset.restitution = 0.5f;
-                preset.friction = 0.1f;
-                preset.isStatic = false;
-                preset.usesGravity = true;
-
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);

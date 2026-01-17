@@ -132,15 +132,15 @@ namespace bp
         linearVelocity += acceleration * deltaTime;
 
         float damping = 1 - math::Clamp(linearDamping, 0.0f, 1.0f);
-        // linearVelocity *= std::pow(damping, deltaTime);
-        linearVelocity *= damping;
+        linearVelocity *= std::pow(damping, deltaTime);
+        // linearVelocity *= damping;
 
         float angularAcceleration = torque / inertia;
         angularVelocity += angularAcceleration * deltaTime;
 
         damping = 1 - math::Clamp(angularDamping, 0.0f, 1.0f);
-        // angularVelocity *= std::pow(damping, deltaTime);
-        angularVelocity *= damping;
+        angularVelocity *= std::pow(damping, deltaTime);
+        // angularVelocity *= damping;
 
         if(usesGravity)
             linearVelocity += gravity * deltaTime;

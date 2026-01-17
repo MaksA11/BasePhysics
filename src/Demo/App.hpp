@@ -40,6 +40,7 @@ namespace demo
 			sf::Vector2i lastMousePos;
 			bool isDragging;
 			
+			bp::BodyPreset preset;
 			std::vector<sf::Color> colors;
 
 		public:
