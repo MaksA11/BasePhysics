@@ -41,36 +41,39 @@ namespace demo
         // preset.shape = bp::CircleShape(0.5f);
         preset.linearDamping = 0.001f;
         preset.angularDamping = 0.001f;
-        preset.restitution = 0.3f;
-        preset.friction = 0.5f;
+        preset.restitution = 0.4f;
+        preset.friction = 0.6f;
         preset.isStatic = false;
         preset.usesGravity = true;
 
         scene.AddRigidbody(preset);
         colors.push_back(random::RandomColor());
 
-        // for(int i = 0; i < 50; i++)
-        // {
-        //     sf::Vector2f center = camera.GetPosition();
-        //     sf::Vector2f size = camera.GetViewSize();
-        //     float halfX = size.x * 0.5f;
-        //     float halfY = std::abs(size.y) * 0.5f;
-        //     float padding = 0.5f;
+        for(int i = 0; i < 20; i++)
+        {
+            sf::Vector2f center = camera.GetPosition();
+            sf::Vector2f size = camera.GetViewSize();
+            float halfX = size.x * 0.5f;
+            float halfY = std::abs(size.y) * 0.5f;
+            float padding = 0.5f;
 
-        //     preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
-        //         random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
+            preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
+                random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
 
-        //     if(random::RandomBool())
-        //         preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
-        //     else
-        //         preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
+            if(random::RandomBool())
+                preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
+            else
+                preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
 
-        //     scene.AddRigidbody(preset);
-        //     colors.push_back(random::RandomColor());
-        // }
+            // preset.position = bp::Vec2(0.0f, -10.0f + (float)i);
+            // preset.shape = bp::BoxShape(bp::Vec2::One());
+
+            scene.AddRigidbody(preset);
+            colors.push_back(random::RandomColor());
+        }
 
         preset.position = bp::Vec2(0.0f, -14.0f);
-        preset.shape = bp::BoxShape(bp::Vec2(52.0f, 4.0f));
+        preset.shape = bp::BoxShape(bp::Vec2(100.0f, 4.0f));
         preset.isStatic = true;
 
         scene.AddRigidbody(preset);
@@ -103,7 +106,7 @@ namespace demo
             else if(pos.y < center.y - halfY)
                 pos.y = center.y + halfY;
 
-            rb->MoveTo(pos);
+            // rb->MoveTo(pos);
 
             // if((pos.x > center.x + halfX || pos.x < center.x - halfX || pos.y > center.y + halfY || pos.y < center.y - halfY) && rb != scene.GetBodies()[0])
             //     scene.RemoveRigidbody(rb);

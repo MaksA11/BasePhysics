@@ -64,6 +64,10 @@ namespace bp
                 if(bodies[i]->IsStatic() && bodies[j]->IsStatic())
                     continue;
 
+                if(!collisions::IntersectAABBs(bodies[i]->GetCollider().GetAABB(bodies[i]->GetPosition(), bodies[i]->GetRotation()),
+                    bodies[j]->GetCollider().GetAABB(bodies[j]->GetPosition(), bodies[j]->GetRotation())))
+				    continue;
+
                 Vec2 normal;
                 float depth;
                 std::vector<Vec2> contactPoints;
