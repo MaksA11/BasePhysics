@@ -49,7 +49,7 @@ namespace bp
             Vec2 min = Vec2(FLT_MAX, FLT_MAX);
 		    Vec2 max = Vec2(-FLT_MAX, -FLT_MAX);
 
-            Vec2 *verts = geometry::GetBoxVertices(*box, pos, rot);
+            std::array<Vec2, 4> verts = geometry::GetBoxVertices(*box, pos, rot);
 
             for(int i = 0; i < 4; i++)
 			{
@@ -62,8 +62,6 @@ namespace bp
 				if(verts[i].y > max.y)
 					max.y = verts[i].y;
 			}
-
-            delete[] verts;
 
             return AABB(min, max);
         }

@@ -78,7 +78,7 @@ namespace bp::collisions
         outNormal = Vec2::Zero();
         outDepth = FLT_MAX;
 
-        Vec2 *verts[2];
+        std::array<Vec2, 4> verts[2];
         verts[0] = geometry::GetBoxVertices(a, posA, rotA);
         verts[1] = geometry::GetBoxVertices(b, posB, rotB);
         
@@ -100,12 +100,7 @@ namespace bp::collisions
                 geometry::ProjectVertices(verts[1], axis, min2, max2);
 
                 if(min1 >= max2 || min2 >= max1)
-                {
-                    delete[] verts[0];
-                    delete[] verts[1];
-
                     return false;
-                }
 
                 float axisDepth = std::min(max2 - min1, max1 - min2);
                 if(axisDepth < outDepth)
@@ -119,9 +114,6 @@ namespace bp::collisions
         Vec2 direction = posB - posA;
         if(math::Dot(direction, outNormal) < 0)
             outNormal = -outNormal;
-        
-        delete[] verts[0];
-        delete[] verts[1];
 
         return true;
     }
@@ -130,7 +122,7 @@ namespace bp::collisions
         outNormal = Vec2::Zero();
         outDepth = FLT_MAX;
 
-        Vec2 *verts = geometry::GetBoxVertices(b, posB, rotB);
+        std::array<Vec2, 4> verts = geometry::GetBoxVertices(b, posB, rotB);
         
         Vec2 axis = Vec2::Zero();
         float axisDepth = 0;
@@ -150,11 +142,7 @@ namespace bp::collisions
             geometry::ProjectCircle(posA, a.radius, axis, min2, max2);
 
             if(min1 >= max2 || min2 >= max1)
-            {
-                delete[] verts;
-
                 return false;
-            }
 
             float axisDepth = fmin(max2 - min1, max1 - min2);
             if(axisDepth < outDepth)
@@ -174,11 +162,7 @@ namespace bp::collisions
         geometry::ProjectCircle(posA, a.radius, axis, min2, max2);
 
         if(min1 >= max2 || min2 >= max1)
-        {
-            delete[] verts;
-
             return false;
-        }
 
         axisDepth = fmin(max2 - min1, max1 - min2);
         if(axisDepth < outDepth)
@@ -191,8 +175,6 @@ namespace bp::collisions
 
         if(math::Dot(direction, outNormal) < 0)
             outNormal = -outNormal;
-
-        delete[] verts;
 
         return true;
     }
@@ -215,7 +197,7 @@ namespace bp::collisions
         float minDistSq = FLT_MAX;
         Vec2 contact = Vec2::Zero();
 
-        Vec2 *verts = geometry::GetBoxVertices(b, posB, rotB);
+        std::array<Vec2, 4> verts = geometry::GetBoxVertices(b, posB, rotB);
 
         for(int i = 0; i < 4; i++)
         {
@@ -242,8 +224,8 @@ namespace bp::collisions
         
         float minDistSq = FLT_MAX;
 
-        Vec2 *vertsA = geometry::GetBoxVertices(a, posA, rotA);
-        Vec2 *vertsB = geometry::GetBoxVertices(b, posB, rotB);
+        std::array<Vec2, 4> vertsA = geometry::GetBoxVertices(a, posA, rotA);
+        std::array<Vec2, 4> vertsB = geometry::GetBoxVertices(b, posB, rotB);
 
         for(int i = 0; i < 4; i++)
         {
@@ -301,9 +283,6 @@ namespace bp::collisions
                 }
             }
         }
-
-        delete[] vertsA;
-        delete[] vertsB;
 
         return contactCount;
     }

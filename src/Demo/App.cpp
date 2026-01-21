@@ -65,15 +65,12 @@ namespace demo
             else
                 preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
 
-            // preset.position = bp::Vec2(0.0f, -10.0f + (float)i);
-            // preset.shape = bp::BoxShape(bp::Vec2::One());
-
             scene.AddRigidbody(preset);
             colors.push_back(random::RandomColor());
         }
 
         preset.position = bp::Vec2(0.0f, -14.0f);
-        preset.shape = bp::BoxShape(bp::Vec2(100.0f, 4.0f));
+        preset.shape = bp::BoxShape(bp::Vec2(52.0f, 4.0f));
         preset.isStatic = true;
 
         scene.AddRigidbody(preset);
@@ -85,32 +82,6 @@ namespace demo
     void App::Update()
     {
         scene.Step(deltaTime, 8);
-
-        sf::Vector2f center = camera.GetPosition();
-        sf::Vector2f size = camera.GetViewSize();
-
-        float halfX = size.x * 0.5f;
-        float halfY = std::abs(size.y) * 0.5f;
-
-        for(auto &rb : scene.GetBodies())
-        {
-            bp::Vec2 pos = rb->GetPosition();
-
-            if(pos.x > center.x + halfX)
-                pos.x = center.x - halfX;
-            else if(pos.x < center.x - halfX)
-                pos.x = center.x + halfX;
-
-            if(pos.y > center.y + halfY)
-                pos.y = center.y - halfY;
-            else if(pos.y < center.y - halfY)
-                pos.y = center.y + halfY;
-
-            // rb->MoveTo(pos);
-
-            // if((pos.x > center.x + halfX || pos.x < center.x - halfX || pos.y > center.y + halfY || pos.y < center.y - halfY) && rb != scene.GetBodies()[0])
-            //     scene.RemoveRigidbody(rb);
-        }
     }
 
     void App::Render()
@@ -153,54 +124,14 @@ namespace demo
                 rectangle.setOutlineThickness(-0.067f);
                 rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x * 0.5f, rectangle.getSize().y * 0.5f));
                 window->draw(rectangle);
-
-                // sf::CircleShape vertex;
-                // bp::Vec2 *vertices = bp::geometry::GetBoxVertices(*rb->GetCollider().GetBox(), rb->GetPosition(), rb->GetRotation());
-                // for(int i = 0; i < 4; i++)
-                // {
-                //     float radius = 0.05f;
-                //     vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
-                //     vertex.setRadius(radius);
-                //     vertex.setFillColor(sf::Color::Green);
-                //     vertex.setOrigin(sf::Vector2f(radius, radius));
-                //     window->draw(vertex);
-                // }
-                // delete[] vertices;
             }
             else if(rb->GetCollider().IsPolygon())
             {
                 // TODO: implement
             }
 
-            // auto aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
-            // sf::Vector2f size(aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y);
-            // sf::Vector2f position(aabb.min.x, aabb.min.y);
-            // rectangle.setPosition(position);
-            // rectangle.setSize(size);
-            // rectangle.setFillColor(sf::Color::Transparent);
-            // rectangle.setOutlineColor(sf::Color::Red);
-            // rectangle.setOutlineThickness(0.04f);
-            // rectangle.setOrigin(0.0f, 0.0f);
-            // rectangle.setRotation(0.0f);
-            // window->draw(rectangle);
-
             i++;
         }
-
-        // for(auto &contact : scene.GetContacts())
-        // {
-        //     sf::CircleShape circle;
-        //     float radius = 0.05f;
-
-        //     for(int i = 0; i < contact.contactPoints.size(); i++)
-        //     {
-        //         circle.setPosition(sf::Vector2f(contact.contactPoints[i].x, contact.contactPoints[i].y));
-        //         circle.setRadius(radius);
-        //         circle.setFillColor(sf::Color::Magenta);
-        //         circle.setOrigin(sf::Vector2f(radius, radius));
-        //         window->draw(circle);
-        //     }
-        // }
 
         ImGui::SFML::Render(*window);
         camera.ApplyTo(*window);

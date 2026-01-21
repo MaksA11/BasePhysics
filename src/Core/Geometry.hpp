@@ -1,12 +1,14 @@
 #pragma once
 
+#include <array>
+
 #include "Vec2.hpp"
 #include "Math.hpp"
 #include "../Collision/ColliderShapes.hpp"
 
 namespace bp::geometry
 {
-    inline Vec2 *GetBoxVertices(const BoxShape &box, Vec2 position, float rotation)
+    inline std::array<Vec2, 4> GetBoxVertices(const BoxShape &box, Vec2 position, float rotation)
     {
         float left = -box.size.x * 0.5f;
         float right = left + box.size.x;
@@ -19,7 +21,7 @@ namespace bp::geometry
         vertices[2] = Vec2(right, bottom);
         vertices[3] = Vec2(left, bottom);
 
-        Vec2 *transformedVertices = new Vec2[4];
+        std::array<Vec2, 4> transformedVertices;
 
         for(int i = 0; i < 4; i++)
 		{
@@ -48,7 +50,7 @@ namespace bp::geometry
 
         return math::DistanceSquared(point, outClosestPoint);
     }
-    inline int FindClosestPointIndex(Vec2 center, Vec2 vertices[])
+    inline int FindClosestPointIndex(Vec2 center, std::array<Vec2, 4> vertices)
     {
         int result = -1;
         float minDistSq = FLT_MAX;
@@ -68,7 +70,7 @@ namespace bp::geometry
         return result;
     }
 
-    inline void ProjectVertices(Vec2 vertices[], Vec2 axis, float &outMin, float &outMax)
+    inline void ProjectVertices(std::array<Vec2, 4> vertices, Vec2 axis, float &outMin, float &outMax)
     {
         outMin = FLT_MAX;
         outMax = -FLT_MAX;
