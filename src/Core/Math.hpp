@@ -46,30 +46,4 @@ namespace bp::math
 
         return Vec2(x, y);
     }
-
-    inline void Swap(float &val1, float &val2)
-    {
-        float temp = val1;
-        val1 = val2;
-        val2 = temp;
-    }
-
-    inline float Clamp(float val, float min, float max)
-    {
-        if(val > max)
-            return max;
-        if(val < min)
-            return min;
-            
-        return val;
-    }
-
-    inline bool NearlyEqual(float val1, float val2)
-    {
-        return abs(val1 - val2) < 0.0005f;
-    }
-    inline bool NearlyEqual(Vec2 val1, Vec2 val2)
-    {
-        return DistanceSquared(val1, val2) < 0.0005f * 0.0005f;
-    }
 }

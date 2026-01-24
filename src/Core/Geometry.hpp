@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <utility>
 
 #include "Vec2.hpp"
 #include "Math.hpp"
@@ -97,6 +98,6 @@ namespace bp::geometry
         outMax = math::Dot(p2, axis);
 
         if(outMin > outMax)
-            math::Swap(outMin, outMax);
+            std::swap(outMin, outMax);
     }
 }

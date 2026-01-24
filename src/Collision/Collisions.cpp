@@ -102,7 +102,7 @@ namespace bp::collisions
                 if(min1 >= max2 || min2 >= max1)
                     return false;
 
-                float axisDepth = std::min(max2 - min1, max1 - min2);
+                float axisDepth = utils::Min(max2 - min1, max1 - min2);
                 if(axisDepth < outDepth)
                 {
                     outDepth = axisDepth;
@@ -239,9 +239,9 @@ namespace bp::collisions
                 Vec2 cp;
                 float distanceSq = geometry::PointSegmentDistance(vert, vert1, vert2, cp);
 
-                if(math::NearlyEqual(distanceSq, minDistSq))
+                if(utils::NearlyEqual(distanceSq, minDistSq))
                 {
-                    if(!math::NearlyEqual(cp, outContact1))
+                    if(!utils::NearlyEqual(cp, outContact1))
                     {
                         contactCount = 2;
                         outContact2 = cp;
@@ -267,9 +267,9 @@ namespace bp::collisions
                 Vec2 cp;
                 float distanceSq = geometry::PointSegmentDistance(vert, vert1, vert2, cp);
 
-                if(math::NearlyEqual(distanceSq, minDistSq))
+                if(utils::NearlyEqual(distanceSq, minDistSq))
                 {
-                    if(!math::NearlyEqual(cp, outContact1))
+                    if(!utils::NearlyEqual(cp, outContact1))
                     {
                         contactCount = 2;
                         outContact2 = cp;

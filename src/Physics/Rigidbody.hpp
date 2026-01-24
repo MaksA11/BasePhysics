@@ -5,6 +5,7 @@
 
 #include "../Core/Vec2.hpp"
 #include "../Core/Math.hpp"
+#include "../Core/Utils.hpp"
 #include "../Collision/Collider.hpp"
 #include "BodyPreset.hpp"
 

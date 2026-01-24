@@ -112,7 +112,7 @@ namespace bp
         Vec2 r2s[2];
         float js[2];
 
-        float e = std::min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
+        float e = utils::Min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
         float sf = sqrt(rb1->GetCollider().GetFriction() * rb2->GetCollider().GetFriction());
         float df = 0.8f * sf;
 
@@ -176,7 +176,7 @@ namespace bp
             Vec2 relativeVel = (rb2->GetLinearVelocity() + vel2) - (rb1->GetLinearVelocity() + vel1);
 
             Vec2 tangent = relativeVel - math::Dot(relativeVel, normal) * normal;
-            if(math::NearlyEqual(tangent, Vec2::Zero()))
+            if(utils::NearlyEqual(tangent, Vec2::Zero()))
             {
                 impulses[i] = Vec2::Zero();
                 js[i] = 0.0f;
@@ -193,7 +193,7 @@ namespace bp
                 (r1PerpDotT * r1PerpDotT) * rb1->GetInverseInertia() +
                 (r2PerpDotT * r2PerpDotT) * rb2->GetInverseInertia());
 
-            if(std::abs(jt) <= js[i] * sf)
+            if(utils::Abs(jt) <= js[i] * sf)
                 impulses[i] = jt * tangent;
             else
                 impulses[i] = -js[i] * tangent * df;
