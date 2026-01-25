@@ -8,7 +8,7 @@ namespace bp
     }
     PhysicsScene::~PhysicsScene()
     {
-        for(auto &rb : bodies)
+        for(bp::Rigidbody *rb : bodies)
         {
             delete rb;
         }
@@ -45,7 +45,7 @@ namespace bp
                 ResolveCollision(contact);
                 SeparateBodies(contact);
             }
-            for(auto &rb : bodies)
+            for(bp::Rigidbody *rb : bodies)
             {
                 rb->PhysicsStep(deltaTime, substeps, gravity);
             }
@@ -148,6 +148,8 @@ namespace bp
                 (r1PerpDotN * r1PerpDotN) * rb1->GetInverseInertia() +
                 (r2PerpDotN * r2PerpDotN) * rb2->GetInverseInertia());
 
+            j /= (float)contacts.size();
+            
             js[i] = j;
             impulses[i] = j * normal;
         }
@@ -192,6 +194,8 @@ namespace bp
                 (rb1->GetInverseMass() + rb2->GetInverseMass() +
                 (r1PerpDotT * r1PerpDotT) * rb1->GetInverseInertia() +
                 (r2PerpDotT * r2PerpDotT) * rb2->GetInverseInertia());
+
+            jt /= (float)contacts.size();
 
             if(utils::Abs(jt) <= js[i] * sf)
                 impulses[i] = jt * tangent;

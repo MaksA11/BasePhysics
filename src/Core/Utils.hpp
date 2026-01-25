@@ -7,7 +7,7 @@
 
 namespace bp::utils
 {
-    constexpr float epsilon = 0.0005f;
+    constexpr float epsilon = 0.00005f;
 
     inline float Clamp(float val, float min, float max)
     {           

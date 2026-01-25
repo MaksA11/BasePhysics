@@ -78,13 +78,13 @@ namespace bp
     {
         if(isStatic)
             return;
-        linearVelocity += impulse / mass;
+        linearVelocity += impulse * GetInverseMass();
     }
     void Rigidbody::ApplyAngularImpulse(float impulse)
     {
         if(isStatic)
             return;
-        angularVelocity += impulse / inertia;
+        angularVelocity += impulse * GetInverseInertia();
     }
 
     void Rigidbody::ApplyForce(Vec2 force)
@@ -132,15 +132,14 @@ namespace bp
         linearVelocity += acceleration * deltaTime;
 
         float damping = 1 - utils::Clamp(linearDamping, 0.0f, 1.0f);
-        linearVelocity *= std::pow(damping, deltaTime);
-        // linearVelocity *= damping;
+        linearVelocity *= 1.0f / (1.0f + deltaTime * linearDamping);
 
         float angularAcceleration = torque / inertia;
         angularVelocity += angularAcceleration * deltaTime;
 
+        float angularDampingBias = 5.0f;
         damping = 1 - utils::Clamp(angularDamping, 0.0f, 1.0f);
-        angularVelocity *= std::pow(damping, deltaTime);
-        // angularVelocity *= damping;
+        angularVelocity *= 1.0f / (1.0f + deltaTime * damping * angularDampingBias);
 
         if(usesGravity)
             linearVelocity += gravity * deltaTime;

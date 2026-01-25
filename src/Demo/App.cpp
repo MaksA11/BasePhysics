@@ -39,8 +39,8 @@ namespace demo
         preset.mass = 1.0f;
         preset.shape = bp::BoxShape(bp::Vec2::One());
         // preset.shape = bp::CircleShape(0.5f);
-        preset.linearDamping = 0.001f;
-        preset.angularDamping = 0.001f;
+        preset.linearDamping = 0.1f;
+        preset.angularDamping = 0.1f;
         preset.restitution = 0.4f;
         preset.friction = 0.6f;
         preset.isStatic = false;
@@ -92,7 +92,7 @@ namespace demo
         sf::CircleShape circle;
 
         int i = 0;
-        for(auto &rb : scene.GetBodies())
+        for(bp::Rigidbody *rb : scene.GetBodies())
         {
             if(rb->GetCollider().IsCircle())
             {
@@ -148,7 +148,7 @@ namespace demo
         ImGui::Text("Body count");
         ImGui::Text(std::to_string(scene.GetBodies().size()).c_str());
         ImGui::Separator();
-        ImGui::Text("Contacts");
+        ImGui::Text("Contact count");
         ImGui::Text(std::to_string(scene.GetContacts().size()).c_str());
         ImGui::Separator();
         ImGui::Text("Body[0]");
@@ -159,6 +159,9 @@ namespace demo
         ImGui::Separator();
         ImGui::Text("FPS");
         ImGui::Text(std::to_string(fps).c_str());
+        ImGui::Separator();
+        if(ImGui::Button("Reset"))
+            Reset();
         ImGui::End();
     }
 
@@ -250,7 +253,13 @@ namespace demo
     }
     void App::Reset()
     {
-        
+        for(int i = scene.GetBodies().size() - 1; i >= 0; i--)
+        {
+            scene.RemoveRigidbody(i);
+        }
+        colors.clear();
+        colors.shrink_to_fit();
+        Start();
     }
     void App::CleanUp()
     {
