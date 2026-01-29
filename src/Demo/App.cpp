@@ -72,11 +72,21 @@ namespace demo
         preset.position = bp::Vec2(0.0f, -14.0f);
         preset.shape = bp::BoxShape(bp::Vec2(52.0f, 4.0f));
         preset.isStatic = true;
+        
+        scene.AddRigidbody(preset);
+        colors.push_back(random::RandomColor());
+        
+        std::vector<bp::Vec2> vertices = {
+            bp::Vec2(0.0f, 1.0f),
+            bp::Vec2(0.866f, -0.5f),
+            bp::Vec2(-0.866f, -0.5f)
+        };
+        preset.position = bp::Vec2(0.0f, 10.0f);
+        preset.shape = bp::PolygonShape(vertices);
+        preset.isStatic = false;
 
         scene.AddRigidbody(preset);
         colors.push_back(random::RandomColor());
-
-        preset.isStatic = false;
     }
 
     void App::Update()
@@ -90,6 +100,7 @@ namespace demo
 
         sf::RectangleShape rectangle;
         sf::CircleShape circle;
+        sf::ConvexShape polygon;
 
         int i = 0;
         for(bp::Rigidbody *rb : scene.GetBodies())
@@ -127,12 +138,25 @@ namespace demo
             }
             else if(rb->GetCollider().IsPolygon())
             {
-                // TODO: implement
+                polygon.setPointCount(rb->GetCollider().GetPolygon()->vertices.size());
+        
+                for(int i = 0; i < rb->GetCollider().GetPolygon()->vertices.size(); i++)
+                {
+                    polygon.setPoint(i, sf::Vector2f(rb->GetCollider().GetPolygon()->vertices[i].x + rb->GetPosition().x,
+                        rb->GetCollider().GetPolygon()->vertices[i].y + rb->GetPosition().y));
+                }
+                
+                polygon.setRotation(bp::math::ToDegrees(rb->GetRotation()));
+                polygon.setFillColor(colors[i]);
+                polygon.setOutlineColor(sf::Color::Black);
+                polygon.setOutlineThickness(-0.067f);
+        
+                window->draw(polygon);
             }
-
+            
             i++;
         }
-
+        
         ImGui::SFML::Render(*window);
         camera.ApplyTo(*window);
         window->display();

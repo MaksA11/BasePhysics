@@ -66,7 +66,7 @@ namespace bp
             return AABB(min, max);
         }
         if(const PolygonShape *poly = GetPolygon())
-            return AABB(Vec2::Zero(), Vec2::Zero()); // TODO: implement
+            return AABB(Vec2::One(), Vec2::One()); // TODO: implement
         
         return AABB(Vec2::Zero(), Vec2::Zero());
     }
@@ -81,7 +81,7 @@ namespace bp
             return (1.0f / 12.0f) * mass * (size.x * size.x + size.y * size.y);
         }
         if(IsPolygon())
-            return 0.0f; // TODO: implement
+            return 1.0f; // TODO: implement
 
         return 1.0f;
     }
