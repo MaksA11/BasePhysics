@@ -9,22 +9,11 @@
 
 namespace bp::geometry
 {
-    inline std::array<Vec2, 4> GetBoxVertices(const BoxShape &box, Vec2 position, float rotation)
+    inline std::vector<Vec2> TransformPolygonVertices(std::vector<Vec2> vertices, Vec2 position, float rotation)
     {
-        float left = -box.size.x * 0.5f;
-        float right = left + box.size.x;
-        float bottom = -box.size.y * 0.5f;
-        float top = bottom + box.size.y;
+        std::vector<Vec2> transformedVertices = std::vector<Vec2>(vertices.size());
 
-        Vec2 vertices[4];
-        vertices[0] = Vec2(left, top);
-        vertices[1] = Vec2(right, top);
-        vertices[2] = Vec2(right, bottom);
-        vertices[3] = Vec2(left, bottom);
-
-        std::array<Vec2, 4> transformedVertices;
-
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < vertices.size(); i++)
 		{
 			Vec2 vertex = vertices[i];
 			transformedVertices[i] = math::Transform(vertex, position, rotation);
@@ -51,12 +40,12 @@ namespace bp::geometry
 
         return math::DistanceSquared(point, outClosestPoint);
     }
-    inline int FindClosestPointIndex(Vec2 center, std::array<Vec2, 4> vertices)
+    inline int FindClosestPointIndex(Vec2 center, std::vector<Vec2> vertices)
     {
         int result = -1;
         float minDistSq = FLT_MAX;
 
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < vertices.size(); i++)
         {
             Vec2 vert = vertices[i];
             float distSq = math::DistanceSquared(vert, center);
@@ -71,12 +60,12 @@ namespace bp::geometry
         return result;
     }
 
-    inline void ProjectVertices(std::array<Vec2, 4> vertices, Vec2 axis, float &outMin, float &outMax)
+    inline void ProjectVertices(std::vector<Vec2> vertices, Vec2 axis, float &outMin, float &outMax)
     {
         outMin = FLT_MAX;
         outMax = -FLT_MAX;
 
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < vertices.size(); i++)
         {
             Vec2 vert = vertices[i];
             float proj = math::Dot(vert, axis);

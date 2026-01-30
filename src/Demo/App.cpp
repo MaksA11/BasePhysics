@@ -49,7 +49,15 @@ namespace demo
         scene.AddRigidbody(preset);
         colors.push_back(random::RandomColor());
 
-        for(int i = 0; i < 20; i++)
+        bp::CircleShape circle = bp::CircleShape(0.5f);
+        bp::BoxShape box = bp::BoxShape(bp::Vec2::One());
+        bp::PolygonShape triangle = bp::PolygonShape({{0.0f, 1.0f}, {0.866f, -0.5f}, {-0.866f, -0.5f}});
+        bp::PolygonShape pentagon = bp::PolygonShape({{0.0f, 1.0f}, {0.951f, 0.309f}, {0.588f, -0.809f}, {-0.588f, -0.809f}, {-0.951f, 0.309f}});
+        bp::PolygonShape hexagon = bp::PolygonShape({{0.0f, 1.0f}, {0.866f, 0.5f}, {0.866f, -0.5f}, {0.0f, -1.0f}, {-0.866f, -0.5f}, {-0.866f, 0.5f}});
+        bp::PolygonShape septagon = bp::PolygonShape({{0.0f, 1.0f}, {0.782f, 0.623f}, {0.975f, -0.223f}, {0.434f, -0.901f}, {-0.434f, -0.901f}, {-0.975f, -0.223f}, {-0.782f, 0.623f}});
+        bp::PolygonShape octagon = bp::PolygonShape({{0.383f, 0.924f}, {0.924f, 0.383f}, {0.924f, -0.383f}, {0.383f, -0.924f}, {-0.383f, -0.924f}, {-0.924f, -0.383f}, {-0.924f, 0.383f}, {-0.383f, 0.924f}});
+
+        for(int i = 0; i < 100; i++)
         {
             sf::Vector2f center = camera.GetPosition();
             sf::Vector2f size = camera.GetViewSize();
@@ -59,11 +67,17 @@ namespace demo
 
             preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
                 random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
-
-            if(random::RandomBool())
-                preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
-            else
-                preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
+                
+            switch(random::RandomInt(2, 8))
+            {
+                case 2: preset.shape = circle; break;
+                case 3: preset.shape = triangle; break;
+                case 4: preset.shape = box; break;
+                case 5: preset.shape = pentagon; break;
+                case 6: preset.shape = hexagon; break;
+                case 7: preset.shape = septagon; break;
+                case 8: preset.shape = octagon; break;
+            }
 
             scene.AddRigidbody(preset);
             colors.push_back(random::RandomColor());
@@ -75,18 +89,7 @@ namespace demo
         
         scene.AddRigidbody(preset);
         colors.push_back(random::RandomColor());
-        
-        std::vector<bp::Vec2> vertices = {
-            bp::Vec2(0.0f, 1.0f),
-            bp::Vec2(0.866f, -0.5f),
-            bp::Vec2(-0.866f, -0.5f)
-        };
-        preset.position = bp::Vec2(0.0f, 10.0f);
-        preset.shape = bp::PolygonShape(vertices);
         preset.isStatic = false;
-
-        scene.AddRigidbody(preset);
-        colors.push_back(random::RandomColor());
     }
 
     void App::Update()
@@ -142,18 +145,32 @@ namespace demo
         
                 for(int i = 0; i < rb->GetCollider().GetPolygon()->vertices.size(); i++)
                 {
-                    polygon.setPoint(i, sf::Vector2f(rb->GetCollider().GetPolygon()->vertices[i].x + rb->GetPosition().x,
-                        rb->GetCollider().GetPolygon()->vertices[i].y + rb->GetPosition().y));
+                    polygon.setPoint(i, sf::Vector2f(rb->GetCollider().GetPolygon()->vertices[i].x,
+                        rb->GetCollider().GetPolygon()->vertices[i].y));
                 }
                 
+                polygon.setPosition(rb->GetPosition().x, rb->GetPosition().y);
                 polygon.setRotation(bp::math::ToDegrees(rb->GetRotation()));
                 polygon.setFillColor(colors[i]);
                 polygon.setOutlineColor(sf::Color::Black);
                 polygon.setOutlineThickness(-0.067f);
-        
+                polygon.setOrigin(0.0f, 0.0f);
+                
                 window->draw(polygon);
             }
             
+            // auto aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
+            // sf::Vector2f size(aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y);
+            // sf::Vector2f position(aabb.min.x, aabb.min.y);
+            // rectangle.setPosition(position);
+            // rectangle.setSize(size);
+            // rectangle.setFillColor(sf::Color::Transparent);
+            // rectangle.setOutlineColor(sf::Color::Red);
+            // rectangle.setOutlineThickness(0.04f);
+            // rectangle.setOrigin(0.0f, 0.0f);
+            // rectangle.setRotation(0.0f);
+            // window->draw(rectangle);
+
             i++;
         }
         
