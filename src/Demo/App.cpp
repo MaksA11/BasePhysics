@@ -78,8 +78,6 @@ namespace demo
             scene.AddRigidbody(spawnPreset);
             colors.push_back(random::RandomColor());
         }
-
-        spawnPreset.isSensor = true;
     }
 
     void App::Update()
@@ -210,7 +208,7 @@ namespace demo
                     }
                 }
             }
-            
+
             if(renderAABBs)
             {
                 auto aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
@@ -277,6 +275,7 @@ namespace demo
         ImGui::Separator();
         ImGui::Checkbox("Is static", &spawnPreset.isStatic);
         ImGui::Checkbox("Use gravity", &spawnPreset.usesGravity);
+        ImGui::Checkbox("Is sensor", &spawnPreset.isSensor);
         ImGui::Separator();
         ImGui::Text("Mass");
         ImGui::SliderFloat("##Mass", &spawnPreset.mass, 0.1f, 100.0f);
@@ -307,6 +306,7 @@ namespace demo
             ImGui::Separator();
             ImGui::Checkbox("Is static", &selectedPreset.isStatic);
             ImGui::Checkbox("Use gravity", &selectedPreset.usesGravity);
+            ImGui::Checkbox("Is sensor", &selectedPreset.isSensor);
             ImGui::Separator();
             ImGui::Text("Mass");
             ImGui::SliderFloat("##Mass", &selectedPreset.mass, 0.1f, 100.0f);

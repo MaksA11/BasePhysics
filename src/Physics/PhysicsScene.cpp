@@ -57,9 +57,9 @@ namespace bp
         contacts.clear();
         contacts.shrink_to_fit();
 
-        for(int i = 0; i < bodies.size() - 1; i++)
+        for(int i = 0; i < (int)bodies.size() - 1; i++)
         {
-            for(int j = i + 1; j < bodies.size(); j++)
+            for(int j = i + 1; j < (int)bodies.size(); j++)
             {
                 if((bodies[i]->IsStatic() && bodies[j]->IsStatic()) || (bodies[i]->GetCollider().IsSensor() || bodies[j]->GetCollider().IsSensor()))
                     continue;

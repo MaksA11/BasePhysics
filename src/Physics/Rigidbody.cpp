@@ -170,7 +170,7 @@ namespace bp
         angularDamping = preset.angularDamping;
         isStatic = preset.isStatic;
         usesGravity = preset.usesGravity;
-        collider = Collider(preset.shape, preset.restitution, preset.friction);
+        collider = Collider(preset.shape, preset.restitution, preset.friction, preset.isSensor);
         inertia = collider.CalculateInertia(mass);
     }
     BodyPreset Rigidbody::GetProperties() const
@@ -191,6 +191,7 @@ namespace bp
         preset.friction = collider.GetFriction();
         preset.isStatic = isStatic;
         preset.usesGravity = usesGravity;
+        preset.isSensor = collider.IsSensor();
         return preset;
     }
 }
