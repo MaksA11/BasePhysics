@@ -61,7 +61,7 @@ namespace bp
         {
             for(int j = i + 1; j < bodies.size(); j++)
             {
-                if(bodies[i]->IsStatic() && bodies[j]->IsStatic())
+                if((bodies[i]->IsStatic() && bodies[j]->IsStatic()) || (bodies[i]->GetCollider().IsSensor() || bodies[j]->GetCollider().IsSensor()))
                     continue;
 
                 if(!collisions::IntersectAABBs(bodies[i]->GetCollider().GetAABB(bodies[i]->GetPosition(), bodies[i]->GetRotation()),

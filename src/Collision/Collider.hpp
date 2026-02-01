@@ -17,8 +17,10 @@ namespace bp
             float restitution;
             float friction;
 
+            bool isSensor;
+
         public:
-            Collider(ColliderShape shape, float restitution, float friction) : shape(shape), restitution(restitution), friction(friction) {}
+            Collider(ColliderShape shape, float restitution, float friction, bool isSensor = false) : shape(shape), restitution(restitution), friction(friction), isSensor(isSensor) {}
 
             bool IsCircle() const;
             bool IsBox() const;
@@ -34,5 +36,8 @@ namespace bp
             const AABB GetAABB(Vec2 pos, float rot) const;
 
             float CalculateInertia(float mass);
+
+            void SetSensor(bool val);
+            const bool IsSensor() const;
     };
 }

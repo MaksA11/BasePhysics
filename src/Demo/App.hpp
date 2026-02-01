@@ -61,7 +61,7 @@ namespace demo
 			bool renderContactPoints;
 
 			int substeps;
-			int framerateLimit;
+			int fpsLimit;
 
 			bp::BodyPreset spawnPreset;
 			bp::BodyPreset selectedPreset;

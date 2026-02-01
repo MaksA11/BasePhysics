@@ -4,22 +4,22 @@ namespace bp
 {
     Rigidbody *Rigidbody::CreateRigidbody(BodyPreset preset)
     {
-        Collider collider = Collider(preset.shape, preset.restitution, preset.friction);
+        Collider collider = Collider(preset.shape, preset.restitution, preset.friction, preset.isSensor);
         return new Rigidbody(preset, collider);
     }
-    Rigidbody *Rigidbody::CreateCircleBody(Vec2 position, float rotation, float radius, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity)
+    Rigidbody *Rigidbody::CreateCircleBody(Vec2 position, float rotation, float radius, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool isSensor)
     {
         Collider collider = Collider(CircleShape(radius), restitution, friction);
         return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
     }
-    Rigidbody *Rigidbody::CreateBoxBody(Vec2 position, float rotation, Vec2 size, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity)
+    Rigidbody *Rigidbody::CreateBoxBody(Vec2 position, float rotation, Vec2 size, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool isSensor)
     {
-        Collider collider = Collider(BoxShape(size), restitution, friction);
+        Collider collider = Collider(BoxShape(size), restitution, friction, isSensor);
         return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
     }
-    Rigidbody *Rigidbody::CreatePolygonBody(Vec2 position, float rotation, std::vector<Vec2> vertices, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity)
+    Rigidbody *Rigidbody::CreatePolygonBody(Vec2 position, float rotation, std::vector<Vec2> vertices, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool isSensor)
     {
-        Collider collider = Collider(PolygonShape(vertices), restitution, friction);
+        Collider collider = Collider(PolygonShape(vertices), restitution, isSensor);
         return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
     }
 

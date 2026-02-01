@@ -126,4 +126,13 @@ namespace bp
 
         return 1.0f;
     }
+
+    void Collider::SetSensor(bool val)
+    {
+        isSensor = val;
+    }
+    const bool Collider::IsSensor() const
+    {
+        return isSensor;
+    }
 }

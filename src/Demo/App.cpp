@@ -44,7 +44,7 @@ namespace demo
         renderContactPoints = false;
 
         substeps = 8;
-        framerateLimit = 500;
+        fpsLimit = 500;
 
         shapeIndex = 0;
         spawnPreset.position = bp::Vec2(0.0f, -14.0f);
@@ -78,6 +78,8 @@ namespace demo
             scene.AddRigidbody(spawnPreset);
             colors.push_back(random::RandomColor());
         }
+
+        spawnPreset.isSensor = true;
     }
 
     void App::Update()
@@ -344,8 +346,8 @@ namespace demo
         ImGui::Text("Substeps");
         ImGui::SliderInt("##Substeps", &substeps, 1, 24);
         ImGui::Text("FPS limit");
-        if(ImGui::SliderInt("##FPS limit", &framerateLimit, 1, 500))
-            window->setFramerateLimit(framerateLimit);
+        if(ImGui::SliderInt("##FPS limit", &fpsLimit, 1, 500))
+            window->setFramerateLimit(fpsLimit);
         ImGui::Separator();
         ImGui::Checkbox("Render bodies", &renderBodies);
         ImGui::Checkbox("Render outlines", &renderOutlines);
@@ -389,7 +391,7 @@ namespace demo
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
 
-                    bp::Rigidbody *mouseRb = bp::Rigidbody::CreateCircleBody(worldPos, 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false);
+                    bp::Rigidbody *mouseRb = bp::Rigidbody::CreateCircleBody(worldPos, 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true);
 
                     for(bp::Rigidbody *rb : scene.GetBodies())
                     {
