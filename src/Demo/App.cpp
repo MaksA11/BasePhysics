@@ -59,25 +59,32 @@ namespace demo
         spawnPreset.usesGravity = true;
 
         scene.AddRigidbody(spawnPreset);
-        colors.push_back(random::RandomColor());
+        colors.push_back(sf::Color(0, 90, 10));
+
+        spawnPreset.position = bp::Vec2(-6.0f, 8.0f);
+        spawnPreset.rotation = bp::math::pi * -0.15f;
+        spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
+        scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(0, 90, 10));
+
+        spawnPreset.position = bp::Vec2(6.0f, 2.0f);
+        spawnPreset.rotation = bp::math::pi * 0.15f;
+        spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
+        scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(0, 90, 10));
+
+        spawnPreset.rotation = 0.0f;
         spawnPreset.isStatic = false;
 
-        for(int i = 0; i < 100; i++)
-        {
-            sf::Vector2f center = camera.GetPosition();
-            sf::Vector2f size = camera.GetViewSize();
-            float halfX = size.x * 0.5f;
-            float halfY = std::abs(size.y) * 0.5f;
-            float padding = 0.5f;
+        spawnPreset.position = bp::Vec2(0.0f, -12.0f);
+        spawnPreset.shape = bp::PolygonShape({{0.0f, 1.0f}, {2.5f, -0.5f}, {-2.5f, -0.5f}});
+        scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(90, 90, 90));
 
-            spawnPreset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
-                random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
-                
-            spawnPreset.shape = shapes[random::RandomInt(0, 6)];
-
-            scene.AddRigidbody(spawnPreset);
-            colors.push_back(random::RandomColor());
-        }
+        spawnPreset.position = bp::Vec2(0.0f, -10.0f);
+        spawnPreset.shape = bp::BoxShape(bp::Vec2(18.0f, 0.75f));
+        scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(80, 40, 10));
     }
 
     void App::Update()
@@ -430,6 +437,44 @@ namespace demo
 
             if(event.type == sf::Event::MouseWheelScrolled && !ImGui::GetIO().WantCaptureMouse)
                 camera.Zoom(event.mouseWheelScroll.delta > 0 ? 1.1f : 0.9f);
+
+            if(event.type == sf::Event::KeyPressed)
+            {
+                if(event.key.code == sf::Keyboard::R)
+                {
+                    for(int i = 0; i < 10; i++)
+                    {
+                        sf::Vector2f center = camera.GetPosition();
+                        sf::Vector2f size = camera.GetViewSize();
+                        float halfX = size.x * 0.5f;
+                        float halfY = std::abs(size.y) * 0.5f;
+                        float padding = 0.5f;
+
+                        spawnPreset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
+                            random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
+                            
+                        spawnPreset.shape = shapes[random::RandomInt(0, 6)];
+
+                        scene.AddRigidbody(spawnPreset);
+                        colors.push_back(random::RandomColor());
+                    }
+                }
+                if(event.key.code == sf::Keyboard::Delete)
+                {
+                    const std::vector<bp::Rigidbody *> &bodies = scene.GetBodies();
+                    for(int i = 0; i < bodies.size(); i++)
+                    {
+                        if(bodies[i] == selectedRb)
+                        {
+                            colors.erase(colors.begin() + i);
+                            break;
+                        }
+                    }
+
+                    scene.RemoveRigidbody(selectedRb);
+                    selectedRb = nullptr;
+                }
+            }
         }
         
         if(isDragging)
@@ -461,22 +506,6 @@ namespace demo
                 selectedRb->ApplyAngularImpulse(bp::math::pi * -0.05f * rbForce);
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
                 selectedRb->ApplyAngularImpulse(bp::math::pi * 0.05f * rbForce);
-
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Delete))
-            {
-                const std::vector<bp::Rigidbody *> &bodies = scene.GetBodies();
-                for(int i = 0; i < bodies.size(); i++)
-                {
-                    if(bodies[i] == selectedRb)
-                    {
-                        colors.erase(colors.begin() + i);
-                        break;
-                    }
-                }
-
-                scene.RemoveRigidbody(selectedRb);
-                selectedRb = nullptr;
-            }
         }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
