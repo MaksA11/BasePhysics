@@ -25,7 +25,7 @@ namespace demo
         }
 
         ImGui::SFML::Init(*window);
-        // window->setFramerateLimit(60);
+        window->setFramerateLimit(500);
         clock = sf::Clock();
         camera = Camera(bp::Vec2::Zero(), window->getSize(), 50);
 
@@ -34,28 +34,33 @@ namespace demo
 
     void App::Start()
     {
-        preset.position = bp::Vec2::Zero();
-        preset.rotation = 0.0f;
-        preset.mass = 1.0f;
-        preset.shape = bp::BoxShape(bp::Vec2::One());
-        // preset.shape = bp::CircleShape(0.5f);
-        preset.linearDamping = 0.1f;
-        preset.angularDamping = 0.1f;
-        preset.restitution = 0.4f;
-        preset.friction = 0.6f;
-        preset.isStatic = false;
-        preset.usesGravity = true;
+        selectedRb = nullptr;
 
-        scene.AddRigidbody(preset);
+        renderBodies = true;
+        renderOutlines = true;
+        renderCircleLines = true;
+        renderVertices = false;
+        renderAABBs = false;
+        renderContactPoints = false;
+
+        substeps = 8;
+        framerateLimit = 500;
+
+        shapeIndex = 0;
+        spawnPreset.position = bp::Vec2(0.0f, -14.0f);
+        spawnPreset.rotation = 0.0f;
+        spawnPreset.shape = bp::BoxShape(bp::Vec2(52.0f, 4.0f));
+        spawnPreset.mass = 1.0f;
+        spawnPreset.linearDamping = 0.1f;
+        spawnPreset.angularDamping = 0.1f;
+        spawnPreset.restitution = 0.4f;
+        spawnPreset.friction = 0.6f;
+        spawnPreset.isStatic = true;
+        spawnPreset.usesGravity = true;
+
+        scene.AddRigidbody(spawnPreset);
         colors.push_back(random::RandomColor());
-
-        bp::CircleShape circle = bp::CircleShape(0.5f);
-        bp::BoxShape box = bp::BoxShape(bp::Vec2::One());
-        bp::PolygonShape triangle = bp::PolygonShape({{0.0f, 1.0f}, {0.866f, -0.5f}, {-0.866f, -0.5f}});
-        bp::PolygonShape pentagon = bp::PolygonShape({{0.0f, 1.0f}, {0.951f, 0.309f}, {0.588f, -0.809f}, {-0.588f, -0.809f}, {-0.951f, 0.309f}});
-        bp::PolygonShape hexagon = bp::PolygonShape({{0.0f, 1.0f}, {0.866f, 0.5f}, {0.866f, -0.5f}, {0.0f, -1.0f}, {-0.866f, -0.5f}, {-0.866f, 0.5f}});
-        bp::PolygonShape septagon = bp::PolygonShape({{0.0f, 1.0f}, {0.782f, 0.623f}, {0.975f, -0.223f}, {0.434f, -0.901f}, {-0.434f, -0.901f}, {-0.975f, -0.223f}, {-0.782f, 0.623f}});
-        bp::PolygonShape octagon = bp::PolygonShape({{0.383f, 0.924f}, {0.924f, 0.383f}, {0.924f, -0.383f}, {0.383f, -0.924f}, {-0.383f, -0.924f}, {-0.924f, -0.383f}, {-0.924f, 0.383f}, {-0.383f, 0.924f}});
+        spawnPreset.isStatic = false;
 
         for(int i = 0; i < 100; i++)
         {
@@ -65,36 +70,28 @@ namespace demo
             float halfY = std::abs(size.y) * 0.5f;
             float padding = 0.5f;
 
-            preset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
+            spawnPreset.position = bp::Vec2(random::RandomFloat(-(center.x + halfX - padding), center.x + halfX - padding),
                 random::RandomFloat(-(center.y + halfY - padding), center.y + halfY - padding));
                 
-            switch(random::RandomInt(2, 8))
-            {
-                case 2: preset.shape = circle; break;
-                case 3: preset.shape = triangle; break;
-                case 4: preset.shape = box; break;
-                case 5: preset.shape = pentagon; break;
-                case 6: preset.shape = hexagon; break;
-                case 7: preset.shape = septagon; break;
-                case 8: preset.shape = octagon; break;
-            }
+            spawnPreset.shape = shapes[random::RandomInt(0, 6)];
 
-            scene.AddRigidbody(preset);
+            scene.AddRigidbody(spawnPreset);
             colors.push_back(random::RandomColor());
         }
-
-        preset.position = bp::Vec2(0.0f, -14.0f);
-        preset.shape = bp::BoxShape(bp::Vec2(52.0f, 4.0f));
-        preset.isStatic = true;
-        
-        scene.AddRigidbody(preset);
-        colors.push_back(random::RandomColor());
-        preset.isStatic = false;
     }
 
     void App::Update()
     {
-        scene.Step(deltaTime, 8);
+        scene.Step(deltaTime, substeps);
+
+        for(int i = 0; i < scene.GetBodies().size(); i++)
+        {
+            if(scene.GetBodies()[i]->GetPosition().y < -50.0f)
+            {
+                colors.erase(colors.begin() + i);
+                scene.RemoveRigidbody(i);
+            }
+        }
     }
 
     void App::Render()
@@ -108,70 +105,144 @@ namespace demo
         int i = 0;
         for(bp::Rigidbody *rb : scene.GetBodies())
         {
-            if(rb->GetCollider().IsCircle())
+            if(renderBodies)
             {
-                circle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
-                circle.setRadius(rb->GetCollider().GetCircle()->radius);
-                circle.setRotation(bp::math::ToDegrees(rb->GetRotation()));
-                circle.setFillColor(colors[i]);
-                circle.setOutlineColor(sf::Color::Black);
-                circle.setOutlineThickness(-0.067f);
-                circle.setOrigin(sf::Vector2f(circle.getRadius(), circle.getRadius()));
-                window->draw(circle);
-
-                bp::Vec2 va = bp::math::Transform(bp::Vec2::Zero(), rb->GetPosition(), rb->GetRotation());
-                bp::Vec2 vb = bp::math::Transform(bp::Vec2(circle.getRadius(), 0.0f), rb->GetPosition(), rb->GetRotation());
-                sf::Vertex line[] = {
-                    sf::Vertex(sf::Vector2f(va.x, va.y), sf::Color::Black),
-                    sf::Vertex(sf::Vector2f(vb.x, vb.y), sf::Color::Black)
-                };
-
-                window->draw(line, 2, sf::Lines);
-            }
-            else if(rb->GetCollider().IsBox())
-            {
-                rectangle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
-                rectangle.setSize(sf::Vector2f(rb->GetCollider().GetBox()->size.x, rb->GetCollider().GetBox()->size.y));
-                rectangle.setRotation(bp::math::ToDegrees(rb->GetRotation()));
-                rectangle.setFillColor(colors[i]);
-                rectangle.setOutlineColor(sf::Color::Black);
-                rectangle.setOutlineThickness(-0.067f);
-                rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x * 0.5f, rectangle.getSize().y * 0.5f));
-                window->draw(rectangle);
-            }
-            else if(rb->GetCollider().IsPolygon())
-            {
-                polygon.setPointCount(rb->GetCollider().GetPolygon()->vertices.size());
-        
-                for(int i = 0; i < rb->GetCollider().GetPolygon()->vertices.size(); i++)
+                if(rb->GetCollider().IsCircle())
                 {
-                    polygon.setPoint(i, sf::Vector2f(rb->GetCollider().GetPolygon()->vertices[i].x,
-                        rb->GetCollider().GetPolygon()->vertices[i].y));
+                    circle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
+                    circle.setRadius(rb->GetCollider().GetCircle()->radius);
+                    circle.setRotation(bp::math::ToDegrees(rb->GetRotation()));
+                    circle.setFillColor(colors[i]);
+
+                    if(selectedRb && selectedRb == rb)
+                        circle.setOutlineColor(sf::Color::Red);
+                    else
+                        circle.setOutlineColor(sf::Color::Black);
+
+                    circle.setOutlineThickness(renderOutlines ? -0.067f : 0.0f);
+                    circle.setOrigin(sf::Vector2f(circle.getRadius(), circle.getRadius()));
+                    window->draw(circle);
+
+                    if(renderCircleLines)
+                    {
+                        bp::Vec2 va = bp::math::Transform(bp::Vec2::Zero(), rb->GetPosition(), rb->GetRotation());
+                        bp::Vec2 vb = bp::math::Transform(bp::Vec2(circle.getRadius(), 0.0f), rb->GetPosition(), rb->GetRotation());
+                        sf::Vertex line[] = {
+                            sf::Vertex(sf::Vector2f(va.x, va.y), sf::Color::Black),
+                            sf::Vertex(sf::Vector2f(vb.x, vb.y), sf::Color::Black)
+                        };
+
+                        window->draw(line, 2, sf::Lines);
+                    }
                 }
-                
-                polygon.setPosition(rb->GetPosition().x, rb->GetPosition().y);
-                polygon.setRotation(bp::math::ToDegrees(rb->GetRotation()));
-                polygon.setFillColor(colors[i]);
-                polygon.setOutlineColor(sf::Color::Black);
-                polygon.setOutlineThickness(-0.067f);
-                polygon.setOrigin(0.0f, 0.0f);
-                
-                window->draw(polygon);
+                else if(rb->GetCollider().IsBox())
+                {
+                    rectangle.setPosition(sf::Vector2f(rb->GetPosition().x, rb->GetPosition().y));
+                    rectangle.setSize(sf::Vector2f(rb->GetCollider().GetBox()->size.x, rb->GetCollider().GetBox()->size.y));
+                    rectangle.setRotation(bp::math::ToDegrees(rb->GetRotation()));
+                    rectangle.setFillColor(colors[i]);
+
+                    if(selectedRb && selectedRb == rb)
+                        rectangle.setOutlineColor(sf::Color::Red);
+                    else
+                        rectangle.setOutlineColor(sf::Color::Black);
+
+                    rectangle.setOutlineThickness(renderOutlines ? -0.067f : 0.0f);
+                    rectangle.setOrigin(sf::Vector2f(rectangle.getSize().x * 0.5f, rectangle.getSize().y * 0.5f));
+
+                    window->draw(rectangle);
+
+                    if(renderVertices)
+                    {
+                        sf::CircleShape vertex;
+                        std::vector<bp::Vec2> vertices = bp::geometry::TransformPolygonVertices(rb->GetCollider().GetBox()->ToPolygon().vertices, rb->GetPosition(), rb->GetRotation());
+                        for(int i = 0; i < vertices.size(); i++)
+                        {
+                            float radius = 0.05f;
+                            vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
+                            vertex.setRadius(radius);
+                            vertex.setFillColor(sf::Color::Green);
+                            vertex.setOrigin(sf::Vector2f(radius, radius));
+                            window->draw(vertex);
+                        }
+                    }
+                }
+                else if(rb->GetCollider().IsPolygon())
+                {
+                    polygon.setPointCount(rb->GetCollider().GetPolygon()->vertices.size());
+            
+                    for(int i = 0; i < rb->GetCollider().GetPolygon()->vertices.size(); i++)
+                    {
+                        polygon.setPoint(i, sf::Vector2f(rb->GetCollider().GetPolygon()->vertices[i].x,
+                            rb->GetCollider().GetPolygon()->vertices[i].y));
+                    }
+                    
+                    polygon.setPosition(rb->GetPosition().x, rb->GetPosition().y);
+                    polygon.setRotation(bp::math::ToDegrees(rb->GetRotation()));
+                    polygon.setFillColor(colors[i]);
+
+                    if(selectedRb && selectedRb == rb)
+                        polygon.setOutlineColor(sf::Color::Red);
+                    else
+                        polygon.setOutlineColor(sf::Color::Black);
+
+                    polygon.setOutlineThickness(renderOutlines ? -0.067f : 0.0f);
+                    polygon.setOrigin(0.0f, 0.0f);
+                    
+                    window->draw(polygon);
+
+                    if(renderVertices)
+                    {
+                        sf::CircleShape vertex;
+                        const bp::PolygonShape &polygon = *rb->GetCollider().GetPolygon();
+                        std::vector<bp::Vec2> vertices = bp::geometry::TransformPolygonVertices(polygon.vertices, rb->GetPosition(), rb->GetRotation());
+                        for(int i = 0; i < vertices.size(); i++)
+                        {
+                            float radius = 0.05f;
+                            vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
+                            vertex.setRadius(radius);
+                            vertex.setFillColor(sf::Color::Green);
+                            vertex.setOrigin(sf::Vector2f(radius, radius));
+                            window->draw(vertex);
+                        }
+                    }
+                }
             }
             
-            // auto aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
-            // sf::Vector2f size(aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y);
-            // sf::Vector2f position(aabb.min.x, aabb.min.y);
-            // rectangle.setPosition(position);
-            // rectangle.setSize(size);
-            // rectangle.setFillColor(sf::Color::Transparent);
-            // rectangle.setOutlineColor(sf::Color::Red);
-            // rectangle.setOutlineThickness(0.04f);
-            // rectangle.setOrigin(0.0f, 0.0f);
-            // rectangle.setRotation(0.0f);
-            // window->draw(rectangle);
+            if(renderAABBs)
+            {
+                auto aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
+                sf::Vector2f size(aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y);
+                sf::Vector2f position(aabb.min.x, aabb.min.y);
+                rectangle.setPosition(position);
+                rectangle.setSize(size);
+                rectangle.setFillColor(sf::Color::Transparent);
+                rectangle.setOutlineColor(sf::Color::Red);
+                rectangle.setOutlineThickness(0.04f);
+                rectangle.setOrigin(0.0f, 0.0f);
+                rectangle.setRotation(0.0f);
+                window->draw(rectangle);
+            }
 
             i++;
+        }
+
+        if(renderContactPoints)
+        {
+            for(const bp::ContactManifold &contact : scene.GetContacts())
+            {
+                sf::CircleShape circle;
+                float radius = 0.05f;
+
+                for(int i = 0; i < contact.contactPoints.size(); i++)
+                {
+                    circle.setPosition(sf::Vector2f(contact.contactPoints[i].x, contact.contactPoints[i].y));
+                    circle.setRadius(radius);
+                    circle.setFillColor(sf::Color::Magenta);
+                    circle.setOrigin(sf::Vector2f(radius, radius));
+                    window->draw(circle);
+                }
+            }
         }
         
         ImGui::SFML::Render(*window);
@@ -182,7 +253,7 @@ namespace demo
     {
         ImGui::SFML::Update(*window, clock.getElapsedTime());
 
-        ImGui::Begin("Debug");
+        ImGui::Begin("Simulation info");
         ImGui::Text("Camera");
         ImGui::Text(camera.DebugInfo().c_str());
         ImGui::Separator();
@@ -192,17 +263,110 @@ namespace demo
         ImGui::Text("Contact count");
         ImGui::Text(std::to_string(scene.GetContacts().size()).c_str());
         ImGui::Separator();
-        ImGui::Text("Body[0]");
-        ImGui::Text(("x: " + std::to_string(scene.GetBodies()[0]->GetPosition().x) + ", y: " + std::to_string(scene.GetBodies()[0]->GetPosition().y) +
-            "\nrot: " + std::to_string(scene.GetBodies()[0]->GetRotation()) +
-            "\nvel: " + std::to_string(scene.GetBodies()[0]->GetLinearVelocity().x) + ", y: " + std::to_string(scene.GetBodies()[0]->GetLinearVelocity().y) +
-            "\nangvel: " + std::to_string(scene.GetBodies()[0]->GetAngularVelocity())).c_str());
-        ImGui::Separator();
         ImGui::Text("FPS");
         ImGui::Text(std::to_string(fps).c_str());
+        ImGui::End();
+
+        ImGui::Begin("Spawn");
+        ImGui::Text("Shape");
+        const char* items[] = { "Circle", "Triangle", "Box", "Pentagon", "Hexagon", "Septagon", "Octagon" };
+        ImGui::ListBox("##Shape", &shapeIndex, items, IM_ARRAYSIZE(items), 7);
+        spawnPreset.shape = shapes[shapeIndex];
         ImGui::Separator();
+        ImGui::Checkbox("Is static", &spawnPreset.isStatic);
+        ImGui::Checkbox("Use gravity", &spawnPreset.usesGravity);
+        ImGui::Separator();
+        ImGui::Text("Mass");
+        ImGui::SliderFloat("##Mass", &spawnPreset.mass, 0.1f, 100.0f);
+        ImGui::Text("Restitution");
+        ImGui::SliderFloat("##Restitution", &spawnPreset.restitution, 0.0f, 10.0f);
+        ImGui::Text("Friction");
+        ImGui::SliderFloat("##Friction", &spawnPreset.friction, 0.0f, 10.0f);
+        ImGui::Text("Linear damping");
+        ImGui::SliderFloat("##Linear damping", &spawnPreset.linearDamping, 0.0f, 10.0f);
+        ImGui::Text("Angular damping");
+        ImGui::SliderFloat("##Angular damping", &spawnPreset.angularDamping, 0.0f, 10.0f);
+        ImGui::End();
+
+        ImGui::Begin("Selected rigidbody");
+        if(selectedRb)
+        {
+            selectedPreset = selectedRb->GetProperties();
+
+            std::string pos = "Position: " + selectedPreset.position.ToString();
+            std::string rot = "Rotation: " + std::to_string(bp::math::ToDegrees(selectedPreset.rotation));
+            std::string vel = "Linear velocity: " + selectedRb->GetLinearVelocity().ToString();
+            std::string angVel = "Angular velocity: " + std::to_string(bp::math::ToDegrees(selectedRb->GetAngularVelocity()));
+
+            ImGui::Text(pos.c_str());
+            ImGui::Text(rot.c_str());
+            ImGui::Text(vel.c_str());
+            ImGui::Text(angVel.c_str());
+            ImGui::Separator();
+            ImGui::Checkbox("Is static", &selectedPreset.isStatic);
+            ImGui::Checkbox("Use gravity", &selectedPreset.usesGravity);
+            ImGui::Separator();
+            ImGui::Text("Mass");
+            ImGui::SliderFloat("##Mass", &selectedPreset.mass, 0.1f, 100.0f);
+            ImGui::Text("Restitution");
+            ImGui::SliderFloat("##Restitution", &selectedPreset.restitution, 0.0f, 10.0f);
+            ImGui::Text("Friction");
+            ImGui::SliderFloat("##Friction", &selectedPreset.friction, 0.0f, 10.0f);
+            ImGui::Text("Linear damping");
+            ImGui::SliderFloat("##Linear damping", &selectedPreset.linearDamping, 0.0f, 10.0f);
+            ImGui::Text("Angular damping");
+            ImGui::SliderFloat("##Angular damping", &selectedPreset.angularDamping, 0.0f, 10.0f);
+            
+            selectedRb->SetProperties(selectedPreset);
+
+            ImGui::Separator();
+            if(ImGui::Button("Delete rigidbody"))
+            {
+                const std::vector<bp::Rigidbody *> &bodies = scene.GetBodies();
+                for(int i = 0; i < bodies.size(); i++)
+                {
+                    if(bodies[i] == selectedRb)
+                    {
+                        colors.erase(colors.begin() + i);
+                        break;
+                    }
+                }
+
+                scene.RemoveRigidbody(selectedRb);
+                selectedRb = nullptr;
+            }
+        }
+        else
+            ImGui::Text("Rigidbody not selected");
+        ImGui::End();
+
+        ImGui::Begin("Simulation options");
+        ImGui::Text("Substeps");
+        ImGui::SliderInt("##Substeps", &substeps, 1, 24);
+        ImGui::Text("FPS limit");
+        if(ImGui::SliderInt("##FPS limit", &framerateLimit, 1, 500))
+            window->setFramerateLimit(framerateLimit);
+        ImGui::Separator();
+        ImGui::Checkbox("Render bodies", &renderBodies);
+        ImGui::Checkbox("Render outlines", &renderOutlines);
+        ImGui::Checkbox("Render circle lines", &renderCircleLines);
+        ImGui::Checkbox("Render vertices", &renderVertices);
+        ImGui::Checkbox("Render AABBs", &renderAABBs);
+        ImGui::Checkbox("Render contact points", &renderContactPoints);
+        ImGui::Separator();
+        if(ImGui::Button("Delete all rigidbodies"))
+        {
+            for(int i = scene.GetBodies().size() - 1; i > 0; --i)
+            {
+                colors.erase(colors.begin() + i);
+                scene.RemoveRigidbody(i);
+            }
+        }
         if(ImGui::Button("Reset"))
             Reset();
+        ImGui::SameLine();
+        if(ImGui::Button("Exit"))
+            appRunning = false;
         ImGui::End();
     }
 
@@ -217,26 +381,37 @@ namespace demo
 
             if(event.type == sf::Event::MouseButtonPressed)
             {
+                if(ImGui::GetIO().WantCaptureMouse)
+                    continue;
+
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
 
-                    preset.shape = bp::CircleShape(random::RandomFloat(0.5f, 0.75f));
-                    preset.position = worldPos;
+                    bp::Rigidbody *mouseRb = bp::Rigidbody::CreateCircleBody(worldPos, 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false);
 
-                    scene.AddRigidbody(preset);
-                    colors.push_back(random::RandomColor());
+                    for(bp::Rigidbody *rb : scene.GetBodies())
+                    {
+                        if(bp::collisions::Collide(rb, mouseRb))
+                        {
+                            selectedRb = rb;
+                            break;
+                        }
+                        else
+                            selectedRb = nullptr;   
+                    }
+
+                    delete mouseRb;
                 }
                 if(event.mouseButton.button == sf::Mouse::Right)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
                     
-                    preset.shape = bp::BoxShape(random::RandomVec2(1.0f, 1.5f));
-                    preset.position = worldPos;
+                    spawnPreset.position = worldPos;
 
-                    scene.AddRigidbody(preset);
+                    scene.AddRigidbody(spawnPreset);
                     colors.push_back(random::RandomColor());
                 }
                 if(event.mouseButton.button == sf::Mouse::Middle)
@@ -250,8 +425,8 @@ namespace demo
                 if(event.mouseButton.button == sf::Mouse::Middle)
                     isDragging = false;
             }
-            
-            if(event.type == sf::Event::MouseWheelScrolled)
+
+            if(event.type == sf::Event::MouseWheelScrolled && !ImGui::GetIO().WantCaptureMouse)
                 camera.Zoom(event.mouseWheelScroll.delta > 0 ? 1.1f : 0.9f);
         }
         
@@ -268,20 +443,39 @@ namespace demo
             lastMousePos = currentMousePos;
         }
 
-        const float rbForce = 5.0 * deltaTime;
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-            scene.GetBodies()[0]->ApplyImpulse(bp::Vec2::Up() * rbForce);
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            scene.GetBodies()[0]->ApplyImpulse(-bp::Vec2::Up() * rbForce);
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-            scene.GetBodies()[0]->ApplyImpulse(bp::Vec2::Right() * rbForce);
-        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-            scene.GetBodies()[0]->ApplyImpulse(-bp::Vec2::Right() * rbForce);
+        if(selectedRb)
+        {
+            const float rbForce = 5.0 * deltaTime;
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+                selectedRb->ApplyImpulse(bp::Vec2::Up() * rbForce);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+                selectedRb->ApplyImpulse(-bp::Vec2::Up() * rbForce);
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+                selectedRb->ApplyImpulse(bp::Vec2::Right() * rbForce);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+                selectedRb->ApplyImpulse(-bp::Vec2::Right() * rbForce);
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-            scene.GetBodies()[0]->Rotate(bp::math::pi * 0.5f * deltaTime);
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-            scene.GetBodies()[0]->Rotate(bp::math::pi * -0.5f * deltaTime);
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+                selectedRb->ApplyAngularImpulse(bp::math::pi * -0.05f * rbForce);
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+                selectedRb->ApplyAngularImpulse(bp::math::pi * 0.05f * rbForce);
+
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Delete))
+            {
+                const std::vector<bp::Rigidbody *> &bodies = scene.GetBodies();
+                for(int i = 0; i < bodies.size(); i++)
+                {
+                    if(bodies[i] == selectedRb)
+                    {
+                        colors.erase(colors.begin() + i);
+                        break;
+                    }
+                }
+
+                scene.RemoveRigidbody(selectedRb);
+                selectedRb = nullptr;
+            }
+        }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
             appRunning = false;

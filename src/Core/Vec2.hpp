@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <string>
 
 namespace bp
 {
@@ -129,6 +130,11 @@ namespace bp
         Vec2 operator - () const
         {
             return Vec2(-x, -y);
+        }
+
+        std::string ToString() const
+        {
+            return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
         }
     };
 }

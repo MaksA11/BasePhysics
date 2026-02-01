@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "../Core/Vec2.hpp"
+#include "../Core/Utils.hpp"
 #include "../Core/Geometry.hpp"
 #include "ColliderShapes.hpp"
 #include "AABB.hpp"

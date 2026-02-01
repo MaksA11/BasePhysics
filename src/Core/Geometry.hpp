@@ -2,6 +2,7 @@
 
 #include <array>
 #include <utility>
+#include <limits>
 
 #include "Vec2.hpp"
 #include "Math.hpp"
@@ -43,7 +44,7 @@ namespace bp::geometry
     inline int FindClosestPointIndex(Vec2 center, std::vector<Vec2> vertices)
     {
         int result = -1;
-        float minDistSq = FLT_MAX;
+        float minDistSq = std::numeric_limits<float>::max();
 
         for(int i = 0; i < vertices.size(); i++)
         {
@@ -62,8 +63,8 @@ namespace bp::geometry
 
     inline void ProjectVertices(std::vector<Vec2> vertices, Vec2 axis, float &outMin, float &outMax)
     {
-        outMin = FLT_MAX;
-        outMax = -FLT_MAX;
+        outMin = std::numeric_limits<float>::max();
+        outMax = -std::numeric_limits<float>::max();
 
         for(int i = 0; i < vertices.size(); i++)
         {

@@ -46,8 +46,8 @@ namespace bp
         }
         if(const BoxShape *box = GetBox())
         {
-            Vec2 min = Vec2(FLT_MAX, FLT_MAX);
-		    Vec2 max = Vec2(-FLT_MAX, -FLT_MAX);
+            Vec2 min = Vec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+		    Vec2 max = Vec2(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
 
             std::vector<Vec2> verts = geometry::TransformPolygonVertices(box->ToPolygon().vertices, pos, rot);
 
@@ -67,8 +67,8 @@ namespace bp
         }
         if(const PolygonShape *poly = GetPolygon())
         {
-            Vec2 min = Vec2(FLT_MAX, FLT_MAX);
-		    Vec2 max = Vec2(-FLT_MAX, -FLT_MAX);
+            Vec2 min = Vec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+		    Vec2 max = Vec2(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
             
             std::vector<Vec2> verts = geometry::TransformPolygonVertices(poly->vertices, pos, rot);
 

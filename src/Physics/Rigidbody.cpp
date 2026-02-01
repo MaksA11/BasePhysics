@@ -17,6 +17,11 @@ namespace bp
         Collider collider = Collider(BoxShape(size), restitution, friction);
         return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
     }
+    Rigidbody *Rigidbody::CreatePolygonBody(Vec2 position, float rotation, std::vector<Vec2> vertices, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity)
+    {
+        Collider collider = Collider(PolygonShape(vertices), restitution, friction);
+        return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
+    }
 
     void Rigidbody::DeleteRigidbody(Rigidbody *rb, std::vector<Rigidbody *> &bodies)
     {

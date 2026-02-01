@@ -112,8 +112,8 @@ namespace bp
         Vec2 r2s[2];
         float js[2];
 
-        float e = utils::Min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
-        float sf = sqrt(rb1->GetCollider().GetFriction() * rb2->GetCollider().GetFriction());
+        float e = std::min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
+        float sf = std::sqrt(rb1->GetCollider().GetFriction() * rb2->GetCollider().GetFriction());
         float df = 0.8f * sf;
 
         for(int i = 0; i < contacts.size(); i++)
@@ -197,7 +197,7 @@ namespace bp
 
             jt /= (float)contacts.size();
 
-            if(utils::Abs(jt) <= js[i] * sf)
+            if(std::abs(jt) <= js[i] * sf)
                 impulses[i] = jt * tangent;
             else
                 impulses[i] = -js[i] * tangent * df;

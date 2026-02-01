@@ -125,6 +125,14 @@ namespace bp::collisions
 
         return false;
     }
+    bool Collide(Rigidbody *bodyA, Rigidbody *bodyB)
+    {
+        Vec2 normal;
+        float depth;
+        std::vector<Vec2> contacts;
+
+        return Collide(bodyA, bodyB, normal, depth, contacts);
+    }
 
     bool IntersectCircles(const CircleShape &a, const CircleShape &b, Vec2 posA, Vec2 posB, Vec2 &outNormal, float &outDepth)
     {
@@ -148,7 +156,7 @@ namespace bp::collisions
     bool IntersectPolygons(const PolygonShape &a, const PolygonShape &b, Vec2 posA, Vec2 posB, float rotA, float rotB, Vec2 &outNormal, float &outDepth)
     {
         outNormal = Vec2::Zero();
-        outDepth = FLT_MAX;
+        outDepth = std::numeric_limits<float>::max();
 
         std::vector<Vec2> verts[2];
         verts[0] = geometry::TransformPolygonVertices(a.vertices, posA, rotA);
@@ -174,7 +182,7 @@ namespace bp::collisions
                 if(min1 >= max2 || min2 >= max1)
                     return false;
 
-                float axisDepth = utils::Min(max2 - min1, max1 - min2);
+                float axisDepth = std::min(max2 - min1, max1 - min2);
                 if(axisDepth < outDepth)
                 {
                     outDepth = axisDepth;
@@ -192,7 +200,7 @@ namespace bp::collisions
     bool IntersectCirclePolygon(const CircleShape &a, const PolygonShape &b, Vec2 posA, Vec2 posB, float rotB, Vec2 &outNormal, float &outDepth)
     {
         outNormal = Vec2::Zero();
-        outDepth = FLT_MAX;
+        outDepth = std::numeric_limits<float>::max();
 
         std::vector<Vec2> verts = geometry::TransformPolygonVertices(b.vertices, posB, rotB);
         
@@ -216,7 +224,7 @@ namespace bp::collisions
             if(min1 >= max2 || min2 >= max1)
                 return false;
 
-            float axisDepth = fmin(max2 - min1, max1 - min2);
+            float axisDepth = std::min(max2 - min1, max1 - min2);
             if(axisDepth < outDepth)
             {
                 outDepth = axisDepth;
@@ -236,7 +244,7 @@ namespace bp::collisions
         if(min1 >= max2 || min2 >= max1)
             return false;
 
-        axisDepth = fmin(max2 - min1, max1 - min2);
+        axisDepth = std::min(max2 - min1, max1 - min2);
         if(axisDepth < outDepth)
         {
             outDepth = axisDepth;
@@ -266,7 +274,7 @@ namespace bp::collisions
     }
     Vec2 FindCirclePolygonContactPoint(const CircleShape &a, const PolygonShape &b, Vec2 posA, Vec2 posB, float rotB)
     {
-        float minDistSq = FLT_MAX;
+        float minDistSq = std::numeric_limits<float>::max();
         Vec2 contact = Vec2::Zero();
 
         std::vector<Vec2> verts = geometry::TransformPolygonVertices(b.vertices, posB, rotB);
@@ -294,7 +302,7 @@ namespace bp::collisions
         outContact1 = Vec2::Zero();
         outContact2 = Vec2::Zero();
         
-        float minDistSq = FLT_MAX;
+        float minDistSq = std::numeric_limits<float>::max();
 
         std::vector<Vec2> vertsA = geometry::TransformPolygonVertices(a.vertices, posA, rotA);
         std::vector<Vec2> vertsB = geometry::TransformPolygonVertices(b.vertices, posB, rotB);
