@@ -63,6 +63,7 @@ namespace demo
 
 			int substeps;
 			int fpsLimit;
+			float gravity;
 
 			bp::BodyPreset spawnPreset;
 			bp::BodyPreset selectedPreset;

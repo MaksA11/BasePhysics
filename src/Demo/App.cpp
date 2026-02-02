@@ -46,6 +46,9 @@ namespace demo
         substeps = 8;
         fpsLimit = 500;
 
+        gravity = 9.81f;
+        scene.SetGravity(bp::Vec2(0.0f, -gravity));
+
         shapeIndex = 0;
         spawnPreset.position = bp::Vec2(0.0f, -14.0f);
         spawnPreset.rotation = 0.0f;
@@ -60,6 +63,11 @@ namespace demo
 
         scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(0, 90, 10));
+        
+        spawnPreset.position = bp::Vec2(0.0f, -11.5f);
+        spawnPreset.shape = bp::PolygonShape({{0.0f, 1.0f}, {2.5f, -0.5f}, {-2.5f, -0.5f}});
+        scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(90, 90, 90));
 
         spawnPreset.position = bp::Vec2(-6.0f, 8.0f);
         spawnPreset.rotation = bp::math::pi * -0.15f;
@@ -76,11 +84,6 @@ namespace demo
         spawnPreset.rotation = 0.0f;
         spawnPreset.isStatic = false;
 
-        spawnPreset.position = bp::Vec2(0.0f, -12.0f);
-        spawnPreset.shape = bp::PolygonShape({{0.0f, 1.0f}, {2.5f, -0.5f}, {-2.5f, -0.5f}});
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(90, 90, 90));
-
         spawnPreset.position = bp::Vec2(0.0f, -10.0f);
         spawnPreset.shape = bp::BoxShape(bp::Vec2(18.0f, 0.75f));
         scene.AddRigidbody(spawnPreset);
@@ -96,6 +99,8 @@ namespace demo
             if(scene.GetBodies()[i]->GetPosition().y < -50.0f)
             {
                 colors.erase(colors.begin() + i);
+                if(scene.GetBodies()[i] == selectedRb)
+                    selectedRb = nullptr;
                 scene.RemoveRigidbody(i);
             }
         }
@@ -350,6 +355,9 @@ namespace demo
         ImGui::End();
 
         ImGui::Begin("Simulation options");
+        ImGui::Text("Gravity");
+        if(ImGui::SliderFloat("##Gravity", &gravity, 0.0f, 100.0f))
+            scene.SetGravity(bp::Vec2(0.0f, -gravity));
         ImGui::Text("Substeps");
         ImGui::SliderInt("##Substeps", &substeps, 1, 24);
         ImGui::Text("FPS limit");

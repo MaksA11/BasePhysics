@@ -31,6 +31,8 @@ namespace bp
 
             void Step(float deltaTime, unsigned int substeps);
 
+            void SetGravity(Vec2 val);
+
             const std::vector<Rigidbody *> &GetBodies() const;
             const std::vector<ContactManifold> &GetContacts() const;
     };

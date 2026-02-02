@@ -211,6 +211,11 @@ namespace bp
         }
     }
 
+    void PhysicsScene::SetGravity(Vec2 val)
+    {
+        gravity = val;
+    }
+
     const std::vector<Rigidbody *> &PhysicsScene::GetBodies() const
     {
         return bodies;

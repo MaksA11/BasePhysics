@@ -168,6 +168,11 @@ namespace bp
         mass = preset.mass;
         linearDamping = preset.linearDamping;
         angularDamping = preset.angularDamping;
+        if(isStatic != preset.isStatic)
+        {
+            linearVelocity = Vec2::Zero();
+            angularVelocity = 0.0f;
+        }
         isStatic = preset.isStatic;
         usesGravity = preset.usesGravity;
         collider = Collider(preset.shape, preset.restitution, preset.friction, preset.isSensor);
