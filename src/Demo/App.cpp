@@ -43,7 +43,8 @@ namespace demo
         renderAABBs = false;
         renderContactPoints = false;
 
-        substeps = 8;
+        substeps = 2;
+        iterations = 6;
         fpsLimit = 500;
 
         gravity = 9.81f;
@@ -92,7 +93,7 @@ namespace demo
 
     void App::Update()
     {
-        scene.Step(deltaTime, substeps);
+        scene.Step(deltaTime, substeps, iterations);
 
         for(int i = 0; i < scene.GetBodies().size(); i++)
         {
@@ -360,6 +361,8 @@ namespace demo
             scene.SetGravity(bp::Vec2(0.0f, -gravity));
         ImGui::Text("Substeps");
         ImGui::SliderInt("##Substeps", &substeps, 1, 24);
+        ImGui::Text("Iterations");
+        ImGui::SliderInt("##Iterations", &iterations, 1, 24);
         ImGui::Text("FPS limit");
         if(ImGui::SliderInt("##FPS limit", &fpsLimit, 1, 500))
             window->setFramerateLimit(fpsLimit);

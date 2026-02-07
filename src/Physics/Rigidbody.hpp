@@ -66,7 +66,9 @@ namespace bp
             float GetInertia();
             float GetInverseInertia();
 
-            void PhysicsStep(float deltaTime, unsigned int substeps, Vec2 gravity);
+            void IntegrateVelocity(float deltaTime, Vec2 gravity);
+            void ApplyDamping(float deltaTime);
+            void IntegratePosition(float deltaTime);
 
             bool IsStatic();
             bool UsesGravity();

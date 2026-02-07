@@ -62,6 +62,7 @@ namespace demo
 			bool renderContactPoints;
 
 			int substeps;
+			int iterations;
 			int fpsLimit;
 			float gravity;
 

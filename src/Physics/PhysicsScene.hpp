@@ -29,7 +29,7 @@ namespace bp
             void RemoveRigidbody(Rigidbody *rb);
             void RemoveRigidbody(int index);
 
-            void Step(float deltaTime, unsigned int substeps);
+            void Step(float deltaTime, unsigned int substeps, unsigned int iterations);
 
             void SetGravity(Vec2 val);
 

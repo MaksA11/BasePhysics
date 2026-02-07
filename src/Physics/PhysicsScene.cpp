@@ -5,6 +5,7 @@ namespace bp
     PhysicsScene::PhysicsScene()
     {
         gravity = Vec2(0.0f, -9.81f);
+        contacts.reserve(512);
     }
     PhysicsScene::~PhysicsScene()
     {
@@ -35,19 +36,34 @@ namespace bp
         Rigidbody::DeleteRigidbody(bodies[index], bodies);
     }
 
-    void PhysicsScene::Step(float deltaTime, unsigned int substeps)
+    void PhysicsScene::Step(float deltaTime, unsigned int substeps, unsigned int iterations)
     {
-        for(int currentSubstep = 0; currentSubstep < substeps; currentSubstep++)
+        deltaTime /= (float)substeps;
+
+        for(int substep = 0; substep < substeps; substep++)
         {
-            DetectCollisions();
-            for(const ContactManifold &contact : contacts)
-            {
-                ResolveCollision(contact);
-                SeparateBodies(contact);
-            }
             for(bp::Rigidbody *rb : bodies)
             {
-                rb->PhysicsStep(deltaTime, substeps, gravity);
+                rb->IntegrateVelocity(deltaTime, gravity);
+                rb->ApplyDamping(deltaTime);
+            }
+            
+            DetectCollisions();
+            for(int iter = 0; iter < iterations; iter++)
+            {
+                for(const ContactManifold &contact : contacts)
+                {
+                    ResolveCollision(contact);
+                }
+            }
+            
+            for(bp::Rigidbody *rb : bodies)
+            {
+                rb->IntegratePosition(deltaTime);
+            }
+            for(const ContactManifold &contact : contacts)
+            {
+                SeparateBodies(contact);
             }
         }
     }
@@ -55,7 +71,6 @@ namespace bp
     void PhysicsScene::DetectCollisions()
     {
         contacts.clear();
-        contacts.shrink_to_fit();
 
         for(int i = 0; i < (int)bodies.size() - 1; i++)
         {

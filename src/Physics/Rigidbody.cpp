@@ -126,12 +126,10 @@ namespace bp
         return 1.0f / inertia;
     }
 
-    void Rigidbody::PhysicsStep(float deltaTime, unsigned int substeps, Vec2 gravity)
+    void Rigidbody::IntegrateVelocity(float deltaTime, Vec2 gravity)
     {
         if(isStatic)
 		    return;
-
-        deltaTime /= (float)substeps;
 
         Vec2 acceleration = force / mass;
         linearVelocity += acceleration * deltaTime;
@@ -139,17 +137,27 @@ namespace bp
         float angularAcceleration = torque / inertia;
         angularVelocity += angularAcceleration * deltaTime;
 
-        linearVelocity *= 1.0f / (1.0f + deltaTime * linearDamping);
-        angularVelocity *= 1.0f / (1.0f + deltaTime * angularDamping);
-
         if(usesGravity)
             linearVelocity += gravity * deltaTime;
 
-        Move(linearVelocity * deltaTime);
-        Rotate(angularVelocity * deltaTime);
-
         force = Vec2::Zero();
         torque = 0.0f;
+    }
+    void Rigidbody::ApplyDamping(float deltaTime)
+    {
+        if(isStatic)
+		    return;
+
+        linearVelocity *= 1.0f / (1.0f + deltaTime * linearDamping);
+        angularVelocity *= 1.0f / (1.0f + deltaTime * angularDamping);
+    }
+    void Rigidbody::IntegratePosition(float deltaTime)
+    {
+        if(isStatic)
+		    return;
+
+        Move(linearVelocity * deltaTime);
+        Rotate(angularVelocity * deltaTime);
     }
 
     bool Rigidbody::IsStatic()
