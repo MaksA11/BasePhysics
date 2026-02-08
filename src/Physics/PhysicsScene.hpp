@@ -22,6 +22,7 @@ namespace bp
 
         public:
             PhysicsScene();
+            PhysicsScene(Vec2 gravity);
             ~PhysicsScene();
 
             Rigidbody *AddRigidbody(Rigidbody *rb);

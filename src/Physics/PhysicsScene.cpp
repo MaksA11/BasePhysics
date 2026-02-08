@@ -7,6 +7,11 @@ namespace bp
         gravity = Vec2(0.0f, -9.81f);
         contacts.reserve(512);
     }
+    PhysicsScene::PhysicsScene(Vec2 gravity)
+    {
+        this->gravity = gravity;
+        contacts.reserve(512);
+    }
     PhysicsScene::~PhysicsScene()
     {
         for(bp::Rigidbody *rb : bodies)

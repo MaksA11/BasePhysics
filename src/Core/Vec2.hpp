@@ -132,6 +132,18 @@ namespace bp
             return Vec2(-x, -y);
         }
 
+        
+        bool operator == (const Vec2& vec) const
+        {
+            const float epsilon = 0.00005f;
+            return std::fabs(x - vec.x) < epsilon && std::fabs(y - vec.y) < epsilon;
+        }
+
+        bool operator != (const Vec2& vec) const
+        {
+            return !(*this == vec);
+        }
+
         std::string ToString() const
         {
             return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
