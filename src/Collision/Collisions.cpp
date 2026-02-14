@@ -139,13 +139,10 @@ namespace bp::collisions
         outNormal = Vec2::Zero();
         outDepth = 0.0f;
 
-        float distSq = math::DistanceSquared(posA, posB);
-        float dist = std::sqrt(distSq);
-
+        float dist = math::Distance(posA, posB);
         float radii = a.radius + b.radius;
-        float radiiSq = radii * radii;
 
-        if(distSq >= radiiSq)
+        if(dist >= radii)
             return false;
 
         outNormal = (posB - posA).Normalized();

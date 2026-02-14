@@ -43,7 +43,11 @@ namespace bp
         return rotation;
     }
 
-    const Collider& Rigidbody::GetCollider() const
+    const Collider &Rigidbody::GetCollider() const
+    {
+        return collider;
+    }
+    Collider &Rigidbody::GetCollider()
     {
         return collider;
     }
@@ -96,13 +100,13 @@ namespace bp
     {
         if(isStatic)
             return;
-        this->force += force / mass;
+        this->force += force;
     }
     void Rigidbody::ApplyTorque(float torque)
     {
         if(isStatic)
             return;
-        this->torque += torque / inertia;
+        this->torque += torque;
     }
     
     float Rigidbody::GetMass()

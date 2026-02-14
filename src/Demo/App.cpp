@@ -43,7 +43,7 @@ namespace demo
         renderAABBs = false;
         renderContactPoints = false;
 
-        substeps = 2;
+        substeps = 24;
         iterations = 6;
         fpsLimit = 500;
 
@@ -168,6 +168,7 @@ namespace demo
                     if(renderVertices)
                     {
                         sf::CircleShape vertex;
+                        // std::vector<bp::Vec2> vertices = rb->GetCollider().GetBox()->ToPolygon().vertices;
                         std::vector<bp::Vec2> vertices = bp::geometry::TransformPolygonVertices(rb->GetCollider().GetBox()->ToPolygon().vertices, rb->GetPosition(), rb->GetRotation());
                         for(int i = 0; i < vertices.size(); i++)
                         {
@@ -208,6 +209,7 @@ namespace demo
                     {
                         sf::CircleShape vertex;
                         const bp::PolygonShape &polygon = *rb->GetCollider().GetPolygon();
+                        // std::vector<bp::Vec2> vertices = polygon.worldVertices;
                         std::vector<bp::Vec2> vertices = bp::geometry::TransformPolygonVertices(polygon.vertices, rb->GetPosition(), rb->GetRotation());
                         for(int i = 0; i < vertices.size(); i++)
                         {

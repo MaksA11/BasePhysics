@@ -44,7 +44,8 @@ namespace bp
             Vec2 GetPosition();
             float GetRotation();
 
-            const Collider& GetCollider() const;
+            const Collider &GetCollider() const;
+            Collider &GetCollider();
 
             void Move(Vec2 delta);
             void MoveTo(Vec2 position);
