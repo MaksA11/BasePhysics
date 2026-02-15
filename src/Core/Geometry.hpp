@@ -10,19 +10,6 @@
 
 namespace bp::geometry
 {
-    inline std::vector<Vec2> TransformPolygonVertices(std::vector<Vec2> vertices, Vec2 position, float rotation)
-    {
-        std::vector<Vec2> transformedVertices = std::vector<Vec2>(vertices.size());
-
-        for(int i = 0; i < vertices.size(); i++)
-		{
-			Vec2 vertex = vertices[i];
-			transformedVertices[i] = math::Transform(vertex, position, rotation);
-		}
-
-        return transformedVertices;
-    }
-
     inline float PointSegmentDistance(Vec2 point, Vec2 segmentA, Vec2 segmentB, Vec2 &outClosestPoint)
     {
         Vec2 segment = segmentB - segmentA;
@@ -41,7 +28,7 @@ namespace bp::geometry
 
         return math::DistanceSquared(point, outClosestPoint);
     }
-    inline int FindClosestPointIndex(Vec2 center, std::vector<Vec2> vertices)
+    inline int FindClosestPointIndex(Vec2 center, const std::vector<Vec2> &vertices)
     {
         int result = -1;
         float minDistSq = std::numeric_limits<float>::max();

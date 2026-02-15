@@ -155,26 +155,20 @@ namespace bp::collisions
         outNormal = Vec2::Zero();
         outDepth = std::numeric_limits<float>::max();
 
-        std::vector<Vec2> verts[2];
-        verts[0] = geometry::TransformPolygonVertices(a.vertices, posA, rotA);
-        verts[1] = geometry::TransformPolygonVertices(b.vertices, posB, rotB);
+        const std::vector<Vec2> *verts[2] = { &a.worldVertices, &b.worldVertices };
+        const std::vector<Vec2> *axes[2] = { &a.worldNormals, &b.worldNormals };
         
         for(int i = 0; i < 2; i++)
         {
-            for(int j = 0; j < verts[i].size(); j++)
+            for(int j = 0; j < axes[i]->size(); j++)
             {
-                Vec2 vert1 = verts[i][j];
-                Vec2 vert2 = verts[i][(j + 1) % verts[i].size()];
-
-                Vec2 edge = vert2 - vert1;
-                Vec2 axis = Vec2(-edge.y, edge.x);
-                axis.Normalize();
+                Vec2 axis = (*axes[i])[j];
 
                 float min1, max1;
                 float min2, max2;
 
-                geometry::ProjectVertices(verts[0], axis, min1, max1);
-                geometry::ProjectVertices(verts[1], axis, min2, max2);
+                geometry::ProjectVertices(*verts[0], axis, min1, max1);
+                geometry::ProjectVertices(*verts[1], axis, min2, max2);
 
                 if(min1 >= max2 || min2 >= max1)
                     return false;
@@ -199,21 +193,14 @@ namespace bp::collisions
         outNormal = Vec2::Zero();
         outDepth = std::numeric_limits<float>::max();
 
-        std::vector<Vec2> verts = geometry::TransformPolygonVertices(b.vertices, posB, rotB);
-        
-        Vec2 axis = Vec2::Zero();
-        float axisDepth = 0;
-        float min1, max1;
-        float min2, max2;
+        const std::vector<Vec2> &verts = b.worldVertices;
+        const std::vector<Vec2> &axes = b.worldNormals;
 
-        for(int i = 0; i < verts.size(); i++)
+        for(int i = 0; i < axes.size(); i++)
         {
-            Vec2 vert1 = verts[i];
-            Vec2 vert2 = verts[(i + 1) % verts.size()];
-
-            Vec2 edge = vert2 - vert1;
-            axis = Vec2(-edge.y, edge.x);
-            axis.Normalize();
+            Vec2 axis = axes[i];
+            float min1, max1;
+            float min2, max2;
 
             geometry::ProjectVertices(verts, axis, min1, max1);
             geometry::ProjectCircle(posA, a.radius, axis, min2, max2);
@@ -232,8 +219,10 @@ namespace bp::collisions
         int cpIndex = geometry::FindClosestPointIndex(posA, verts);
         Vec2 cp = verts[cpIndex];
 
-        axis = cp - posA;
+        Vec2 axis = cp - posA;
         axis.Normalize();
+        float min1, max1;
+        float min2, max2;
 
         geometry::ProjectVertices(verts, axis, min1, max1);
         geometry::ProjectCircle(posA, a.radius, axis, min2, max2);
@@ -241,7 +230,7 @@ namespace bp::collisions
         if(min1 >= max2 || min2 >= max1)
             return false;
 
-        axisDepth = std::min(max2 - min1, max1 - min2);
+        float axisDepth = std::min(max2 - min1, max1 - min2);
         if(axisDepth < outDepth)
         {
             outDepth = axisDepth;
@@ -249,7 +238,6 @@ namespace bp::collisions
         }
 
         Vec2 direction = posB - posA;
-
         if(math::Dot(direction, outNormal) < 0)
             outNormal = -outNormal;
 
@@ -274,7 +262,7 @@ namespace bp::collisions
         float minDistSq = std::numeric_limits<float>::max();
         Vec2 contact = Vec2::Zero();
 
-        std::vector<Vec2> verts = geometry::TransformPolygonVertices(b.vertices, posB, rotB);
+        std::vector<Vec2> verts = b.worldVertices;
 
         for(int i = 0; i < verts.size(); i++)
         {
@@ -301,8 +289,8 @@ namespace bp::collisions
         
         float minDistSq = std::numeric_limits<float>::max();
 
-        std::vector<Vec2> vertsA = geometry::TransformPolygonVertices(a.vertices, posA, rotA);
-        std::vector<Vec2> vertsB = geometry::TransformPolygonVertices(b.vertices, posB, rotB);
+        std::vector<Vec2> vertsA = a.worldVertices;
+        std::vector<Vec2> vertsB = b.worldVertices;
 
         for(int i = 0; i < vertsA.size(); i++)
         {

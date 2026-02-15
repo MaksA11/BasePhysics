@@ -51,6 +51,8 @@ namespace bp
             {
                 rb->IntegrateVelocity(deltaTime, gravity);
                 rb->ApplyDamping(deltaTime);
+                rb->IntegratePosition(deltaTime);
+                rb->GetCollider().UpdateWorldGeometry(rb->GetPosition(), rb->GetRotation());
             }
             
             DetectCollisions();
@@ -62,13 +64,14 @@ namespace bp
                 }
             }
             
-            for(bp::Rigidbody *rb : bodies)
-            {
-                rb->IntegratePosition(deltaTime);
-            }
             for(const ContactManifold &contact : contacts)
             {
                 SeparateBodies(contact);
+
+                Rigidbody *rb1 = bodies[contact.rbIndex1];
+                Rigidbody *rb2 = bodies[contact.rbIndex2];
+                rb1->GetCollider().UpdateWorldGeometry(rb1->GetPosition(), rb1->GetRotation());
+                rb2->GetCollider().UpdateWorldGeometry(rb2->GetPosition(), rb2->GetRotation());
             }
         }
     }

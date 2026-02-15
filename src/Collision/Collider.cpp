@@ -39,55 +39,44 @@ namespace bp
 
     const AABB Collider::GetAABB(Vec2 pos, float rot) const
     {
-        if(const CircleShape *circle = GetCircle())
+        return std::visit([pos](auto &&shape) -> AABB
         {
-            float r = circle->radius;
-            return AABB(pos - Vec2(r, r), pos + Vec2(r, r));
-        }
-        if(const BoxShape *box = GetBox())
-        {
-            Vec2 min = Vec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-		    Vec2 max = Vec2(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+            using T = std::decay_t<decltype(shape)>;
+            if constexpr(std::is_same_v<T, CircleShape>)
+            {
+                float r = shape.radius;
+                return AABB(pos - Vec2(r, r), pos + Vec2(r, r));
+            }
+            else
+            {
+                const PolygonShape &poly = [&]() -> const PolygonShape &
+                {
+                    if constexpr(std::is_same_v<T, BoxShape>)
+                        return shape.polygon;
+                    else
+                        return shape;
+                }();
 
-            std::vector<Vec2> verts = geometry::TransformPolygonVertices(box->ToPolygon().vertices, pos, rot);
+                if(poly.worldVertices.empty())
+                    return AABB(pos, pos);
 
-            for(int i = 0; i < 4; i++)
-			{
-				if(verts[i].x < min.x)
-					min.x = verts[i].x;
-				if(verts[i].x> max.x)
-					max.x = verts[i].x;
-				if(verts[i].y < min.y)
-					min.y = verts[i].y;
-				if(verts[i].y > max.y)
-					max.y = verts[i].y;
-			}
+                Vec2 min = Vec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+                Vec2 max = Vec2(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
 
-            return AABB(min, max);
-        }
-        if(const PolygonShape *poly = GetPolygon())
-        {
-            Vec2 min = Vec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-		    Vec2 max = Vec2(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
-            
-            std::vector<Vec2> verts = geometry::TransformPolygonVertices(poly->vertices, pos, rot);
-
-            for(int i = 0; i < verts.size(); i++)
-			{
-				if(verts[i].x < min.x)
-					min.x = verts[i].x;
-				if(verts[i].x> max.x)
-					max.x = verts[i].x;
-				if(verts[i].y < min.y)
-					min.y = verts[i].y;
-				if(verts[i].y > max.y)
-					max.y = verts[i].y;
-			}
-
-            return AABB(min, max);
-        }
-        
-        return AABB(Vec2::Zero(), Vec2::Zero());
+                for(const Vec2 &vert : poly.worldVertices)
+                {
+                    if(vert.x < min.x)
+                        min.x = vert.x;
+                    if(vert.y < min.y)
+                        min.y = vert.y;
+                    if(vert.x > max.x)
+                        max.x = vert.x;
+                    if(vert.y > max.y)
+                        max.y = vert.y;
+                }
+                return AABB(min, max);
+            }
+        }, shape);
     }
 
     float Collider::CalculateInertia(float mass)
@@ -125,6 +114,39 @@ namespace bp
         }
 
         return 1.0f;
+    }
+    void Collider::UpdateWorldGeometry(Vec2 pos, float rot)
+    {
+        std::visit([pos, rot](auto &&s)
+        {
+            using T = std::decay_t<decltype(s)>;
+            if constexpr(std::is_same_v<T, PolygonShape> || std::is_same_v<T, BoxShape>) 
+            {
+                PolygonShape &poly = [&]() -> PolygonShape &
+                {
+                    if constexpr(std::is_same_v<T, BoxShape>)
+                        return s.polygon;
+                    else
+                        return s;
+                }();
+
+                float cosA = std::cos(rot);
+                float sinA = std::sin(rot);
+
+                for(size_t i = 0; i < poly.vertices.size(); i++)
+                {
+                    float vx = poly.vertices[i].x;
+                    float vy = poly.vertices[i].y;
+                    poly.worldVertices[i].x = vx * cosA - vy * sinA + pos.x;
+                    poly.worldVertices[i].y = vx * sinA + vy * cosA + pos.y;
+
+                    float nx = poly.normals[i].x;
+                    float ny = poly.normals[i].y;
+                    poly.worldNormals[i].x = nx * cosA - ny * sinA;
+                    poly.worldNormals[i].y = nx * sinA + ny * cosA;
+                }
+            }
+        }, this->shape);
     }
 
     void Collider::SetSensor(bool val)

@@ -36,6 +36,7 @@ namespace bp
             const AABB GetAABB(Vec2 pos, float rot) const;
 
             float CalculateInertia(float mass);
+            void UpdateWorldGeometry(Vec2 pos, float rot);
 
             void SetSensor(bool val);
             const bool IsSensor() const;

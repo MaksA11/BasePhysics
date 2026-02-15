@@ -16,9 +16,28 @@ namespace bp
     struct PolygonShape
     {
         std::vector<Vec2> vertices;
+        std::vector<Vec2> normals;
+
+        std::vector<Vec2> worldVertices;
+        std::vector<Vec2> worldNormals;
         
         PolygonShape() {}
-        PolygonShape(std::vector<Vec2> vertices) : vertices(vertices) {}
+        PolygonShape(std::vector<Vec2> vertices) : vertices(vertices)
+        {
+            int n = vertices.size();
+
+            worldVertices.resize(n);
+            worldNormals.resize(n);
+            normals.resize(n);
+
+            for(int i = 0; i < n; i++)
+            {
+                Vec2 v1 = vertices[i];
+                Vec2 v2 = vertices[(i + 1) % n];
+                Vec2 edge = v2 - v1;
+                normals[i] = math::Perpendicular(edge).Normalized();
+            }
+        }
     };
     struct BoxShape
     {
@@ -43,6 +62,10 @@ namespace bp
         }
 
         const PolygonShape &ToPolygon() const
+        {
+            return polygon;
+        }
+        PolygonShape &ToPolygon()
         {
             return polygon;
         }
