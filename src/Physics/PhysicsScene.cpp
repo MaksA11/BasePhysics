@@ -14,7 +14,7 @@ namespace bp
     }
     PhysicsScene::~PhysicsScene()
     {
-        for(bp::Rigidbody *rb : bodies)
+        for(Rigidbody *rb : bodies)
         {
             delete rb;
         }
@@ -47,7 +47,7 @@ namespace bp
 
         for(int substep = 0; substep < substeps; substep++)
         {
-            for(bp::Rigidbody *rb : bodies)
+            for(Rigidbody *rb : bodies)
             {
                 rb->IntegrateVelocity(deltaTime, gravity);
                 rb->ApplyDamping(deltaTime);
@@ -110,17 +110,20 @@ namespace bp
         Rigidbody *rb1 = bodies[contact.rbIndex1];
         Rigidbody *rb2 = bodies[contact.rbIndex2];
         
-        Vec2 translationVector = contact.normal * contact.depth;
-        
-        if(rb1->IsStatic())
-            rb2->Move(translationVector);
-        else if(rb2->IsStatic())
-            rb1->Move(-translationVector);
-        else
-        {
-            rb1->Move(-translationVector * 0.5f);
-            rb2->Move(translationVector * 0.5f);
-        }
+        const float percent = 0.8f;
+        const float slop = 0.01f;
+
+        float invMassSum = rb1->GetInverseMass() + rb2->GetInverseMass();
+        if(invMassSum == 0.0f)
+            return;
+
+        float correctionMag = std::max(contact.depth - slop, 0.0f) / invMassSum * percent;
+        Vec2 correction = contact.normal * correctionMag;
+
+        if(!rb1->IsStatic())
+            rb1->Move(-correction * rb1->GetInverseMass());
+        if(!rb2->IsStatic())
+            rb2->Move(correction * rb2->GetInverseMass());
     }
     void PhysicsScene::ResolveCollision(const ContactManifold &contact)
     {

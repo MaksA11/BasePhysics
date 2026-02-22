@@ -78,7 +78,7 @@ namespace bp
         {
             return Vec2(x * scalar, y * scalar);
         }
-        friend Vec2 operator * (float scalar, const Vec2& vec)
+        friend Vec2 operator * (float scalar, const Vec2 &vec)
         {
             return Vec2(vec.x * scalar, vec.y * scalar);
         }
@@ -133,13 +133,13 @@ namespace bp
         }
 
         
-        bool operator == (const Vec2& vec) const
+        bool operator == (const Vec2 &vec) const
         {
             const float epsilon = 0.00005f;
             return std::fabs(x - vec.x) < epsilon && std::fabs(y - vec.y) < epsilon;
         }
 
-        bool operator != (const Vec2& vec) const
+        bool operator != (const Vec2 &vec) const
         {
             return !(*this == vec);
         }

@@ -43,7 +43,7 @@ namespace demo
         renderAABBs = false;
         renderContactPoints = false;
 
-        substeps = 8;
+        substeps = 6;
         iterations = 6;
         fpsLimit = 500;
 
@@ -57,7 +57,7 @@ namespace demo
         spawnPreset.mass = 1.0f;
         spawnPreset.linearDamping = 0.1f;
         spawnPreset.angularDamping = 0.1f;
-        spawnPreset.restitution = 0.4f;
+        spawnPreset.restitution = 0.5f;
         spawnPreset.friction = 0.6f;
         spawnPreset.isStatic = true;
         spawnPreset.usesGravity = true;
@@ -89,6 +89,26 @@ namespace demo
         spawnPreset.shape = bp::BoxShape(bp::Vec2(18.0f, 0.75f));
         scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(80, 40, 10));
+
+        // spawnPreset.isStatic = false;
+        // spawnPreset.shape = bp::BoxShape(bp::Vec2(1.0f, 1.0f));
+        // int currentCount = 0;
+        // int level = 0;
+        // while(currentCount < 105)
+        // {
+        //     int boxesInRow = 14 - level;
+        //     if(boxesInRow <= 0)
+        //         break;
+        //     float startX = -(boxesInRow) / 2.0f;
+        //     for(int i = 0; i < boxesInRow && currentCount < 105; i++)
+        //     {
+        //         spawnPreset.position = bp::Vec2(startX + i, -11.5f + level);
+        //         scene.AddRigidbody(spawnPreset);
+        //         colors.push_back(sf::Color(0, 90, 10));
+        //         currentCount++;
+        //     }
+        //     level++;
+        // }
     }
 
     void App::Update()
