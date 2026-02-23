@@ -37,46 +37,9 @@ namespace bp
         return friction;
     }
 
-    const AABB Collider::GetAABB(Vec2 pos, float rot) const
+    const AABB &Collider::GetAABB(Vec2 pos, float rot) const
     {
-        return std::visit([pos](auto &&shape) -> AABB
-        {
-            using T = std::decay_t<decltype(shape)>;
-            if constexpr(std::is_same_v<T, CircleShape>)
-            {
-                float r = shape.radius;
-                return AABB(pos - Vec2(r, r), pos + Vec2(r, r));
-            }
-            else
-            {
-                const PolygonShape &poly = [&]() -> const PolygonShape &
-                {
-                    if constexpr(std::is_same_v<T, BoxShape>)
-                        return shape.polygon;
-                    else
-                        return shape;
-                }();
-
-                if(poly.worldVertices.empty())
-                    return AABB(pos, pos);
-
-                Vec2 min = Vec2(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-                Vec2 max = Vec2(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
-
-                for(const Vec2 &vert : poly.worldVertices)
-                {
-                    if(vert.x < min.x)
-                        min.x = vert.x;
-                    if(vert.y < min.y)
-                        min.y = vert.y;
-                    if(vert.x > max.x)
-                        max.x = vert.x;
-                    if(vert.y > max.y)
-                        max.y = vert.y;
-                }
-                return AABB(min, max);
-            }
-        }, shape);
+        return aabb;
     }
 
     float Collider::CalculateInertia(float mass)
@@ -117,34 +80,52 @@ namespace bp
     }
     void Collider::UpdateWorldGeometry(Vec2 pos, float rot)
     {
-        std::visit([pos, rot](auto &&s)
+        std::visit([this, pos, rot](auto &&shape)
         {
-            using T = std::decay_t<decltype(s)>;
-            if constexpr(std::is_same_v<T, PolygonShape> || std::is_same_v<T, BoxShape>) 
+            using T = std::decay_t<decltype(shape)>;
+            if constexpr(std::is_same_v<T, CircleShape>) 
+                this->aabb = AABB(pos - Vec2(shape.radius, shape.radius), pos + Vec2(shape.radius, shape.radius));
+            else if constexpr(std::is_same_v<T, PolygonShape> || std::is_same_v<T, BoxShape>) 
             {
                 PolygonShape &poly = [&]() -> PolygonShape &
                 {
                     if constexpr(std::is_same_v<T, BoxShape>)
-                        return s.polygon;
+                        return shape.polygon;
                     else
-                        return s;
+                        return shape;
                 }();
 
                 float cosA = std::cos(rot);
                 float sinA = std::sin(rot);
 
+                Vec2 min(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+                Vec2 max(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+
                 for(size_t i = 0; i < poly.vertices.size(); i++)
                 {
                     float vx = poly.vertices[i].x;
                     float vy = poly.vertices[i].y;
-                    poly.worldVertices[i].x = vx * cosA - vy * sinA + pos.x;
-                    poly.worldVertices[i].y = vx * sinA + vy * cosA + pos.y;
+
+                    Vec2 &worldV = poly.worldVertices[i];
+                    worldV.x = vx * cosA - vy * sinA + pos.x;
+                    worldV.y = vx * sinA + vy * cosA + pos.y;
+
+                    if(worldV.x < min.x)
+                        min.x = worldV.x;
+                    if(worldV.y < min.y)
+                        min.y = worldV.y;
+                    if(worldV.x > max.x)
+                        max.x = worldV.x;
+                    if(worldV.y > max.y)
+                        max.y = worldV.y;
 
                     float nx = poly.normals[i].x;
                     float ny = poly.normals[i].y;
                     poly.worldNormals[i].x = nx * cosA - ny * sinA;
                     poly.worldNormals[i].y = nx * sinA + ny * cosA;
                 }
+
+                this->aabb = AABB(min, max);
             }
         }, this->shape);
     }

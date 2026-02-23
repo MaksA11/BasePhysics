@@ -6,11 +6,13 @@ namespace bp
     {
         gravity = Vec2(0.0f, -9.81f);
         contacts.reserve(512);
+        hashGrid = HashGrid();
     }
     PhysicsScene::PhysicsScene(Vec2 gravity)
     {
         this->gravity = gravity;
         contacts.reserve(512);
+        hashGrid = HashGrid();
     }
     PhysicsScene::~PhysicsScene()
     {
@@ -79,28 +81,55 @@ namespace bp
     void PhysicsScene::DetectCollisions()
     {
         contacts.clear();
+        hashGrid.Refresh(bodies);
 
-        for(int i = 0; i < (int)bodies.size() - 1; i++)
+        const std::unordered_map<size_t, std::vector<int>> &grid = hashGrid.GetGrid();
+
+        static std::vector<bool> collisionMatrix;
+        int n = bodies.size();
+        collisionMatrix.assign(n * n, false); 
+
+        for(auto const &[hash, cell] : grid)
         {
-            for(int j = i + 1; j < (int)bodies.size(); j++)
+            if(cell.size() < 2)
+                continue;
+
+            for(int i = 0; i < (int)cell.size(); i++)
             {
-                if((bodies[i]->IsStatic() && bodies[j]->IsStatic()) || (bodies[i]->GetCollider().IsSensor() || bodies[j]->GetCollider().IsSensor()))
-                    continue;
-
-                if(!collisions::IntersectAABBs(bodies[i]->GetCollider().GetAABB(bodies[i]->GetPosition(), bodies[i]->GetRotation()),
-                    bodies[j]->GetCollider().GetAABB(bodies[j]->GetPosition(), bodies[j]->GetRotation())))
-				    continue;
-
-                Vec2 normal;
-                float depth;
-                std::vector<Vec2> contactPoints;
-
-                if(collisions::Collide(bodies[i], bodies[j], normal, depth, contactPoints))
+                for(int j = 0; j < (int)cell.size(); j++)
                 {
-                    if(contactPoints.size() == 1)
-                        contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0]));
-                    if(contactPoints.size() == 2)
-                        contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0], contactPoints[1]));
+                    int indexA = cell[i];
+                    int indexB = cell[j];
+
+                    int minIndex = std::min(indexA, indexB);
+                    int maxIndex = std::max(indexA, indexB);
+                    int matrixIndex = minIndex * n + maxIndex;
+
+                    if(collisionMatrix[matrixIndex])
+                        continue;
+                    collisionMatrix[matrixIndex] = true;
+
+                    Rigidbody *rb1 = bodies[indexA];
+                    Rigidbody *rb2 = bodies[indexB];
+
+                    if((rb1->IsStatic() && rb2->IsStatic()) || (rb1->GetCollider().IsSensor() || rb2->GetCollider().IsSensor()))
+                        continue;
+
+                    if(!collisions::IntersectAABBs(rb1->GetCollider().GetAABB(rb1->GetPosition(), rb1->GetRotation()),
+                        rb2->GetCollider().GetAABB(rb2->GetPosition(), rb2->GetRotation())))
+                        continue;
+
+                    Vec2 normal;
+                    float depth;
+                    std::vector<Vec2> contactPoints;
+
+                    if(collisions::Collide(rb1, rb2, normal, depth, contactPoints))
+                    {
+                        if(contactPoints.size() == 1)
+                            contacts.push_back(ContactManifold(indexA, indexB, normal, depth, contactPoints[0]));
+                        if(contactPoints.size() == 2)
+                            contacts.push_back(ContactManifold(indexA, indexB, normal, depth, contactPoints[0], contactPoints[1]));
+                    }
                 }
             }
         }
@@ -249,5 +278,9 @@ namespace bp
     const std::vector<ContactManifold> &PhysicsScene::GetContacts() const
     {
         return contacts;
+    }
+    const HashGrid &PhysicsScene::GetHashGrid() const
+    {
+        return hashGrid;
     }
 }

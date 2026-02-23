@@ -16,11 +16,13 @@ namespace bp
             ColliderShape shape;
             float restitution;
             float friction;
-
             bool isSensor;
 
+            AABB aabb;
+
         public:
-            Collider(ColliderShape shape, float restitution, float friction, bool isSensor = false) : shape(shape), restitution(restitution), friction(friction), isSensor(isSensor) {}
+            Collider(ColliderShape shape, float restitution, float friction, bool isSensor = false)
+                : shape(shape), restitution(restitution), friction(friction), isSensor(isSensor), aabb(AABB(Vec2::Zero(), Vec2::Zero())) {}
 
             bool IsCircle() const;
             bool IsBox() const;
@@ -33,7 +35,7 @@ namespace bp
             float GetRestitution() const;
             float GetFriction() const;
 
-            const AABB GetAABB(Vec2 pos, float rot) const;
+            const AABB &GetAABB(Vec2 pos, float rot) const;
 
             float CalculateInertia(float mass);
             void UpdateWorldGeometry(Vec2 pos, float rot);

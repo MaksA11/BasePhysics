@@ -1,10 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <utility>
+#include <set>
 
 #include "../Collision/Collider.hpp"
 #include "../Collision/Collisions.hpp"
 #include "../Collision/ContactManifold.hpp"
+#include "../Collision/HashGrid.hpp"
 #include "Rigidbody.hpp"
 
 namespace bp
@@ -15,6 +18,7 @@ namespace bp
             Vec2 gravity;
             std::vector<Rigidbody *> bodies;
             std::vector<ContactManifold> contacts;
+            HashGrid hashGrid;
 
             void DetectCollisions();
             void SeparateBodies(const ContactManifold &contact);
@@ -36,5 +40,6 @@ namespace bp
 
             const std::vector<Rigidbody *> &GetBodies() const;
             const std::vector<ContactManifold> &GetContacts() const;
+            const HashGrid &GetHashGrid() const;
     };
 }

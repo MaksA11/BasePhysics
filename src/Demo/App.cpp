@@ -42,6 +42,7 @@ namespace demo
         renderVertices = false;
         renderAABBs = false;
         renderContactPoints = false;
+        renderHashGrid = false;
 
         substeps = 6;
         iterations = 6;
@@ -92,22 +93,21 @@ namespace demo
 
         // spawnPreset.isStatic = false;
         // spawnPreset.shape = bp::BoxShape(bp::Vec2(1.0f, 1.0f));
-        // int currentCount = 0;
-        // int level = 0;
-        // while(currentCount < 105)
+        // int baseWidth = 40;
+        // float spacing = 1.0f;
+        // bp::Vec2 startPos = bp::Vec2(0.0f, -11.5f);
+        // for(int row = 0; row < baseWidth; row++)
         // {
-        //     int boxesInRow = 14 - level;
-        //     if(boxesInRow <= 0)
-        //         break;
-        //     float startX = -(boxesInRow) / 2.0f;
-        //     for(int i = 0; i < boxesInRow && currentCount < 105; i++)
+        //     int boxesInRow = baseWidth - row;
+        //     float rowOffset = (boxesInRow - 1) * spacing * 0.5f;
+        //     for(int i = 0; i < boxesInRow; i++)
         //     {
-        //         spawnPreset.position = bp::Vec2(startX + i, -11.5f + level);
+        //         float x = startPos.x - rowOffset + (i * spacing);
+        //         float y = startPos.y + (row * spacing);
+        //         spawnPreset.position = bp::Vec2(x, y);
         //         scene.AddRigidbody(spawnPreset);
-        //         colors.push_back(sf::Color(0, 90, 10));
-        //         currentCount++;
+        //         colors.push_back(sf::Color(88, 88, 88));
         //     }
-        //     level++;
         // }
     }
 
@@ -257,6 +257,43 @@ namespace demo
                 window->draw(rectangle);
             }
 
+            if(renderHashGrid)
+            {
+                float cellSize = scene.GetHashGrid().GetCellSize();
+                sf::Vector2f viewCenter = camera.GetPosition();
+                sf::Vector2f viewSize = camera.GetViewSize();
+
+                float left = viewCenter.x - viewSize.x / 2.0f;
+                float right = viewCenter.x + viewSize.x / 2.0f;
+                float top = viewCenter.y + std::abs(viewSize.y) / 2.0f;
+                float bottom = viewCenter.y - std::abs(viewSize.y) / 2.0f;
+
+                float startX = std::floor(left / cellSize) * cellSize;
+                float endX = std::ceil(right / cellSize) * cellSize;
+                float startY = std::floor(bottom / cellSize) * cellSize;
+                float endY = std::ceil(top / cellSize) * cellSize;
+
+                sf::Color gridColor = sf::Color(100, 110, 120, 150);
+
+                for(float x = startX; x <= endX; x += cellSize)
+                {
+                    sf::Vertex line[] = {
+                        sf::Vertex(sf::Vector2f(x, bottom), gridColor),
+                        sf::Vertex(sf::Vector2f(x, top), gridColor)
+                    };
+                    window->draw(line, 2, sf::Lines);
+                }
+
+                for(float y = startY; y <= endY; y += cellSize)
+                {
+                    sf::Vertex line[] = {
+                        sf::Vertex(sf::Vector2f(left, y), gridColor),
+                        sf::Vertex(sf::Vector2f(right, y), gridColor)
+                    };
+                    window->draw(line, 2, sf::Lines);
+                }
+            }
+
             i++;
         }
 
@@ -393,6 +430,7 @@ namespace demo
         ImGui::Checkbox("Render vertices", &renderVertices);
         ImGui::Checkbox("Render AABBs", &renderAABBs);
         ImGui::Checkbox("Render contact points", &renderContactPoints);
+        ImGui::Checkbox("Render hash grid", &renderHashGrid);
         ImGui::Separator();
         if(ImGui::Button("Delete all rigidbodies"))
         {
