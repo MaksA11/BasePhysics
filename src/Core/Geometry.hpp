@@ -52,7 +52,7 @@ namespace bp::geometry
         return result;
     }
 
-    inline void ProjectVertices(const std::vector<Vec2>& vertices, Vec2 axis, float &outMin, float &outMax)
+    inline void ProjectVertices(const std::vector<Vec2> &vertices, Vec2 axis, float &outMin, float &outMax)
     {
         outMin = std::numeric_limits<float>::max();
         outMax = -std::numeric_limits<float>::max();

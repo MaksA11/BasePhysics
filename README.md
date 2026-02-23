@@ -17,12 +17,12 @@ One of my priorities is to provide a **clean and transparent API**, ensuring tha
 *   **Impulse Solver**: A basic implementation of collision response with friction and restitution.
 *   **Substepping**: Support for dividing the time step into smaller increments to help with simulation stability.
 *   **Geometry Caching**: A simple optimization that transforms vertices and normals once per step to maintain efficiency.
+*   **Broad-phase Optimizations**: Pair generation using a hash grid, with AABB overlap culling to eliminate non-intersecting pairs before performing SAT checks.
 
 ### Future Goals
 I plan to continuously expand this engine as I learn more advanced concepts. My roadmap includes:
-*   **Broad-phase Optimizations**: Implementing Spatial Hashing to handle hundreds of objects.
 *   **Improved Stability**: Refining stacking and contact point generation (for example Sutherland-Hodgman clipping).
-*   **Fluid Simulation**: Implementing particle-based or grid-based fluids to simulate liquids and gases.
+*   **Fluid Simulation**: Implementing particle-based fluids to simulate liquids and gases.
 *   **Softbody Physics**: Exploring spring-mass systems or PBD (Position Based Dynamics) for deformable objects.
 
 ### Tech Stack
