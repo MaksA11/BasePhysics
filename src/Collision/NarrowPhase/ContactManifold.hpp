@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../Core/Vec2.hpp"
+#include "../../Core/Vec2.hpp"
 
 namespace bp
 {

@@ -6,7 +6,7 @@
 #include "../Core/Utils.hpp"
 #include "../Core/Geometry.hpp"
 #include "ColliderShapes.hpp"
-#include "AABB.hpp"
+#include "BroadPhase/AABB.hpp"
 
 namespace bp
 {

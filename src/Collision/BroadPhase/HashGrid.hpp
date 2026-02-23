@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "../Core/Vec2.hpp"
-#include "../Physics/Rigidbody.hpp"
+#include "../../Core/Vec2.hpp"
+#include "../../Physics/Rigidbody.hpp"
 #include "GridEntry.hpp"
 #include "AABB.hpp"
 

@@ -3,9 +3,9 @@
 #include <vector>
 
 #include "../Collision/Collider.hpp"
-#include "../Collision/Collisions.hpp"
-#include "../Collision/ContactManifold.hpp"
-#include "../Collision/HashGrid.hpp"
+#include "../Collision/NarrowPhase/Collisions.hpp"
+#include "../Collision/NarrowPhase/ContactManifold.hpp"
+#include "../Collision/BroadPhase/HashGrid.hpp"
 #include "Rigidbody.hpp"
 
 namespace bp
@@ -27,7 +27,7 @@ namespace bp
 
         public:
             PhysicsScene();
-            PhysicsScene(Vec2 gravity);
+            PhysicsScene(Vec2 gravity, float cellSize = 2.5f);
             ~PhysicsScene();
 
             Rigidbody *AddRigidbody(Rigidbody *rb);

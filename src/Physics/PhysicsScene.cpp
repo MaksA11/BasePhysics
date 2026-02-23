@@ -6,7 +6,7 @@ namespace bp
     {
         contacts.reserve(1024);
     }
-    PhysicsScene::PhysicsScene(Vec2 gravity) : gravity(gravity), hashGrid(2.5f), checkCounter(0)
+    PhysicsScene::PhysicsScene(Vec2 gravity, float cellSize) : gravity(gravity), hashGrid(cellSize), checkCounter(0)
     {
         contacts.reserve(1024);
     }

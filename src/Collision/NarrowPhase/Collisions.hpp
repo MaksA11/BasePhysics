@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Core/Vec2.hpp"
-#include "../Core/Math.hpp"
-#include "../Core/Geometry.hpp"
-#include "../Physics/Rigidbody.hpp"
-#include "Collider.hpp"
+#include "../../Core/Vec2.hpp"
+#include "../../Core/Math.hpp"
+#include "../../Core/Geometry.hpp"
+#include "../../Physics/Rigidbody.hpp"
+#include "../Collider.hpp"
 
 namespace bp::collisions
 {   
