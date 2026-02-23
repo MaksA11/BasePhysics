@@ -1,8 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <utility>
-#include <set>
 
 #include "../Collision/Collider.hpp"
 #include "../Collision/Collisions.hpp"

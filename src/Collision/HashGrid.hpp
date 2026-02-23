@@ -20,14 +20,13 @@ namespace bp
             static constexpr int prime2 = 19349663;
 
             void Clear();
-            void MapBodiesToCells(int rbIndex, const AABB &aabb);
-            size_t GenerateHash(Vec2 pos);
+            void MapBodyToCells(int rbIndex, const AABB &aabb);
 
         public:
             HashGrid() : cellSize(2.5f) {};
             HashGrid(float cellSize) : cellSize(cellSize) {};
 
-            void Refresh(const std::vector<Rigidbody*> &bodies);
+            void Refresh(const std::vector<Rigidbody *> &bodies);
             const std::unordered_map<size_t, std::vector<int>> &GetGrid() const;
 
             float GetCellSize() const;
