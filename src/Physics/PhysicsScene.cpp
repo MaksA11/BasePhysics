@@ -2,17 +2,13 @@
 
 namespace bp
 {
-    PhysicsScene::PhysicsScene()
+    PhysicsScene::PhysicsScene() : gravity(0.0f, -9.81f), hashGrid(2.5f), checkCounter(0)
     {
-        gravity = Vec2(0.0f, -9.81f);
-        contacts.reserve(512);
-        hashGrid = HashGrid();
+        contacts.reserve(1024);
     }
-    PhysicsScene::PhysicsScene(Vec2 gravity)
+    PhysicsScene::PhysicsScene(Vec2 gravity) : gravity(gravity), hashGrid(2.5f), checkCounter(0)
     {
-        this->gravity = gravity;
-        contacts.reserve(512);
-        hashGrid = HashGrid();
+        contacts.reserve(1024);
     }
     PhysicsScene::~PhysicsScene()
     {
@@ -83,34 +79,41 @@ namespace bp
         contacts.clear();
         hashGrid.Refresh(bodies);
 
-        const std::unordered_map<size_t, std::vector<int>> &grid = hashGrid.GetGrid();
-
-        static std::vector<bool> collisionMatrix;
-        int n = bodies.size();
-        collisionMatrix.assign(n * n, false); 
-
-        for(auto const &[hash, cell] : grid)
+        int n = (int)bodies.size();
+        if(pairCheckMatrix.size() < (size_t)n * n)
         {
-            if(cell.size() < 2)
-                continue;
+            pairCheckMatrix.assign((size_t)n * n, 0);
+            checkCounter = 0;
+        }
+        checkCounter++;
+        if(checkCounter >= std::numeric_limits<int>::max() - 1)
+        {
+            std::fill(pairCheckMatrix.begin(), pairCheckMatrix.end(), 0);
+            checkCounter = 1;
+        }
 
-            for(int i = 0; i < (int)cell.size(); i++)
+        for(int hash = 0; hash < HashGrid::GetGridSize(); hash++)
+        {
+            for(int i = hashGrid.GetHead(hash); i != -1; i = hashGrid.GetEntry(i).next)
             {
-                for(int j = 0; j < (int)cell.size(); j++)
+                for(int j = hashGrid.GetEntry(i).next; j != -1; j = hashGrid.GetEntry(j).next)
                 {
-                    int indexA = cell[i];
-                    int indexB = cell[j];
+                    int rb1Index = hashGrid.GetEntry(i).rbIndex;
+                    int rb2Index = hashGrid.GetEntry(j).rbIndex;
 
-                    int minIndex = std::min(indexA, indexB);
-                    int maxIndex = std::max(indexA, indexB);
+                    if(rb1Index == rb2Index)
+                        continue;
+
+                    int minIndex = std::min(rb1Index, rb2Index);
+                    int maxIndex = std::max(rb1Index, rb2Index);
                     int matrixIndex = minIndex * n + maxIndex;
 
-                    if(collisionMatrix[matrixIndex])
+                    if(pairCheckMatrix[matrixIndex] == checkCounter)
                         continue;
-                    collisionMatrix[matrixIndex] = true;
+                    pairCheckMatrix[matrixIndex] = checkCounter;
 
-                    Rigidbody *rb1 = bodies[indexA];
-                    Rigidbody *rb2 = bodies[indexB];
+                    Rigidbody *rb1 = bodies[rb1Index];
+                    Rigidbody *rb2 = bodies[rb2Index];
 
                     if((rb1->IsStatic() && rb2->IsStatic()) || (rb1->GetCollider().IsSensor() || rb2->GetCollider().IsSensor()))
                         continue;
@@ -125,10 +128,12 @@ namespace bp
 
                     if(collisions::Collide(rb1, rb2, normal, depth, contactPoints))
                     {
-                        if(contactPoints.size() == 1)
-                            contacts.push_back(ContactManifold(indexA, indexB, normal, depth, contactPoints[0]));
-                        if(contactPoints.size() == 2)
-                            contacts.push_back(ContactManifold(indexA, indexB, normal, depth, contactPoints[0], contactPoints[1]));
+                        if(!contactPoints.empty())
+                        {
+                            contacts.emplace_back(rb1Index, rb2Index, normal, depth, contactPoints[0]);
+                            if(contactPoints.size() > 1) 
+                                contacts.back().contactPoints.push_back(contactPoints[1]);
+                        }
                     }
                 }
             }

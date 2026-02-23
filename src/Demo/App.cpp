@@ -54,7 +54,7 @@ namespace demo
         shapeIndex = 0;
         spawnPreset.position = bp::Vec2(0.0f, -14.0f);
         spawnPreset.rotation = 0.0f;
-        spawnPreset.shape = bp::BoxShape(bp::Vec2(52.0f, 4.0f));
+        spawnPreset.shape = bp::BoxShape(bp::Vec2(152.0f, 4.0f));
         spawnPreset.mass = 1.0f;
         spawnPreset.linearDamping = 0.1f;
         spawnPreset.angularDamping = 0.1f;
@@ -66,49 +66,49 @@ namespace demo
         scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(0, 90, 10));
         
-        spawnPreset.position = bp::Vec2(0.0f, -11.5f);
-        spawnPreset.shape = bp::PolygonShape({{0.0f, 1.0f}, {2.5f, -0.5f}, {-2.5f, -0.5f}});
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(90, 90, 90));
+        // spawnPreset.position = bp::Vec2(0.0f, -11.5f);
+        // spawnPreset.shape = bp::PolygonShape({{0.0f, 1.0f}, {2.5f, -0.5f}, {-2.5f, -0.5f}});
+        // scene.AddRigidbody(spawnPreset);
+        // colors.push_back(sf::Color(90, 90, 90));
 
-        spawnPreset.position = bp::Vec2(-6.0f, 8.0f);
-        spawnPreset.rotation = bp::math::pi * -0.15f;
-        spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(0, 90, 10));
+        // spawnPreset.position = bp::Vec2(-6.0f, 8.0f);
+        // spawnPreset.rotation = bp::math::pi * -0.15f;
+        // spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
+        // scene.AddRigidbody(spawnPreset);
+        // colors.push_back(sf::Color(0, 90, 10));
 
-        spawnPreset.position = bp::Vec2(6.0f, 2.0f);
-        spawnPreset.rotation = bp::math::pi * 0.15f;
-        spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(0, 90, 10));
+        // spawnPreset.position = bp::Vec2(6.0f, 2.0f);
+        // spawnPreset.rotation = bp::math::pi * 0.15f;
+        // spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
+        // scene.AddRigidbody(spawnPreset);
+        // colors.push_back(sf::Color(0, 90, 10));
 
-        spawnPreset.rotation = 0.0f;
-        spawnPreset.isStatic = false;
-
-        spawnPreset.position = bp::Vec2(0.0f, -10.0f);
-        spawnPreset.shape = bp::BoxShape(bp::Vec2(18.0f, 0.75f));
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(80, 40, 10));
-
+        // spawnPreset.rotation = 0.0f;
         // spawnPreset.isStatic = false;
-        // spawnPreset.shape = bp::BoxShape(bp::Vec2(1.0f, 1.0f));
-        // int baseWidth = 40;
-        // float spacing = 1.0f;
-        // bp::Vec2 startPos = bp::Vec2(0.0f, -11.5f);
-        // for(int row = 0; row < baseWidth; row++)
-        // {
-        //     int boxesInRow = baseWidth - row;
-        //     float rowOffset = (boxesInRow - 1) * spacing * 0.5f;
-        //     for(int i = 0; i < boxesInRow; i++)
-        //     {
-        //         float x = startPos.x - rowOffset + (i * spacing);
-        //         float y = startPos.y + (row * spacing);
-        //         spawnPreset.position = bp::Vec2(x, y);
-        //         scene.AddRigidbody(spawnPreset);
-        //         colors.push_back(sf::Color(88, 88, 88));
-        //     }
-        // }
+
+        // spawnPreset.position = bp::Vec2(0.0f, -10.0f);
+        // spawnPreset.shape = bp::BoxShape(bp::Vec2(18.0f, 0.75f));
+        // scene.AddRigidbody(spawnPreset);
+        // colors.push_back(sf::Color(80, 40, 10));
+
+        spawnPreset.isStatic = false;
+        spawnPreset.shape = bp::BoxShape(bp::Vec2(1.0f, 1.0f));
+        int baseWidth = 45;
+        float spacing = 1.0f;
+        bp::Vec2 startPos = bp::Vec2(0.0f, -11.5f);
+        for(int row = 0; row < baseWidth; row++)
+        {
+            int boxesInRow = baseWidth - row;
+            float rowOffset = (boxesInRow - 1) * spacing * 0.5f;
+            for(int i = 0; i < boxesInRow; i++)
+            {
+                float x = startPos.x - rowOffset + (i * spacing);
+                float y = startPos.y + (row * spacing);
+                spawnPreset.position = bp::Vec2(x, y);
+                scene.AddRigidbody(spawnPreset);
+                colors.push_back(sf::Color(88, 88, 88));
+            }
+        }
     }
 
     void App::Update()

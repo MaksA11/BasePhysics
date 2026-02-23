@@ -16,7 +16,10 @@ namespace bp
             Vec2 gravity;
             std::vector<Rigidbody *> bodies;
             std::vector<ContactManifold> contacts;
+            
             HashGrid hashGrid;
+            std::vector<int> pairCheckMatrix;
+            int checkCounter;
 
             void DetectCollisions();
             void SeparateBodies(const ContactManifold &contact);

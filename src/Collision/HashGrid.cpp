@@ -2,12 +2,26 @@
 
 namespace bp
 {
+    HashGrid::HashGrid() : cellSize(2.5f)
+    {
+        heads.assign(gridSize, -1);
+        entries.reserve(4096);
+    }
+    HashGrid::HashGrid(float cellSize) : cellSize(cellSize)
+    {
+        heads.assign(gridSize, -1);
+        entries.reserve(4096);
+    }
+
+    inline size_t HashGrid::GenerateHash(int x, int y) const
+    {
+        return static_cast<size_t>((static_cast<size_t>(x) * prime1 ^ static_cast<size_t>(y) * prime2) & (gridSize - 1));
+    }
+
     void HashGrid::Clear()
     {
-        for(auto &[key, cell] : grid)
-        {
-            cell.clear();
-        }
+        std::fill(heads.begin(), heads.end(), -1);
+        entries.clear();
     }
     void HashGrid::MapBodyToCells(int rbIndex, const AABB &aabb)
     {
@@ -20,8 +34,9 @@ namespace bp
         {
             for(int y = minY; y <= maxY; ++y)
             {
-                size_t hash = ((static_cast<size_t>(x) * prime1) ^ (static_cast<size_t>(y) * prime2)) % gridSize;
-                grid[hash].push_back(rbIndex);
+                int hash = GenerateHash(x, y);
+                entries.push_back({rbIndex, heads[hash]});
+                heads[hash] = (int)entries.size() - 1;
             }
         }
     }
@@ -38,9 +53,17 @@ namespace bp
         }
     }
 
-    const std::unordered_map<size_t, std::vector<int>> &HashGrid::GetGrid() const
+    int HashGrid::GetHead(int hash) const
     {
-        return grid;
+        return heads[hash];
+    }
+    const GridEntry &HashGrid::GetEntry(int index) const
+    {
+        return entries[index];
+    }
+    int HashGrid::GetGridSize()
+    {
+        return gridSize;
     }
 
     float HashGrid::GetCellSize() const
