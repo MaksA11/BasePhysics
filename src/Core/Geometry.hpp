@@ -1,12 +1,11 @@
 #pragma once
 
-#include <array>
+#include <vector>
 #include <utility>
 #include <limits>
 
 #include "Vec2.hpp"
 #include "Math.hpp"
-#include "../Collision/ColliderShapes.hpp"
 
 namespace bp::geometry
 {
@@ -17,6 +16,13 @@ namespace bp::geometry
 
         float proj = math::Dot(startToPoint, segment);
         float lengthSquared = segment.MagnitudeSquared();
+        
+        if(lengthSquared < 0.00001f)
+        {
+            outClosestPoint = segmentA;
+            return math::DistanceSquared(point, segmentA);
+        }
+
         float d = proj / lengthSquared;
 
         if(d <= 0)
@@ -28,6 +34,7 @@ namespace bp::geometry
 
         return math::DistanceSquared(point, outClosestPoint);
     }
+
     inline int FindClosestPointIndex(Vec2 center, const std::vector<Vec2> &vertices)
     {
         int result = -1;
@@ -35,46 +42,36 @@ namespace bp::geometry
 
         for(int i = 0; i < vertices.size(); i++)
         {
-            Vec2 vert = vertices[i];
-            float distSq = math::DistanceSquared(vert, center);
-
+            float distSq = math::DistanceSquared(vertices[i], center);
             if(distSq < minDistSq)
             {
                 minDistSq = distSq;
                 result = i;
             }
         }
-
         return result;
     }
 
-    inline void ProjectVertices(std::vector<Vec2> vertices, Vec2 axis, float &outMin, float &outMax)
+    inline void ProjectVertices(const std::vector<Vec2>& vertices, Vec2 axis, float &outMin, float &outMax)
     {
         outMin = std::numeric_limits<float>::max();
         outMax = -std::numeric_limits<float>::max();
 
-        for(int i = 0; i < vertices.size(); i++)
+        for(const Vec2 &vert : vertices)
         {
-            Vec2 vert = vertices[i];
             float proj = math::Dot(vert, axis);
-
             if(proj < outMin)
                 outMin = proj;
             if(proj > outMax)
                 outMax = proj;
         }
     }
+
     inline void ProjectCircle(Vec2 center, float radius, Vec2 axis, float &outMin, float &outMax)
     {
-        Vec2 direction = axis.Normalized();
+        float proj = math::Dot(center, axis);
 
-        Vec2 p1 = center + (direction * radius);
-        Vec2 p2 = center - (direction * radius);
-
-        outMin = math::Dot(p1, axis);
-        outMax = math::Dot(p2, axis);
-
-        if(outMin > outMax)
-            std::swap(outMin, outMax);
+        outMin = proj - radius;
+        outMax = proj + radius;
     }
 }
