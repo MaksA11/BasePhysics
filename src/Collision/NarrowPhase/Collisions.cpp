@@ -6,6 +6,9 @@ namespace bp::collisions
     {
         outNormal = Vec2::Zero();
         outDepth = 0.0f;
+
+        if(bodyA == bodyB)
+            return false;
         
         if(bodyA->GetCollider().IsCircle())
         {

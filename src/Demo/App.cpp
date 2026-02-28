@@ -280,44 +280,44 @@ namespace demo
                 window->draw(rectangle);
             }
 
-            if(renderHashGrid)
+            i++;
+        }
+
+        if(renderHashGrid)
+        {
+            float cellSize = scene.GetHashGrid().GetCellSize();
+            sf::Vector2f viewCenter = camera.GetPosition();
+            sf::Vector2f viewSize = camera.GetViewSize();
+
+            float left = viewCenter.x - viewSize.x / 2.0f;
+            float right = viewCenter.x + viewSize.x / 2.0f;
+            float top = viewCenter.y + std::abs(viewSize.y) / 2.0f;
+            float bottom = viewCenter.y - std::abs(viewSize.y) / 2.0f;
+
+            float startX = std::floor(left / cellSize) * cellSize;
+            float endX = std::ceil(right / cellSize) * cellSize;
+            float startY = std::floor(bottom / cellSize) * cellSize;
+            float endY = std::ceil(top / cellSize) * cellSize;
+
+            sf::Color gridColor = sf::Color(100, 110, 120, 150);
+
+            for(float x = startX; x <= endX; x += cellSize)
             {
-                float cellSize = scene.GetHashGrid().GetCellSize();
-                sf::Vector2f viewCenter = camera.GetPosition();
-                sf::Vector2f viewSize = camera.GetViewSize();
-
-                float left = viewCenter.x - viewSize.x / 2.0f;
-                float right = viewCenter.x + viewSize.x / 2.0f;
-                float top = viewCenter.y + std::abs(viewSize.y) / 2.0f;
-                float bottom = viewCenter.y - std::abs(viewSize.y) / 2.0f;
-
-                float startX = std::floor(left / cellSize) * cellSize;
-                float endX = std::ceil(right / cellSize) * cellSize;
-                float startY = std::floor(bottom / cellSize) * cellSize;
-                float endY = std::ceil(top / cellSize) * cellSize;
-
-                sf::Color gridColor = sf::Color(100, 110, 120, 150);
-
-                for(float x = startX; x <= endX; x += cellSize)
-                {
-                    sf::Vertex line[] = {
-                        sf::Vertex(sf::Vector2f(x, bottom), gridColor),
-                        sf::Vertex(sf::Vector2f(x, top), gridColor)
-                    };
-                    window->draw(line, 2, sf::Lines);
-                }
-
-                for(float y = startY; y <= endY; y += cellSize)
-                {
-                    sf::Vertex line[] = {
-                        sf::Vertex(sf::Vector2f(left, y), gridColor),
-                        sf::Vertex(sf::Vector2f(right, y), gridColor)
-                    };
-                    window->draw(line, 2, sf::Lines);
-                }
+                sf::Vertex line[] = {
+                    sf::Vertex(sf::Vector2f(x, bottom), gridColor),
+                    sf::Vertex(sf::Vector2f(x, top), gridColor)
+                };
+                window->draw(line, 2, sf::Lines);
             }
 
-            i++;
+            for(float y = startY; y <= endY; y += cellSize)
+            {
+                sf::Vertex line[] = {
+                    sf::Vertex(sf::Vector2f(left, y), gridColor),
+                    sf::Vertex(sf::Vector2f(right, y), gridColor)
+                };
+                window->draw(line, 2, sf::Lines);
+            }
         }
 
         if(renderContactPoints)

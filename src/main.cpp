@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Demo/app.hpp"
+#include "Demo/App.hpp"
 
 int main()
 {
