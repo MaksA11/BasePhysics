@@ -91,9 +91,29 @@ namespace demo
         scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(80, 40, 10));
 
+        spawnPreset.shape = bp::BoxShape(bp::Vec2::One());
+        spawnPreset.mass = 0.01f;
+        int baseWidth = 4;
+        float spacing = 1.0f;
+        bp::Vec2 startPos = bp::Vec2(6.5f, -9.5f);
+        for(int row = 0; row < baseWidth; row++)
+        {
+            int boxesInRow = baseWidth - row;
+            float rowOffset = (boxesInRow - 1) * spacing * 0.5f;
+            for(int i = 0; i < boxesInRow; i++)
+            {
+                float x = startPos.x - rowOffset + (i * spacing);
+                float y = startPos.y + (row * spacing);
+                spawnPreset.position = bp::Vec2(x, y);
+                scene.AddRigidbody(spawnPreset);
+                colors.push_back(sf::Color(88, 88, 88));
+            }
+        }
+        spawnPreset.mass = 1.0f;
+
         // spawnPreset.isStatic = false;
         // spawnPreset.shape = bp::CircleShape(0.5f);
-        // // spawnPreset.shape = bp::BoxShape(bp::Vec2(1.0f, 1.0f));
+        // // spawnPreset.shape = bp::BoxShape(bp::Vec2::One());
         // int baseWidth = 67;
         // float spacing = 1.0f;
         // bp::Vec2 startPos = bp::Vec2(0.0f, -11.5f);
@@ -333,6 +353,12 @@ namespace demo
         ImGui::Separator();
         ImGui::Text("Contact count");
         ImGui::Text(std::to_string(scene.GetContacts().size()).c_str());
+        ImGui::Separator();
+        ImGui::Text("AABB Collision checks");
+        ImGui::Text(std::to_string(scene.GetAABBCollisionCheckCount()).c_str());
+        ImGui::Separator();
+        ImGui::Text("SAT Collision checks");
+        ImGui::Text(std::to_string(scene.GetSATCollisionCheckCount()).c_str());
         ImGui::Separator();
         ImGui::Text("FPS");
         ImGui::Text(std::to_string(fps).c_str());

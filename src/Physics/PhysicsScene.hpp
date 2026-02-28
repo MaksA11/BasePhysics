@@ -21,6 +21,9 @@ namespace bp
             std::vector<int> pairCheckMatrix;
             int checkCounter;
 
+            int aabbCollisionCheckCount;
+            int satCollisionCheckCount;
+
             void DetectCollisions();
             void SeparateBodies(const ContactManifold &contact);
             void ResolveCollision(const ContactManifold &contact);
@@ -42,5 +45,8 @@ namespace bp
             const std::vector<Rigidbody *> &GetBodies() const;
             const std::vector<ContactManifold> &GetContacts() const;
             const HashGrid &GetHashGrid() const;
+
+            int GetAABBCollisionCheckCount() const;
+            int GetSATCollisionCheckCount() const;
     };
 }

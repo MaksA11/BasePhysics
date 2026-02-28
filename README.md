@@ -22,6 +22,8 @@ One of my priorities is to provide a **clean and transparent API**, ensuring tha
 ### Future Goals
 I plan to continuously expand this engine as I learn more advanced concepts. My roadmap includes:
 *   **Improved Stability**: Refining stacking and contact point generation (for example Sutherland-Hodgman clipping).
+*   **Joints and Constraints**: Implementing distance joints, revolute joints, and springs.
+*   **Concave Shape Support**: Adding support for concave polygons through ear-clipping triangulation or convex decomposition.
 *   **Fluid Simulation**: Implementing particle-based fluids to simulate liquids and gases.
 *   **Softbody Physics**: Exploring spring-mass systems or PBD (Position Based Dynamics) for deformable objects.
 

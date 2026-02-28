@@ -2,11 +2,11 @@
 
 namespace bp
 {
-    PhysicsScene::PhysicsScene() : gravity(0.0f, -9.81f), hashGrid(2.5f), checkCounter(0)
+    PhysicsScene::PhysicsScene() : gravity(0.0f, -9.81f), hashGrid(2.5f), checkCounter(0), aabbCollisionCheckCount(0), satCollisionCheckCount(0)
     {
         contacts.reserve(1024);
     }
-    PhysicsScene::PhysicsScene(Vec2 gravity, float cellSize) : gravity(gravity), hashGrid(cellSize), checkCounter(0)
+    PhysicsScene::PhysicsScene(Vec2 gravity, float cellSize) : gravity(gravity), hashGrid(cellSize), checkCounter(0), aabbCollisionCheckCount(0), satCollisionCheckCount(0)
     {
         contacts.reserve(1024);
     }
@@ -76,6 +76,9 @@ namespace bp
 
     void PhysicsScene::DetectCollisions()
     {
+        aabbCollisionCheckCount = 0;
+        satCollisionCheckCount = 0;
+
         contacts.clear();
         hashGrid.Refresh(bodies);
 
@@ -112,6 +115,8 @@ namespace bp
                         continue;
                     pairCheckMatrix[matrixIndex] = checkCounter;
 
+                    aabbCollisionCheckCount++;
+
                     Rigidbody *rb1 = bodies[rb1Index];
                     Rigidbody *rb2 = bodies[rb2Index];
 
@@ -121,6 +126,8 @@ namespace bp
                     if(!collisions::IntersectAABBs(rb1->GetCollider().GetAABB(rb1->GetPosition(), rb1->GetRotation()),
                         rb2->GetCollider().GetAABB(rb2->GetPosition(), rb2->GetRotation())))
                         continue;
+
+                    satCollisionCheckCount++;
 
                     Vec2 normal;
                     float depth;
@@ -138,6 +145,35 @@ namespace bp
                 }
             }
         }
+
+        // for(int i = 0; i < (int)bodies.size() - 1; i++)
+        // {
+        //     for(int j = i + 1; j < (int)bodies.size(); j++)
+        //     {
+        //         aabbCollisionCheckCount++;
+
+        //         if((bodies[i]->IsStatic() && bodies[j]->IsStatic()) || (bodies[i]->GetCollider().IsSensor() || bodies[j]->GetCollider().IsSensor()))
+        //             continue;
+
+        //         if(!collisions::IntersectAABBs(bodies[i]->GetCollider().GetAABB(bodies[i]->GetPosition(), bodies[i]->GetRotation()),
+        //             bodies[j]->GetCollider().GetAABB(bodies[j]->GetPosition(), bodies[j]->GetRotation())))
+		// 		    continue;
+
+        //         satCollisionCheckCount++;
+                
+        //         Vec2 normal;
+        //         float depth;
+        //         std::vector<Vec2> contactPoints;
+
+        //         if(collisions::Collide(bodies[i], bodies[j], normal, depth, contactPoints))
+        //         {
+        //             if(contactPoints.size() == 1)
+        //                 contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0]));
+        //             if(contactPoints.size() == 2)
+        //                 contacts.push_back(ContactManifold(i, j, normal, depth, contactPoints[0], contactPoints[1]));
+        //         }
+        //     }
+        // }
     }
     void PhysicsScene::SeparateBodies(const ContactManifold &contact)
     {
@@ -287,5 +323,14 @@ namespace bp
     const HashGrid &PhysicsScene::GetHashGrid() const
     {
         return hashGrid;
+    }
+
+    int PhysicsScene::GetAABBCollisionCheckCount() const
+    {
+        return aabbCollisionCheckCount;
+    }
+    int PhysicsScene::GetSATCollisionCheckCount() const
+    {
+        return satCollisionCheckCount;
     }
 }
