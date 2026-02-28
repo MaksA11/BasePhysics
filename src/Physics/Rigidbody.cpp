@@ -7,20 +7,20 @@ namespace bp
         Collider collider = Collider(preset.shape, preset.restitution, preset.friction, preset.isSensor);
         return new Rigidbody(preset, collider);
     }
-    Rigidbody *Rigidbody::CreateCircleBody(Vec2 position, float rotation, float radius, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool isSensor)
+    Rigidbody *Rigidbody::CreateCircleBody(Vec2 position, float rotation, float radius, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool lockRotation, bool isSensor)
     {
         Collider collider = Collider(CircleShape(radius), restitution, friction);
-        return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
+        return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity, lockRotation);
     }
-    Rigidbody *Rigidbody::CreateBoxBody(Vec2 position, float rotation, Vec2 size, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool isSensor)
+    Rigidbody *Rigidbody::CreateBoxBody(Vec2 position, float rotation, Vec2 size, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool lockRotation, bool isSensor)
     {
         Collider collider = Collider(BoxShape(size), restitution, friction, isSensor);
-        return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
+        return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity, lockRotation);
     }
-    Rigidbody *Rigidbody::CreatePolygonBody(Vec2 position, float rotation, std::vector<Vec2> vertices, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool isSensor)
+    Rigidbody *Rigidbody::CreatePolygonBody(Vec2 position, float rotation, std::vector<Vec2> vertices, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool lockRotation, bool isSensor)
     {
         Collider collider = Collider(PolygonShape(vertices), restitution, isSensor);
-        return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity);
+        return new Rigidbody(position, rotation, collider, mass, linearDamping, angularDamping, isStatic, usesGravity, lockRotation);
     }
 
     void Rigidbody::DeleteRigidbody(Rigidbody *rb, std::vector<Rigidbody *> &bodies)
@@ -125,7 +125,7 @@ namespace bp
     }
     float Rigidbody::GetInverseInertia()
     {
-        if(isStatic)
+        if(isStatic || lockRotation)
             return 0.0f;
         return 1.0f / inertia;
     }
@@ -161,7 +161,8 @@ namespace bp
 		    return;
 
         Move(linearVelocity * deltaTime);
-        Rotate(angularVelocity * deltaTime);
+        if(!lockRotation)
+            Rotate(angularVelocity * deltaTime);
     }
 
     bool Rigidbody::IsStatic()
@@ -171,6 +172,10 @@ namespace bp
     bool Rigidbody::UsesGravity()
     {
         return usesGravity;
+    }
+    bool Rigidbody::IsRotationLocked()
+    {
+        return lockRotation;
     }
 
     void Rigidbody::SetProperties(const BodyPreset &preset)
@@ -187,6 +192,7 @@ namespace bp
         }
         isStatic = preset.isStatic;
         usesGravity = preset.usesGravity;
+        lockRotation = preset.lockRotation;
         collider = Collider(preset.shape, preset.restitution, preset.friction, preset.isSensor);
         inertia = collider.CalculateInertia(mass);
     }
@@ -208,6 +214,7 @@ namespace bp
         preset.friction = collider.GetFriction();
         preset.isStatic = isStatic;
         preset.usesGravity = usesGravity;
+        preset.lockRotation = lockRotation;
         preset.isSensor = collider.IsSensor();
         return preset;
     }

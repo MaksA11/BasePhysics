@@ -62,6 +62,8 @@ namespace demo
         spawnPreset.friction = 0.6f;
         spawnPreset.isStatic = true;
         spawnPreset.usesGravity = true;
+        spawnPreset.lockRotation = false;
+        spawnPreset.isSensor = false;
 
         scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(0, 90, 10));
@@ -372,6 +374,7 @@ namespace demo
         ImGui::Separator();
         ImGui::Checkbox("Is static", &spawnPreset.isStatic);
         ImGui::Checkbox("Use gravity", &spawnPreset.usesGravity);
+        ImGui::Checkbox("Lock rotation", &spawnPreset.lockRotation);
         ImGui::Checkbox("Is sensor", &spawnPreset.isSensor);
         ImGui::Separator();
         ImGui::Text("Mass");
@@ -403,6 +406,7 @@ namespace demo
             ImGui::Separator();
             ImGui::Checkbox("Is static", &selectedPreset.isStatic);
             ImGui::Checkbox("Use gravity", &selectedPreset.usesGravity);
+            ImGui::Checkbox("Lock rotation", &selectedPreset.lockRotation);
             ImGui::Checkbox("Is sensor", &selectedPreset.isSensor);
             ImGui::Separator();
             ImGui::Text("Mass");
@@ -494,7 +498,7 @@ namespace demo
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
 
-                    bp::Rigidbody *mouseRb = bp::Rigidbody::CreateCircleBody(worldPos, 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true);
+                    bp::Rigidbody *mouseRb = bp::Rigidbody::CreateCircleBody(worldPos, 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, false, true);
 
                     for(bp::Rigidbody *rb : scene.GetBodies())
                     {

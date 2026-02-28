@@ -14,13 +14,13 @@ namespace bp
     class Rigidbody
     {
         private:
-            Rigidbody(Vec2 position, float rotation, Collider collider, float mass, float linearDamping, float angularDamping, bool isStatic, bool usesGravity)
+            Rigidbody(Vec2 position, float rotation, Collider collider, float mass, float linearDamping, float angularDamping, bool isStatic, bool usesGravity, bool lockRotation)
                 : position(position), rotation(rotation), collider(collider), mass(mass), inertia(collider.CalculateInertia(mass)),
-                linearDamping(linearDamping), angularDamping(angularDamping), isStatic(isStatic), usesGravity(usesGravity),
+                linearDamping(linearDamping), angularDamping(angularDamping), isStatic(isStatic), usesGravity(usesGravity), lockRotation(lockRotation),
                 linearVelocity(Vec2::Zero()), force(Vec2::Zero()), angularVelocity(0.0f), torque(0.0f) {}
             Rigidbody(BodyPreset preset, Collider collider)
                 : position(preset.position), rotation(preset.rotation), collider(collider), mass(preset.mass), inertia(collider.CalculateInertia(preset.mass)),
-                linearDamping(preset.linearDamping), angularDamping(preset.angularDamping), isStatic(preset.isStatic), usesGravity(preset.usesGravity),
+                linearDamping(preset.linearDamping), angularDamping(preset.angularDamping), isStatic(preset.isStatic), usesGravity(preset.usesGravity), lockRotation(preset.lockRotation),
                 linearVelocity(Vec2::Zero()), force(Vec2::Zero()), angularVelocity(0.0f), torque(0.0f) {}
 
             Vec2 position;
@@ -28,16 +28,16 @@ namespace bp
 
             Collider collider;
             float mass, inertia, linearDamping, angularDamping;
-            bool isStatic, usesGravity;
+            bool isStatic, usesGravity, lockRotation;
 
             Vec2 linearVelocity, force;
             float angularVelocity, torque;
 
         public:
             static Rigidbody *CreateRigidbody(BodyPreset preset);
-            static Rigidbody *CreateCircleBody(Vec2 position, float rotation, float radius, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool isSensor);
-            static Rigidbody *CreateBoxBody(Vec2 position, float rotation, Vec2 size, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool isSensor);
-            static Rigidbody *CreatePolygonBody(Vec2 position, float rotation, std::vector<Vec2> vertices, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool isSensor);
+            static Rigidbody *CreateCircleBody(Vec2 position, float rotation, float radius, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool lockRotation, bool isSensor);
+            static Rigidbody *CreateBoxBody(Vec2 position, float rotation, Vec2 size, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool usesGravity, bool lockRotation, bool isSensor);
+            static Rigidbody *CreatePolygonBody(Vec2 position, float rotation, std::vector<Vec2> vertices, float mass, float linearDamping, float angularDamping, float restitution, float friction, bool isStatic, bool lockRotation, bool usesGravity, bool isSensor);
 
             static void DeleteRigidbody(Rigidbody *rb, std::vector<Rigidbody *> &bodies);
 
@@ -73,6 +73,7 @@ namespace bp
 
             bool IsStatic();
             bool UsesGravity();
+            bool IsRotationLocked();
 
             void SetProperties(const BodyPreset &preset);
             BodyPreset GetProperties() const;
