@@ -9,7 +9,6 @@
 #include <imgui-SFML.h>
 
 #include "../Physics/PhysicsScene.hpp"
-#include "../Collision/Collider.hpp"
 
 #include "Camera.hpp"
 #include "Random.hpp"

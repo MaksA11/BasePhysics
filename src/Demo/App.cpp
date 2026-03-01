@@ -219,6 +219,7 @@ namespace demo
                             vertex.setRadius(radius);
                             vertex.setFillColor(sf::Color::Green);
                             vertex.setOrigin(sf::Vector2f(radius, radius));
+
                             window->draw(vertex);
                         }
                     }
@@ -259,6 +260,7 @@ namespace demo
                             vertex.setRadius(radius);
                             vertex.setFillColor(sf::Color::Green);
                             vertex.setOrigin(sf::Vector2f(radius, radius));
+
                             window->draw(vertex);
                         }
                     }
@@ -277,6 +279,7 @@ namespace demo
                 rectangle.setOutlineThickness(0.04f);
                 rectangle.setOrigin(0.0f, 0.0f);
                 rectangle.setRotation(0.0f);
+
                 window->draw(rectangle);
             }
 
@@ -307,6 +310,7 @@ namespace demo
                     sf::Vertex(sf::Vector2f(x, bottom), gridColor),
                     sf::Vertex(sf::Vector2f(x, top), gridColor)
                 };
+
                 window->draw(line, 2, sf::Lines);
             }
 
@@ -316,6 +320,7 @@ namespace demo
                     sf::Vertex(sf::Vector2f(left, y), gridColor),
                     sf::Vertex(sf::Vector2f(right, y), gridColor)
                 };
+
                 window->draw(line, 2, sf::Lines);
             }
         }
@@ -333,6 +338,7 @@ namespace demo
                     circle.setRadius(radius);
                     circle.setFillColor(sf::Color::Magenta);
                     circle.setOrigin(sf::Vector2f(radius, radius));
+                    
                     window->draw(circle);
                 }
             }

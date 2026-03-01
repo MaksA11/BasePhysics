@@ -17,6 +17,7 @@ namespace bp::utils
     {
         return math::DistanceSquared(vec1, vec2) < epsilon * epsilon;
     }
+
     inline Vec2 ClampMagnitude(const Vec2 &vec, float minVal, float maxVal)
     {
         const float magSq = vec.MagnitudeSquared();
