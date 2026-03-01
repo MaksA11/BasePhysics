@@ -13,8 +13,25 @@ namespace bp::utils
     {
         return std::abs(val1 - val2) < epsilon;
     }
-    inline bool NearlyEqual(Vec2 val1, Vec2 val2)
+    inline bool NearlyEqual(const Vec2 &vec1, const Vec2 &vec2)
     {
-        return math::DistanceSquared(val1, val2) < epsilon * epsilon;
+        return math::DistanceSquared(vec1, vec2) < epsilon * epsilon;
+    }
+    inline Vec2 ClampMagnitude(const Vec2 &vec, float minVal, float maxVal)
+    {
+        const float magSq = vec.MagnitudeSquared();
+
+        if(magSq == 0.0f)
+            return vec;
+
+        const float mag = std::sqrt(magSq);
+
+        if(mag < minVal)
+            return vec * (minVal / mag);
+
+        if(mag > maxVal)
+            return vec * (maxVal / mag);
+
+        return vec;
     }
 }
