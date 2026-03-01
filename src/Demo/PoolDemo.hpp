@@ -37,8 +37,7 @@ namespace demo
 			Camera camera;
 
 			bp::PhysicsScene scene;
-
-			sf::Vector2i lastMousePos;
+			
 			bool isDragging;
 
 			std::vector<sf::Color> colors;

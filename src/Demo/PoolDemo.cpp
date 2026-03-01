@@ -36,35 +36,33 @@ namespace demo
     {
         scene = bp::PhysicsScene(bp::Vec2(bp::Vec2::Zero()));
 
-        bp::BodyPreset preset;
+        bp::BodyPreset bound = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::BoxShape(bp::Vec2(1.0f, 10.0f)), 1.0f, 0.0f, 0.0f, 0.3f, 0.1f, true, false, false, true);
+        bp::BodyPreset table = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::BoxShape(bp::Vec2(22.0f, 12.0f)), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
+        bp::BodyPreset hole = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.67f), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
+        bp::BodyPreset ball = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 0.5f, 0.75f, 0.75f, 0.9f, 0.0f, false, false, false, false);
 
-        preset.isStatic = true;
-        preset.position = bp::Vec2(10.5f, 0.0f);
-        preset.shape = bp::BoxShape(bp::Vec2(1.0f, 10.0f));
-        scene.AddRigidbody(preset);
+        bound.position = bp::Vec2(10.5f, 0.0f);
+        scene.AddRigidbody(bound);
         colors.push_back(sf::Color(0, 0, 0, 0));
 
-        preset.position = bp::Vec2(-10.5f, 0.0f);
-        scene.AddRigidbody(preset);
+        bound.position = bp::Vec2(-10.5f, 0.0f);
+        scene.AddRigidbody(bound);
         colors.push_back(sf::Color(0, 0, 0, 0));
 
-        preset.position = bp::Vec2(0.0f, 5.5f);
-        preset.shape = bp::BoxShape(bp::Vec2(20.0f, 1.0f));
-        scene.AddRigidbody(preset);
+        bound.position = bp::Vec2(0.0f, 5.5f);
+        bound.shape = bp::BoxShape(bp::Vec2(20.0f, 1.0f));
+        scene.AddRigidbody(bound);
         colors.push_back(sf::Color(0, 0, 0, 0));
 
-        preset.position = bp::Vec2(0.0f, -5.5f);
-        scene.AddRigidbody(preset);
+        bound.position = bp::Vec2(0.0f, -5.5f);
+        scene.AddRigidbody(bound);
         colors.push_back(sf::Color(0, 0, 0, 0));
 
-        preset.isSensor = true;
-        preset.position = bp::Vec2::Zero();
-        preset.shape = bp::BoxShape(bp::Vec2(22.0f, 12.0f));
-        scene.AddRigidbody(preset);
+        scene.AddRigidbody(table);
         colors.push_back(sf::Color(90, 50, 30));
 
-        preset.shape = bp::BoxShape(bp::Vec2(20.0f, 10.0f));
-        scene.AddRigidbody(preset);
+        table.shape = bp::BoxShape(bp::Vec2(20.0f, 10.0f));
+        scene.AddRigidbody(table);
         colors.push_back(sf::Color(5, 105, 0));
 
         const float x = 10.0f;
@@ -75,31 +73,21 @@ namespace demo
             {-x, -y}, {0.0f, -y}, {x, -y}
         };
 
-        preset.shape = bp::CircleShape(0.6f);
         for(int i = 0; i < 6; i++)
         {
-            preset.position = holePositions[i];
-            scene.AddRigidbody(preset);
+            hole.position = holePositions[i];
+            scene.AddRigidbody(hole);
             colors.push_back(sf::Color(0, 0, 0));
         }
-        preset.shape = bp::CircleShape(0.2f);
+        hole.shape = bp::CircleShape(0.3f);
         for(int i = 0; i < 6; i++)
         {
-            preset.position = holePositions[i];
-            holes.push_back(scene.AddRigidbody(preset));
+            hole.position = holePositions[i];
+            holes.push_back(scene.AddRigidbody(hole));
             colors.push_back(sf::Color(0, 0, 0));
         }
 
         bp::Vec2 origin = bp::Vec2(-4.5f, 0.0f);
-        preset.isSensor = false;
-        preset.isStatic = false;
-        preset.shape = bp::CircleShape(0.35f);
-        preset.mass = 0.5f;
-        preset.restitution = 0.9f;
-        preset.linearDamping = 0.65f;
-        preset.angularDamping = 0.65f;
-        preset.friction = 0.0f;
-
         const float radius = 0.35f;
         const float spacing = 0.0f;
         const int rows = 5;
@@ -114,20 +102,20 @@ namespace demo
                 float x = origin.x - col * xStep;
                 float y = origin.y + row * yStep - (col * yStep * 0.5f);
 
-                preset.position = bp::Vec2(x, y);
+                ball.position = bp::Vec2(x, y);
                 if(i % 2 == 0 && i != 4)
                 {
-                    solids.push_back(scene.AddRigidbody(preset));
+                    solids.push_back(scene.AddRigidbody(ball));
                     colors.push_back(sf::Color(255, 0, 0));
                 }
                 else if(i != 4)
                 {
-                    stripes.push_back(scene.AddRigidbody(preset));
+                    stripes.push_back(scene.AddRigidbody(ball));
                     colors.push_back(sf::Color(0, 255, 0));
                 }
                 else
                 {
-                    eightBall = scene.AddRigidbody(preset);
+                    eightBall = scene.AddRigidbody(ball);
                     colors.push_back(sf::Color(20, 20, 20));
                 }
 
@@ -135,13 +123,9 @@ namespace demo
             }
         }
 
-        preset.position = bp::Vec2(4.5f, 0.0f);
-        // preset.linearDamping = 0.75f;
-        // preset.angularDamping = 0.75f;
-        whiteBall = scene.AddRigidbody(preset);
+        ball.position = bp::Vec2(4.5f, 0.0f);
+        whiteBall = scene.AddRigidbody(ball);
         colors.push_back(sf::Color(255, 255, 255));
-
-        // whiteBall->ApplyImpulse(bp::Vec2(random::RandomFloat(1.0f, 2.0f) * -35.0f, 0.0f));
     }
 
     void PoolDemoApp::Update()
@@ -251,7 +235,7 @@ namespace demo
             i++;
         }
 
-        if(whiteBall->GetLinearVelocity().Magnitude() < 0.05f)
+        if(isDragging)
         {
             sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
             bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
@@ -277,14 +261,14 @@ namespace demo
             ImGui::GetFont(),
             50.0f,
             ImVec2(10.0f, 10.0f),
-            IM_COL32(255, 255, 255, 255),
+            IM_COL32(255, 0, 0, 255),
             ("Solids: " + std::to_string(7 - solids.size())).c_str()
         );
         ImGui::GetBackgroundDrawList()->AddText(
             ImGui::GetFont(),
             50.0f,
             ImVec2(10.0f, 70.0f),
-            IM_COL32(255, 255, 255, 255),
+            IM_COL32(0, 255, 0, 255),
             ("Stripes: " + std::to_string(7 - stripes.size())).c_str()
         );
     }
@@ -298,15 +282,22 @@ namespace demo
             if(event.type == sf::Event::Closed)
                 appRunning = false;
 
+            if(event.type == sf::Event::MouseButtonPressed)
+            {
+                if(event.mouseButton.button == sf::Mouse::Left && whiteBall->GetLinearVelocity().Magnitude() < 0.05f)
+                    isDragging = true;
+            }
             if(event.type == sf::Event::MouseButtonReleased)
             {
-                if(event.mouseButton.button == sf::Mouse::Left)
+                if(event.mouseButton.button == sf::Mouse::Left && isDragging)
                 {
+                    isDragging = false;
+
                     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
                     bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
-                    bp::Vec2 direction = worldPos - whiteBall->GetPosition();
-                    bp::Vec2 impulse = direction * 1.5f;
-                    impulse = bp::utils::ClampMagnitude(impulse, 0.0f, 30.0f);
+                    bp::Vec2 direction = whiteBall->GetPosition() - worldPos;
+                    bp::Vec2 impulse = direction * 2.35f;
+                    impulse = bp::utils::ClampMagnitude(impulse, 0.0f, 35.0f);
                     
                     whiteBall->ApplyImpulse(impulse);
                 }
