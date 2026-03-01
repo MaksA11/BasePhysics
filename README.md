@@ -29,7 +29,7 @@ I plan to continuously expand this engine as I learn more advanced concepts. My 
 
 ### Tech Stack
 *   **Language**: C++17
-*   **Demo & Visualization**: SFML 2.6.2
+*   **Rendering and Demos**: SFML 2.6.2
 *   **GUI**: Dear ImGui
 *   **Build System**: CMake
 
