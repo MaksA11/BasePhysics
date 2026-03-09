@@ -30,7 +30,7 @@ namespace demo
         camera = Camera(bp::Vec2::Zero(), window->getSize(), 50);
 
         random::Init();
-        camera.Zoom(1.5f);
+        camera.Zoom(1.25f);
     }
 
     void PoolDemoApp::Start()
@@ -38,47 +38,60 @@ namespace demo
         scene = bp::PhysicsScene(bp::Vec2(bp::Vec2::Zero()));
 
         const float outerBoundWidth = 8.8f;
-        const float innerBoundWidth = 7.7f;
+        const float innerBoundWidth = 8.0f;
         const float boundHeight = 0.5f;
+        const float innerOuterOffset = 0.2f;
 
-        std::vector<bp::Vec2> boundVertices = {
+        std::vector<bp::Vec2> boundVertices1 = {
             {-outerBoundWidth * 0.5f, boundHeight * 0.5f}, {outerBoundWidth * 0.5f, boundHeight * 0.5f},
-            {innerBoundWidth * 0.5f, -boundHeight * 0.5f}, {-innerBoundWidth * 0.5f, -boundHeight * 0.5f}
+            {innerBoundWidth * 0.5f + innerOuterOffset, -boundHeight * 0.5f}, {-innerBoundWidth * 0.5f + innerOuterOffset, -boundHeight * 0.5f}
+        };
+        std::vector<bp::Vec2> boundVertices2 = {
+            {-outerBoundWidth * 0.5f, boundHeight * 0.5f}, {outerBoundWidth * 0.5f, boundHeight * 0.5f},
+            {innerBoundWidth * 0.5f - innerOuterOffset, -boundHeight * 0.5f}, {-innerBoundWidth * 0.5f - innerOuterOffset, -boundHeight * 0.5f}
+        };
+        std::vector<bp::Vec2> boundVertices3 = {
+            {-outerBoundWidth * 0.5f, boundHeight * 0.5f}, {outerBoundWidth * 0.5f, boundHeight * 0.5f},
+            {innerBoundWidth * 0.5f - innerOuterOffset * 0.5f, -boundHeight * 0.5f}, {-innerBoundWidth * 0.5f + innerOuterOffset * 0.5f, -boundHeight * 0.5f}
         };
 
-        bp::BodyPreset bound = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::PolygonShape(boundVertices), 1.0f, 0.0f, 0.0f, 0.3f, 0.1f, true, false, false, true);
+        bp::BodyPreset bound = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::PolygonShape(boundVertices1), 1.0f, 0.0f, 0.0f, 0.3f, 0.1f, true, false, false, true);
         bp::BodyPreset table = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::BoxShape(bp::Vec2(22.0f, 12.0f)), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
         bp::BodyPreset hole = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
-        bp::BodyPreset ball = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 0.5f, 0.75f, 0.75f, 0.9f, 0.0f, false, false, false, false);
+        bp::BodyPreset ball = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 0.5f, 0.85f, 0.85f, 0.9f, 0.5f, false, false, false, false);
 
         scene.AddRigidbody(table);
         colors.push_back(sf::Color(90, 50, 30));
 
         table.shape = bp::BoxShape(bp::Vec2(20.0f, 10.0f));
-        scene.AddRigidbody(table);
+        innerTable = scene.AddRigidbody(table);
         colors.push_back(sf::Color(5, 105, 0));
 
-        bound.position = bp::Vec2(-5.0f, 4.73f);
+        bound.position = bp::Vec2(-5.0f, 4.75f);
         scene.AddRigidbody(bound);
         colors.push_back(sf::Color(5, 88, 0));
-        bound.position = bp::Vec2(5.0f, 4.73f);
-        scene.AddRigidbody(bound);
-        colors.push_back(sf::Color(5, 88, 0));
-
         bound.rotation = bp::math::pi;
-        bound.position = bp::Vec2(-5.0f, -4.73f);
-        scene.AddRigidbody(bound);
-        colors.push_back(sf::Color(5, 88, 0));
-        bound.position = bp::Vec2(5.0f, -4.73f);
+        bound.position = bp::Vec2(5.0f, -4.75f);
         scene.AddRigidbody(bound);
         colors.push_back(sf::Color(5, 88, 0));
 
+        bound.shape = bp::PolygonShape(boundVertices2);
+        bound.rotation = 0.0f;
+        bound.position = bp::Vec2(5.0f, 4.75f);
+        scene.AddRigidbody(bound);
+        colors.push_back(sf::Color(5, 88, 0));
+        bound.rotation = bp::math::pi;
+        bound.position = bp::Vec2(-5.0f, -4.75f);
+        scene.AddRigidbody(bound);
+        colors.push_back(sf::Color(5, 88, 0));
+
+        bound.shape = bp::PolygonShape(boundVertices3);
         bound.rotation = bp::math::pi * 0.5f;
-        bound.position = bp::Vec2(-9.73f, 0.0f);
+        bound.position = bp::Vec2(-9.75f, 0.0f);
         scene.AddRigidbody(bound);
         colors.push_back(sf::Color(5, 88, 0));
         bound.rotation = bp::math::pi * -0.5f;
-        bound.position = bp::Vec2(9.73f, 0.0f);
+        bound.position = bp::Vec2(9.75f, 0.0f);
         scene.AddRigidbody(bound);
         colors.push_back(sf::Color(5, 88, 0));
 
@@ -88,7 +101,7 @@ namespace demo
         bp::Vec2 holePositions[] = {
             {-x, y}, {x, y},
             {-x, -y}, {x, -y},
-            {0.0f, (y + 0.1f)}, {0.0f, -(y + 0.1f)}
+            {0.0f, (y + 0.15f)}, {0.0f, -(y + 0.15f)}
         };
 
         for(int i = 0; i < 6; i++)
@@ -105,7 +118,7 @@ namespace demo
             scene.AddRigidbody(hole);
             colors.push_back(sf::Color(15, 15, 15));
         }
-        hole.shape = bp::CircleShape(0.67f);
+        hole.shape = bp::CircleShape(0.62f);
         for(int i = 4; i < 6; i++)
         {
             hole.position = holePositions[i];
@@ -121,6 +134,7 @@ namespace demo
         const float yStep = diameter + spacing;
         const float xStep = std::sqrt(3.0f) * radius + spacing;
         int i = 0;
+        
         for(int col = 0; col < rows; col++)
         {
             for(int row = 0; row <= col; row++)
@@ -152,6 +166,9 @@ namespace demo
         ball.position = bp::Vec2(4.5f, 0.0f);
         whiteBall = scene.AddRigidbody(ball);
         colors.push_back(sf::Color(255, 255, 255));
+
+        isPlacing = true;
+        whiteBall->SetSensor(true);
     }
 
     void PoolDemoApp::Update()
@@ -231,8 +248,10 @@ namespace demo
                 circle.setFillColor(colors[i]);
                 if(rb != whiteBall)
                     circle.setOutlineColor(sf::Color::Black);
-                else if(whiteBall->GetLinearVelocity().Magnitude() < 0.05f)
+                else if(whiteBall->GetLinearVelocity().Magnitude() < 0.05f && bp::collisions::Collide(whiteBall, innerTable))
                     circle.setOutlineColor(sf::Color(0, 205, 0));
+                else
+                    circle.setOutlineColor(sf::Color(205, 0, 0));
                 circle.setOutlineThickness(-0.067f);
                 circle.setOrigin(sf::Vector2f(circle.getRadius(), circle.getRadius()));
 
@@ -330,10 +349,15 @@ namespace demo
             impulse = bp::utils::ClampMagnitude(impulse, 0.0f, 35.0f);
             int mag = (int)impulse.Magnitude();
 
+            sf::Vector2i ballScreenPos = camera.WorldToScreen(whiteBall->GetPosition(), *window);
+            ImVec2 ballScreen = ImVec2(ballScreenPos.x - 30, ballScreenPos.y - 75);
+            ImVec2 mouseScreen = ImVec2(mousePos.x - 15, mousePos.y - 50);
+
             ImGui::GetBackgroundDrawList()->AddText(
                 ImGui::GetFont(),
                 50.0f,
-                ImVec2(mousePos.x - 15, mousePos.y - 50),
+                // ballScreen,
+                mouseScreen,
                 IM_COL32((mag * 7.3f), 255 - (mag * 7.3f), 0, 255),
                 (std::to_string((int)impulse.Magnitude())).c_str()
             );
@@ -374,7 +398,12 @@ namespace demo
             }
             else
             {
-                if(event.type == sf::Event::MouseButtonReleased)
+                sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+                bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
+
+                bp::Rigidbody *mouseRb = bp::Rigidbody::CreateCircleBody(worldPos, 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, false, true);
+
+                if(event.type == sf::Event::MouseButtonReleased && bp::collisions::Collide(mouseRb, innerTable))
                 {
                     isPlacing = false;
                     whiteBall->SetSensor(false);

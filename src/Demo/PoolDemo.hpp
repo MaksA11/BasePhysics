@@ -42,6 +42,7 @@ namespace demo
             std::vector<bp::Rigidbody *> stripes;
             bp::Rigidbody *whiteBall;
             bp::Rigidbody *eightBall;
+			bp::Rigidbody *innerTable;
 
 		public:
 			PoolDemoApp();
