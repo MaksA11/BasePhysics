@@ -11,18 +11,12 @@
 
 #include "../Physics/PhysicsScene.hpp"
 
+#include "WindowType.hpp"
 #include "Camera.hpp"
 #include "Random.hpp"
 
 namespace demo
 {
-	enum WindowType
-	{
-		WINDOW = 0,
-		FULLSCREEN = 1,
-		BORDERLESS = 2
-	};
-
 	class PoolDemoApp
 	{
 		private:
@@ -39,6 +33,7 @@ namespace demo
 			bp::PhysicsScene scene;
 			
 			bool isDragging;
+			bool isPlacing;
 
 			std::vector<sf::Color> colors;
 

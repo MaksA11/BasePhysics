@@ -75,6 +75,10 @@ namespace bp
             bool UsesGravity();
             bool IsRotationLocked();
 
+            void SetStatic(bool value);
+            void UseGravity(bool value);
+            void SetSensor(bool value);
+
             void SetProperties(const BodyPreset &preset);
             BodyPreset GetProperties() const;
     };

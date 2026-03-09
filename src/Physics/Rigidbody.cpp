@@ -154,6 +154,15 @@ namespace bp
 
         linearVelocity *= 1.0f / (1.0f + deltaTime * linearDamping);
         angularVelocity *= 1.0f / (1.0f + deltaTime * angularDamping);
+
+        float linearThreshold = 0.0001f;
+        float angularThreshold = 0.0001f;
+
+        if(linearVelocity.MagnitudeSquared() < linearThreshold * linearThreshold)
+            linearVelocity = Vec2::Zero();
+
+        if(std::abs(angularVelocity) < angularThreshold)
+            angularVelocity = 0.0f;
     }
     void Rigidbody::IntegratePosition(float deltaTime)
     {
@@ -178,6 +187,25 @@ namespace bp
         return lockRotation;
     }
 
+    void Rigidbody::SetStatic(bool value)
+    {
+        linearVelocity = Vec2::Zero();
+        angularVelocity = 0.0f;
+
+        isStatic = value;
+    }
+    void Rigidbody::UseGravity(bool value)
+    {
+        usesGravity = value;
+    }
+    void Rigidbody::SetSensor(bool value)
+    {
+        linearVelocity = Vec2::Zero();
+        angularVelocity = 0.0f;
+
+        collider.SetSensor(value);
+    }
+
     void Rigidbody::SetProperties(const BodyPreset &preset)
     {
         position = preset.position;
@@ -185,7 +213,7 @@ namespace bp
         mass = preset.mass;
         linearDamping = preset.linearDamping;
         angularDamping = preset.angularDamping;
-        if(isStatic != preset.isStatic)
+        if(isStatic != preset.isStatic || collider.IsSensor() != preset.isSensor)
         {
             linearVelocity = Vec2::Zero();
             angularVelocity = 0.0f;

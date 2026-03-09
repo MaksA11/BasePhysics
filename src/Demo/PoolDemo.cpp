@@ -7,6 +7,7 @@ namespace demo
         deltaTime = 0.0f;
         appRunning = true;
         isDragging = false;
+        isPlacing = false;
     }
 
     void PoolDemoApp::Init(unsigned int width, unsigned int height, const char *name, WindowType windowType)
@@ -36,8 +37,8 @@ namespace demo
     {
         scene = bp::PhysicsScene(bp::Vec2(bp::Vec2::Zero()));
 
-        const float outerBoundWidth = 8.67f;
-        const float innerBoundWidth = 7.5f;
+        const float outerBoundWidth = 8.8f;
+        const float innerBoundWidth = 7.7f;
         const float boundHeight = 0.5f;
 
         std::vector<bp::Vec2> boundVertices = {
@@ -47,7 +48,7 @@ namespace demo
 
         bp::BodyPreset bound = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::PolygonShape(boundVertices), 1.0f, 0.0f, 0.0f, 0.3f, 0.1f, true, false, false, true);
         bp::BodyPreset table = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::BoxShape(bp::Vec2(22.0f, 12.0f)), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
-        bp::BodyPreset hole = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.3f), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
+        bp::BodyPreset hole = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
         bp::BodyPreset ball = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 0.5f, 0.75f, 0.75f, 0.9f, 0.0f, false, false, false, false);
 
         scene.AddRigidbody(table);
@@ -85,8 +86,9 @@ namespace demo
         const float y = 5.1f;
 
         bp::Vec2 holePositions[] = {
-            {-x, y}, {0.0f, y}, {x, y},
-            {-x, -y}, {0.0f, -y}, {x, -y}
+            {-x, y}, {x, y},
+            {-x, -y}, {x, -y},
+            {0.0f, (y + 0.1f)}, {0.0f, -(y + 0.1f)}
         };
 
         for(int i = 0; i < 6; i++)
@@ -95,8 +97,16 @@ namespace demo
             holes.push_back(scene.AddRigidbody(hole));
             colors.push_back(sf::Color(15, 15, 15));
         }
-        hole.shape = bp::CircleShape(0.6f);
-        for(int i = 0; i < 6; i++)
+
+        hole.shape = bp::CircleShape(0.76f);
+        for(int i = 0; i < 4; i++)
+        {
+            hole.position = holePositions[i];
+            scene.AddRigidbody(hole);
+            colors.push_back(sf::Color(15, 15, 15));
+        }
+        hole.shape = bp::CircleShape(0.67f);
+        for(int i = 4; i < 6; i++)
         {
             hole.position = holePositions[i];
             scene.AddRigidbody(hole);
@@ -169,7 +179,9 @@ namespace demo
                         rb->MoveTo(bp::Vec2(4.5f, 0.15f));
                         rb->SetLinearVelocity(bp::Vec2::Zero());
                         rb->SetAngularVelocity(0.0f);
-                        break; 
+                        rb->SetSensor(true);
+                        isPlacing = true;
+                        break;
                     }
 
                     auto itSolid = std::find(solids.begin(), solids.end(), rb);
@@ -190,6 +202,13 @@ namespace demo
                     }
                 }
             }
+        }
+
+        if(isPlacing)
+        {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+            bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
+            whiteBall->MoveTo(worldPos);
         }
     }
 
@@ -330,24 +349,35 @@ namespace demo
             if(event.type == sf::Event::Closed)
                 appRunning = false;
 
-            if(event.type == sf::Event::MouseButtonPressed)
+            if(!isPlacing)
             {
-                if(event.mouseButton.button == sf::Mouse::Left && whiteBall->GetLinearVelocity().Magnitude() < 0.05f)
-                    isDragging = true;
-            }
-            if(event.type == sf::Event::MouseButtonReleased)
-            {
-                if(event.mouseButton.button == sf::Mouse::Left && isDragging)
+                if(event.type == sf::Event::MouseButtonPressed)
                 {
-                    isDragging = false;
-
-                    sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-                    bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
-                    bp::Vec2 direction = whiteBall->GetPosition() - worldPos;
-                    bp::Vec2 impulse = direction * 3.0f;
-                    impulse = bp::utils::ClampMagnitude(impulse, 0.0f, 35.0f);
-                    
-                    whiteBall->ApplyImpulse(impulse);
+                    if(event.mouseButton.button == sf::Mouse::Left && whiteBall->GetLinearVelocity().Magnitude() < 0.05f)
+                        isDragging = true;
+                }
+                if(event.type == sf::Event::MouseButtonReleased)
+                {
+                    if(event.mouseButton.button == sf::Mouse::Left && isDragging)
+                    {
+                        isDragging = false;
+    
+                        sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+                        bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
+                        bp::Vec2 direction = whiteBall->GetPosition() - worldPos;
+                        bp::Vec2 impulse = direction * 3.0f;
+                        impulse = bp::utils::ClampMagnitude(impulse, 0.0f, 35.0f);
+                        
+                        whiteBall->ApplyImpulse(impulse);
+                    }
+                }
+            }
+            else
+            {
+                if(event.type == sf::Event::MouseButtonReleased)
+                {
+                    isPlacing = false;
+                    whiteBall->SetSensor(false);
                 }
             }
         }
