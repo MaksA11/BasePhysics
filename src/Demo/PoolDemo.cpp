@@ -8,6 +8,9 @@ namespace demo
         appRunning = true;
         isDragging = false;
         isPlacing = false;
+        whiteBallImpulse = bp::Vec2::Zero();
+        whiteBallImpulseMaxMagnitude = 45.0f;
+        whiteBallImpulseMultiplier = 4.25f;
     }
 
     void PoolDemoApp::Init(unsigned int width, unsigned int height, const char *name, WindowType windowType)
@@ -35,12 +38,14 @@ namespace demo
 
     void PoolDemoApp::Start()
     {
-        scene = bp::PhysicsScene(bp::Vec2(bp::Vec2::Zero()));
+        scene = bp::PhysicsScene(bp::Vec2::Zero(), 1.25f);
 
-        const float outerBoundWidth = 8.8f;
-        const float innerBoundWidth = 8.0f;
+        const float outerBoundWidth = 8.5f;
+        const float innerBoundWidth = 7.5f;
         const float boundHeight = 0.5f;
-        const float innerOuterOffset = 0.2f;
+        const float innerOuterOffset = 0.15f;
+        const float centerX = 5.00f;
+        const float centerY = 4.75f;
 
         std::vector<bp::Vec2> boundVertices1 = {
             {-outerBoundWidth * 0.5f, boundHeight * 0.5f}, {outerBoundWidth * 0.5f, boundHeight * 0.5f},
@@ -55,10 +60,10 @@ namespace demo
             {innerBoundWidth * 0.5f - innerOuterOffset * 0.5f, -boundHeight * 0.5f}, {-innerBoundWidth * 0.5f + innerOuterOffset * 0.5f, -boundHeight * 0.5f}
         };
 
-        bp::BodyPreset bound = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::PolygonShape(boundVertices1), 1.0f, 0.0f, 0.0f, 0.3f, 0.1f, true, false, false, true);
+        bp::BodyPreset bound = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::PolygonShape(boundVertices1), 1.0f, 0.0f, 0.0f, 0.75f, 0.3f, true, false, false, false);
         bp::BodyPreset table = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::BoxShape(bp::Vec2(22.0f, 12.0f)), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
         bp::BodyPreset hole = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
-        bp::BodyPreset ball = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 0.5f, 0.85f, 0.85f, 0.9f, 0.5f, false, false, false, false);
+        bp::BodyPreset ball = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 0.6f, 1.0f, 1.2f, 0.95f, 0.75f, false, false, false, false);
 
         scene.AddRigidbody(table);
         colors.push_back(sf::Color(90, 50, 30));
@@ -67,21 +72,21 @@ namespace demo
         innerTable = scene.AddRigidbody(table);
         colors.push_back(sf::Color(5, 105, 0));
 
-        bound.position = bp::Vec2(-5.0f, 4.75f);
+        bound.position = bp::Vec2(-centerX, centerY);
         scene.AddRigidbody(bound);
         colors.push_back(sf::Color(5, 88, 0));
         bound.rotation = bp::math::pi;
-        bound.position = bp::Vec2(5.0f, -4.75f);
+        bound.position = bp::Vec2(centerX, -centerY);
         scene.AddRigidbody(bound);
         colors.push_back(sf::Color(5, 88, 0));
 
         bound.shape = bp::PolygonShape(boundVertices2);
         bound.rotation = 0.0f;
-        bound.position = bp::Vec2(5.0f, 4.75f);
+        bound.position = bp::Vec2(centerX, centerY);
         scene.AddRigidbody(bound);
         colors.push_back(sf::Color(5, 88, 0));
         bound.rotation = bp::math::pi;
-        bound.position = bp::Vec2(-5.0f, -4.75f);
+        bound.position = bp::Vec2(-centerX, -centerY);
         scene.AddRigidbody(bound);
         colors.push_back(sf::Color(5, 88, 0));
 
@@ -221,6 +226,15 @@ namespace demo
             }
         }
 
+        if(isDragging)
+        {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+            bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
+            bp::Vec2 direction = whiteBall->GetPosition() - worldPos;
+            bp::Vec2 impulse = direction * whiteBallImpulseMultiplier;
+            whiteBallImpulse = bp::utils::ClampMagnitude(impulse, 0.0f, whiteBallImpulseMaxMagnitude);
+        }
+
         if(isPlacing)
         {
             sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
@@ -342,12 +356,7 @@ namespace demo
 
         if(isDragging)
         {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-            bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
-            bp::Vec2 direction = whiteBall->GetPosition() - worldPos;
-            bp::Vec2 impulse = direction * 3.0f;
-            impulse = bp::utils::ClampMagnitude(impulse, 0.0f, 35.0f);
-            int mag = (int)impulse.Magnitude();
+            int mag = (int)(whiteBallImpulse.Magnitude() * (100.0f / whiteBallImpulseMaxMagnitude));
 
             sf::Vector2i ballScreenPos = camera.WorldToScreen(whiteBall->GetPosition(), *window);
             ImVec2 ballScreen = ImVec2(ballScreenPos.x - 30, ballScreenPos.y - 75);
@@ -358,8 +367,8 @@ namespace demo
                 50.0f,
                 // ballScreen,
                 mouseScreen,
-                IM_COL32((mag * 7.3f), 255 - (mag * 7.3f), 0, 255),
-                (std::to_string((int)impulse.Magnitude())).c_str()
+                IM_COL32((mag * 2.55), 255 - (mag * 2.55f), 0, 255),
+                (std::to_string(mag)).c_str()
             );
         }
     }
@@ -385,14 +394,8 @@ namespace demo
                     if(event.mouseButton.button == sf::Mouse::Left && isDragging)
                     {
                         isDragging = false;
-    
-                        sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-                        bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
-                        bp::Vec2 direction = whiteBall->GetPosition() - worldPos;
-                        bp::Vec2 impulse = direction * 3.0f;
-                        impulse = bp::utils::ClampMagnitude(impulse, 0.0f, 35.0f);
-                        
-                        whiteBall->ApplyImpulse(impulse);
+                        whiteBall->ApplyImpulse(whiteBallImpulse);
+                        whiteBallImpulse = bp::Vec2::Zero();
                     }
                 }
             }
@@ -415,6 +418,11 @@ namespace demo
             appRunning = false;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::R))
             Reset();
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::G))
+        {
+            isPlacing = true;
+            whiteBall->SetSensor(true);
+        }
     }
 
     void PoolDemoApp::CalculateDeltaTime()

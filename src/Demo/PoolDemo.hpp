@@ -35,6 +35,10 @@ namespace demo
 			bool isDragging;
 			bool isPlacing;
 
+			bp::Vec2 whiteBallImpulse;
+			float whiteBallImpulseMaxMagnitude;
+			float whiteBallImpulseMultiplier;
+
 			std::vector<sf::Color> colors;
 
             std::vector<bp::Rigidbody *> holes;
