@@ -20,6 +20,11 @@ namespace demo
     {
         view.setCenter(position);
     }
+    void Camera::SetZoom(float zoom)
+    {
+        this->zoom = zoom;
+        view.setSize(windowSize.x / zoom, -(windowSize.y / zoom));
+    }
     void Camera::Zoom(float factor)
     {
         zoom *= factor;

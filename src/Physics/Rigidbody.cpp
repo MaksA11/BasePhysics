@@ -198,12 +198,9 @@ namespace bp
     {
         usesGravity = value;
     }
-    void Rigidbody::SetSensor(bool value)
+    void Rigidbody::LockRotation(bool value)
     {
-        linearVelocity = Vec2::Zero();
-        angularVelocity = 0.0f;
-
-        collider.SetSensor(value);
+        lockRotation = value;
     }
 
     void Rigidbody::SetProperties(const BodyPreset &preset)

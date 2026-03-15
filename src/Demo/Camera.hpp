@@ -24,6 +24,7 @@ namespace demo
             void Move(sf::Vector2f delta);
             void MoveTo(sf::Vector2f position);
             void Zoom(float factor);
+            void SetZoom(float zoom);
             void SetScreenSize(sf::Vector2u size);
 
             void ApplyTo(sf::RenderWindow &window);

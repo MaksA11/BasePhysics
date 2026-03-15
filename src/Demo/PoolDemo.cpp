@@ -8,6 +8,7 @@ namespace demo
         appRunning = true;
         isDragging = false;
         isPlacing = false;
+        canBePlaced = true;
         whiteBallImpulse = bp::Vec2::Zero();
         whiteBallImpulseMaxMagnitude = 45.0f;
         whiteBallImpulseMultiplier = 4.25f;
@@ -33,15 +34,15 @@ namespace demo
         camera = Camera(bp::Vec2::Zero(), window->getSize(), 50);
 
         random::Init();
-        camera.Zoom(1.25f);
     }
 
     void PoolDemoApp::Start()
     {
+        camera.SetZoom(62.5f);
         scene = bp::PhysicsScene(bp::Vec2::Zero(), 1.25f);
 
         const float outerBoundWidth = 8.5f;
-        const float innerBoundWidth = 7.5f;
+        const float innerBoundWidth = 7.55f;
         const float boundHeight = 0.5f;
         const float innerOuterOffset = 0.15f;
         const float centerX = 5.00f;
@@ -60,7 +61,7 @@ namespace demo
             {innerBoundWidth * 0.5f - innerOuterOffset * 0.5f, -boundHeight * 0.5f}, {-innerBoundWidth * 0.5f + innerOuterOffset * 0.5f, -boundHeight * 0.5f}
         };
 
-        bp::BodyPreset bound = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::PolygonShape(boundVertices1), 1.0f, 0.0f, 0.0f, 0.75f, 0.3f, true, false, false, false);
+        bp::BodyPreset bound = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::PolygonShape(boundVertices1), 1.0f, 0.0f, 0.0f, 0.67f, 0.3f, true, false, false, false);
         bp::BodyPreset table = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::BoxShape(bp::Vec2(22.0f, 12.0f)), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
         bp::BodyPreset hole = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, true, true);
         bp::BodyPreset ball = bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.35f), 0.6f, 1.0f, 1.2f, 0.95f, 0.75f, false, false, false, false);
@@ -73,40 +74,40 @@ namespace demo
         colors.push_back(sf::Color(5, 105, 0));
 
         bound.position = bp::Vec2(-centerX, centerY);
-        scene.AddRigidbody(bound);
+        bounds.push_back(scene.AddRigidbody(bound));
         colors.push_back(sf::Color(5, 88, 0));
         bound.rotation = bp::math::pi;
         bound.position = bp::Vec2(centerX, -centerY);
-        scene.AddRigidbody(bound);
+        bounds.push_back(scene.AddRigidbody(bound));
         colors.push_back(sf::Color(5, 88, 0));
 
         bound.shape = bp::PolygonShape(boundVertices2);
         bound.rotation = 0.0f;
         bound.position = bp::Vec2(centerX, centerY);
-        scene.AddRigidbody(bound);
+        bounds.push_back(scene.AddRigidbody(bound));
         colors.push_back(sf::Color(5, 88, 0));
         bound.rotation = bp::math::pi;
         bound.position = bp::Vec2(-centerX, -centerY);
-        scene.AddRigidbody(bound);
+        bounds.push_back(scene.AddRigidbody(bound));
         colors.push_back(sf::Color(5, 88, 0));
 
         bound.shape = bp::PolygonShape(boundVertices3);
         bound.rotation = bp::math::pi * 0.5f;
         bound.position = bp::Vec2(-9.75f, 0.0f);
-        scene.AddRigidbody(bound);
+        bounds.push_back(scene.AddRigidbody(bound));
         colors.push_back(sf::Color(5, 88, 0));
         bound.rotation = bp::math::pi * -0.5f;
         bound.position = bp::Vec2(9.75f, 0.0f);
-        scene.AddRigidbody(bound);
+        bounds.push_back(scene.AddRigidbody(bound));
         colors.push_back(sf::Color(5, 88, 0));
 
-        const float x = 10.1f;
-        const float y = 5.1f;
+        const float x = 9.95f;
+        const float y = 4.95f;
 
         bp::Vec2 holePositions[] = {
             {-x, y}, {x, y},
             {-x, -y}, {x, -y},
-            {0.0f, (y + 0.15f)}, {0.0f, -(y + 0.15f)}
+            {0.0f, (y + 0.25f)}, {0.0f, -(y + 0.25f)}
         };
 
         for(int i = 0; i < 6; i++)
@@ -116,14 +117,14 @@ namespace demo
             colors.push_back(sf::Color(15, 15, 15));
         }
 
-        hole.shape = bp::CircleShape(0.76f);
+        hole.shape = bp::CircleShape(0.75f);
         for(int i = 0; i < 4; i++)
         {
             hole.position = holePositions[i];
             scene.AddRigidbody(hole);
             colors.push_back(sf::Color(15, 15, 15));
         }
-        hole.shape = bp::CircleShape(0.62f);
+        hole.shape = bp::CircleShape(0.7f);
         for(int i = 4; i < 6; i++)
         {
             hole.position = holePositions[i];
@@ -173,7 +174,8 @@ namespace demo
         colors.push_back(sf::Color(255, 255, 255));
 
         isPlacing = true;
-        whiteBall->SetSensor(true);
+        whiteBall->SetStatic(true);
+        whiteBall->GetCollider().SetSensor(true);
     }
 
     void PoolDemoApp::Update()
@@ -198,10 +200,8 @@ namespace demo
 
                     if(rb == whiteBall)
                     {
-                        rb->MoveTo(bp::Vec2(4.5f, 0.15f));
-                        rb->SetLinearVelocity(bp::Vec2::Zero());
-                        rb->SetAngularVelocity(0.0f);
-                        rb->SetSensor(true);
+                        rb->SetStatic(true);
+                        rb->GetCollider().SetSensor(true);
                         isPlacing = true;
                         break;
                     }
@@ -226,6 +226,28 @@ namespace demo
             }
         }
 
+        canBePlaced = bp::collisions::Collide(whiteBall, innerTable);
+        for(bp::Rigidbody *ball : solids)
+        {
+            if(bp::collisions::Collide(ball, whiteBall))
+                canBePlaced = false;
+        }
+        for(bp::Rigidbody *ball : stripes)
+        {
+            if(bp::collisions::Collide(ball, whiteBall))
+                canBePlaced = false;
+        }
+        for(bp::Rigidbody *bound : bounds)
+        {
+            if(bp::collisions::Collide(bound, whiteBall))
+                canBePlaced = false;
+        }
+        for(bp::Rigidbody *hole : holes)
+        {
+            if(bp::collisions::Collide(hole, whiteBall))
+                canBePlaced = false;
+        }
+
         if(isDragging)
         {
             sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
@@ -233,7 +255,10 @@ namespace demo
             bp::Vec2 direction = whiteBall->GetPosition() - worldPos;
             bp::Vec2 impulse = direction * whiteBallImpulseMultiplier;
             whiteBallImpulse = bp::utils::ClampMagnitude(impulse, 0.0f, whiteBallImpulseMaxMagnitude);
+            // camera.SetZoom(62.5f - whiteBallImpulse.Magnitude() * 0.35f);
         }
+        else
+            camera.SetZoom(62.5f);
 
         if(isPlacing)
         {
@@ -260,11 +285,11 @@ namespace demo
                 circle.setRadius(rb->GetCollider().GetCircle()->radius);
                 circle.setRotation(bp::math::ToDegrees(rb->GetRotation()));
                 circle.setFillColor(colors[i]);
-                if(rb != whiteBall)
+                if(rb != whiteBall || (rb == whiteBall && isDragging))
                     circle.setOutlineColor(sf::Color::Black);
-                else if(whiteBall->GetLinearVelocity().Magnitude() < 0.05f && bp::collisions::Collide(whiteBall, innerTable))
+                else if(whiteBall->GetLinearVelocity().Magnitude() < 0.05f && canBePlaced)
                     circle.setOutlineColor(sf::Color(0, 205, 0));
-                else
+                else if(isPlacing)
                     circle.setOutlineColor(sf::Color(205, 0, 0));
                 circle.setOutlineThickness(-0.067f);
                 circle.setOrigin(sf::Vector2f(circle.getRadius(), circle.getRadius()));
@@ -349,9 +374,16 @@ namespace demo
         ImGui::GetBackgroundDrawList()->AddText(
             ImGui::GetFont(),
             50.0f,
-            ImVec2(10.0f, 1350.0f),
+            ImVec2(10.0f, 1320.0f),
             IM_COL32(255, 255, 255, 255),
             ("Mouse pos: " + worldPos.ToString()).c_str()
+        );
+        ImGui::GetBackgroundDrawList()->AddText(
+            ImGui::GetFont(),
+            50.0f,
+            ImVec2(10.0f, 1380.0f),
+            IM_COL32(255, 255, 255, 255),
+            ("Zoom: " + std::to_string(camera.GetZoom())).c_str()
         );
 
         if(isDragging)
@@ -401,15 +433,11 @@ namespace demo
             }
             else
             {
-                sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-                bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
-
-                bp::Rigidbody *mouseRb = bp::Rigidbody::CreateCircleBody(worldPos, 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, false, true);
-
-                if(event.type == sf::Event::MouseButtonReleased && bp::collisions::Collide(mouseRb, innerTable))
+                if(event.type == sf::Event::MouseButtonReleased && canBePlaced)
                 {
                     isPlacing = false;
-                    whiteBall->SetSensor(false);
+                    whiteBall->SetStatic(false);
+                    whiteBall->GetCollider().SetSensor(false);
                 }
             }
         }
@@ -421,7 +449,8 @@ namespace demo
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::G))
         {
             isPlacing = true;
-            whiteBall->SetSensor(true);
+            whiteBall->SetStatic(true);
+            whiteBall->GetCollider().SetSensor(true);
         }
     }
 
@@ -438,6 +467,8 @@ namespace demo
         }
         colors.clear();
         colors.shrink_to_fit();
+        bounds.clear();
+        bounds.shrink_to_fit();
         holes.clear();
         holes.shrink_to_fit();
         solids.clear();

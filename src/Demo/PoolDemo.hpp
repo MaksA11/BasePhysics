@@ -34,6 +34,7 @@ namespace demo
 			
 			bool isDragging;
 			bool isPlacing;
+			bool canBePlaced;
 
 			bp::Vec2 whiteBallImpulse;
 			float whiteBallImpulseMaxMagnitude;
@@ -41,6 +42,7 @@ namespace demo
 
 			std::vector<sf::Color> colors;
 
+            std::vector<bp::Rigidbody *> bounds;
             std::vector<bp::Rigidbody *> holes;
             std::vector<bp::Rigidbody *> solids;
             std::vector<bp::Rigidbody *> stripes;
