@@ -1,4 +1,4 @@
-#include "HashGrid.hpp"
+#include <BasePhysics/Collision/BroadPhase/HashGrid.hpp>
 
 namespace bp
 {

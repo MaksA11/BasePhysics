@@ -1,4 +1,4 @@
-#include "Collisions.hpp"
+#include <BasePhysics/Collision/NarrowPhase/Collisions.hpp>
 
 namespace bp::collisions
 {

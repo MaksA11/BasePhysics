@@ -4,7 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../Core/Vec2.hpp"
+#include <BasePhysics/Core/Vec2.hpp>
 
 namespace demo::random
 {

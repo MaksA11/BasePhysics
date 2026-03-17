@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "../../Core/Vec2.hpp"
-#include "../../Physics/Rigidbody.hpp"
-#include "GridEntry.hpp"
-#include "AABB.hpp"
+#include <BasePhysics/Core/Vec2.hpp>
+#include <BasePhysics/Physics/Rigidbody.hpp>
+#include <BasePhysics/Collision/BroadPhase/GridEntry.hpp>
+#include <BasePhysics/Collision/BroadPhase/AABB.hpp>
 
 namespace bp
 {

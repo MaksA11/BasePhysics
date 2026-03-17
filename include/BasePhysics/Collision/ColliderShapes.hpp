@@ -3,7 +3,7 @@
 #include <vector>
 #include <variant>
 
-#include "../Core/Vec2.hpp"
+#include <BasePhysics/Core/Vec2.hpp>
 
 namespace bp
 {

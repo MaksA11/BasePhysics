@@ -1,8 +1,8 @@
-#include "App.hpp"
+#include "PhysicsDemo.hpp"
 
 namespace demo
 {
-    App::App()
+    PhysicsDemoApp::PhysicsDemoApp()
     {
         deltaTime = 0.0f;
         appRunning = true;
@@ -10,7 +10,7 @@ namespace demo
         isDragging = false;
     }
 
-    void App::Init(unsigned int width, unsigned int height, const char *name, WindowType windowType)
+    void PhysicsDemoApp::Init(unsigned int width, unsigned int height, const char *name, WindowType windowType)
     {
         if(windowType == WINDOW)
             window = new sf::RenderWindow(sf::VideoMode(width, height), name);
@@ -32,7 +32,7 @@ namespace demo
         random::Init();
     }
 
-    void App::Start()
+    void PhysicsDemoApp::Start()
     {
         selectedRb = nullptr;
 
@@ -134,7 +134,7 @@ namespace demo
         // }
     }
 
-    void App::Update()
+    void PhysicsDemoApp::Update()
     {
         scene.Step(deltaTime, substeps, iterations);
 
@@ -150,7 +150,7 @@ namespace demo
         }
     }
 
-    void App::Render()
+    void PhysicsDemoApp::Render()
     {
         window->clear(sf::Color(80, 90, 100));
 
@@ -348,7 +348,7 @@ namespace demo
         camera.ApplyTo(*window);
         window->display();
     }
-    void App::RenderUI()
+    void PhysicsDemoApp::RenderUI()
     {
         ImGui::SFML::Update(*window, clock.getElapsedTime());
 
@@ -485,7 +485,7 @@ namespace demo
         ImGui::End();
     }
 
-    void App::Input()
+    void PhysicsDemoApp::Input()
     {
         sf::Event event;
         while(window->pollEvent(event))
@@ -618,12 +618,12 @@ namespace demo
             appRunning = false;
     }
 
-    void App::CalculateDeltaTime()
+    void PhysicsDemoApp::CalculateDeltaTime()
     {
         deltaTime = clock.restart().asSeconds();
         fps = deltaTime > 0.0f ? 1.0f / deltaTime : 0.0f;
     }
-    void App::Reset()
+    void PhysicsDemoApp::Reset()
     {
         for(int i = scene.GetBodies().size() - 1; i >= 0; i--)
         {
@@ -633,14 +633,14 @@ namespace demo
         colors.shrink_to_fit();
         Start();
     }
-    void App::CleanUp()
+    void PhysicsDemoApp::CleanUp()
     {
         ImGui::SFML::Shutdown();
         window->close();
         delete window;
         window = nullptr;
     }
-    bool App::AppRunning()
+    bool PhysicsDemoApp::AppRunning()
     {
         return appRunning;
     }

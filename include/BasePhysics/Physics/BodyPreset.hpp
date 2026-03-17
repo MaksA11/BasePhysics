@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Core/Vec2.hpp"
-#include "../Collision/ColliderShapes.hpp"
+#include <BasePhysics/Core/Vec2.hpp>
+#include <BasePhysics/Collision/ColliderShapes.hpp>
 
 namespace bp
 {

@@ -9,11 +9,11 @@
 #include <imgui.h>
 #include <imgui-SFML.h>
 
-#include "../Physics/PhysicsScene.hpp"
+#include <BasePhysics/BasePhysics.hpp>
 
-#include "WindowType.hpp"
-#include "Camera.hpp"
-#include "Random.hpp"
+#include "Utils/WindowType.hpp"
+#include "Utils/Camera.hpp"
+#include "Utils/Random.hpp"
 
 namespace demo
 {

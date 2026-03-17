@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "../Collision/Collider.hpp"
-#include "../Collision/NarrowPhase/Collisions.hpp"
-#include "../Collision/NarrowPhase/ContactManifold.hpp"
-#include "../Collision/BroadPhase/HashGrid.hpp"
-#include "Rigidbody.hpp"
+#include <BasePhysics/Collision/Collider.hpp>
+#include <BasePhysics/Collision/NarrowPhase/Collisions.hpp>
+#include <BasePhysics/Collision/NarrowPhase/ContactManifold.hpp>
+#include <BasePhysics/Collision/BroadPhase/HashGrid.hpp>
+#include <BasePhysics/Physics/Rigidbody.hpp>
 
 namespace bp
 {

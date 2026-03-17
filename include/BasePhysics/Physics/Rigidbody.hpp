@@ -3,11 +3,11 @@
 #include <iostream>
 #include <vector>
 
-#include "../Core/Vec2.hpp"
-#include "../Core/Math.hpp"
-#include "../Core/Utils.hpp"
-#include "../Collision/Collider.hpp"
-#include "BodyPreset.hpp"
+#include <BasePhysics/Core/Vec2.hpp>
+#include <BasePhysics/Core/Math.hpp>
+#include <BasePhysics/Core/Utils.hpp>
+#include <BasePhysics/Collision/Collider.hpp>
+#include <BasePhysics/Physics/BodyPreset.hpp>
 
 namespace bp
 {

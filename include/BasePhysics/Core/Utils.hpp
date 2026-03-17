@@ -3,7 +3,7 @@
 #include <cmath>
 #include <algorithm>
 
-#include "Math.hpp"
+#include <BasePhysics/Core/Math.hpp>
 
 namespace bp::utils
 {

@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "../Core/Vec2.hpp"
-#include "../Core/Utils.hpp"
-#include "../Core/Geometry.hpp"
-#include "ColliderShapes.hpp"
-#include "BroadPhase/AABB.hpp"
+#include <BasePhysics/Core/Vec2.hpp>
+#include <BasePhysics/Core/Utils.hpp>
+#include <BasePhysics/Core/Geometry.hpp>
+#include <BasePhysics/Collision/ColliderShapes.hpp>
+#include <BasePhysics/Collision/BroadPhase/AABB.hpp>
 
 namespace bp
 {

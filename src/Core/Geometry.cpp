@@ -1,15 +1,8 @@
-#pragma once
-
-#include <vector>
-#include <utility>
-#include <limits>
-
-#include "Vec2.hpp"
-#include "Math.hpp"
+#include <BasePhysics/Core/Geometry.hpp>
 
 namespace bp::geometry
 {
-    inline float PointSegmentDistance(Vec2 point, Vec2 segmentA, Vec2 segmentB, Vec2 &outClosestPoint)
+    float PointSegmentDistance(Vec2 point, Vec2 segmentA, Vec2 segmentB, Vec2 &outClosestPoint)
     {
         Vec2 segment = segmentB - segmentA;
         Vec2 startToPoint = point - segmentA;
@@ -35,7 +28,7 @@ namespace bp::geometry
         return math::DistanceSquared(point, outClosestPoint);
     }
 
-    inline int FindClosestPointIndex(Vec2 center, const std::vector<Vec2> &vertices)
+    int FindClosestPointIndex(Vec2 center, const std::vector<Vec2> &vertices)
     {
         int result = -1;
         float minDistSq = std::numeric_limits<float>::max();
@@ -52,7 +45,7 @@ namespace bp::geometry
         return result;
     }
 
-    inline void ProjectVertices(const std::vector<Vec2> &vertices, Vec2 axis, float &outMin, float &outMax)
+    void ProjectVertices(const std::vector<Vec2> &vertices, Vec2 axis, float &outMin, float &outMax)
     {
         outMin = std::numeric_limits<float>::max();
         outMax = -std::numeric_limits<float>::max();
@@ -67,7 +60,7 @@ namespace bp::geometry
         }
     }
 
-    inline void ProjectCircle(Vec2 center, float radius, Vec2 axis, float &outMin, float &outMax)
+    void ProjectCircle(Vec2 center, float radius, Vec2 axis, float &outMin, float &outMax)
     {
         float proj = math::Dot(center, axis);
 
