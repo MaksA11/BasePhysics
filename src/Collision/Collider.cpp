@@ -1,4 +1,4 @@
-#include "Collider.hpp"
+#include <BasePhysics/Collision/Collider.hpp>
 
 namespace bp
 {
