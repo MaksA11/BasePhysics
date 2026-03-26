@@ -3,6 +3,16 @@
 #include "Demos/PhysicsDemo.hpp"
 #include "Demos/PoolDemo.hpp"
 
+#ifdef _WIN32
+#define WIDTH 1920
+#define HEIGHT 1080
+#define WINDOW_TYPE demo::WindowType::BORDERLESS
+#elif __linux__
+#define WIDTH 1920
+#define HEIGHT 1080
+#define WINDOW_TYPE demo::WindowType::WINDOW
+#endif
+
 int main(int argc, char *argv[])
 {
     if(argc > 1)
@@ -12,7 +22,7 @@ int main(int argc, char *argv[])
 		{
             demo::PoolDemoApp *app = new demo::PoolDemoApp();
 
-            app->Init(2560, 1440, "BasePhysics Demo", demo::WindowType::BORDERLESS);
+            app->Init(WIDTH, HEIGHT, "BasePhysics Demo", WINDOW_TYPE);
             app->Start();
 
             while(app->AppRunning())
@@ -35,7 +45,7 @@ int main(int argc, char *argv[])
     demo::PhysicsDemoApp *app = new demo::PhysicsDemoApp();
     // demo::PoolDemoApp *app = new demo::PoolDemoApp();
 	
-    app->Init(2560, 1440, "BasePhysics Demo", demo::WindowType::BORDERLESS);
+    app->Init(WIDTH, HEIGHT, "BasePhysics Demo", WINDOW_TYPE);
     app->Start();
 
     while(app->AppRunning())
