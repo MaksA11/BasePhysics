@@ -3,13 +3,12 @@
 #include "Demos/PhysicsDemo.hpp"
 #include "Demos/PoolDemo.hpp"
 
-#ifdef _WIN32
 #define WIDTH 2560
 #define HEIGHT 1440
+
+#ifdef _WIN32
 #define WINDOW_TYPE demo::WindowType::BORDERLESS
 #elif __linux__
-#define WIDTH 1920
-#define HEIGHT 1080
 #define WINDOW_TYPE demo::WindowType::WINDOW
 #endif
 

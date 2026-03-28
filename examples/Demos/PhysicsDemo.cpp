@@ -1,5 +1,11 @@
 #include "PhysicsDemo.hpp"
 
+#ifdef _WIN32
+#define GUI_SCALE 1.0f
+#elif __linux__
+#define GUI_SCALE 1.8f
+#endif
+
 namespace demo
 {
     PhysicsDemoApp::PhysicsDemoApp()
@@ -8,6 +14,7 @@ namespace demo
         appRunning = true;
         fps = 0.0f;
         isDragging = false;
+        guiScale = GUI_SCALE;
     }
 
     void PhysicsDemoApp::Init(unsigned int width, unsigned int height, const char *name, WindowType windowType)
@@ -27,7 +34,7 @@ namespace demo
         ImGui::SFML::Init(*window);
         window->setFramerateLimit(500);
         clock = sf::Clock();
-        camera = Camera(bp::Vec2::Zero(), window->getSize(), 50);
+        camera = Camera(bp::Vec2::Zero(), window->getSize(), 50.0f);
 
         random::Init();
     }
@@ -345,6 +352,7 @@ namespace demo
         }
         
         ImGui::SFML::Render(*window);
+        ImGui::GetIO().FontGlobalScale = guiScale;
         camera.ApplyTo(*window);
         window->display();
     }

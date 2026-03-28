@@ -33,6 +33,8 @@ namespace demo
 
 			sf::Vector2i lastMousePos;
 			bool isDragging;
+
+			float guiScale;
 			
 			bp::Rigidbody *selectedRb;
 
