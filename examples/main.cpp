@@ -19,46 +19,42 @@ int main(int argc, char *argv[])
 		std::string arg = argv[1];
 		if(arg == "pool")
 		{
-            demo::PoolDemoApp *app = new demo::PoolDemoApp();
+            demo::PoolDemoApp app = demo::PoolDemoApp();
 
-            app->Init(WIDTH, HEIGHT, "BasePhysics Demo", WINDOW_TYPE);
-            app->Start();
+            app.Init(WIDTH, HEIGHT, "BasePhysics Demo", WINDOW_TYPE);
+            app.Start();
 
-            while(app->AppRunning())
+            while(app.AppRunning())
             {
-                app->CalculateDeltaTime();
-                app->Input();
-                app->Update();
-                app->RenderUI();
-                app->Render();
+                app.CalculateDeltaTime();
+                app.Input();
+                app.Update();
+                app.RenderUI();
+                app.Render();
             }
 
-            app->CleanUp();
-
-            delete app;
+            app.CleanUp();
 
             return EXIT_SUCCESS;
         }
 	}
 
-    demo::PhysicsDemoApp *app = new demo::PhysicsDemoApp();
-    // demo::PoolDemoApp *app = new demo::PoolDemoApp();
+    demo::PhysicsDemoApp app = demo::PhysicsDemoApp();
+    // demo::PoolDemoApp app = demo::PoolDemoApp();
 	
-    app->Init(WIDTH, HEIGHT, "BasePhysics Demo", WINDOW_TYPE);
-    app->Start();
+    app.Init(WIDTH, HEIGHT, "BasePhysics Demo", WINDOW_TYPE);
+    app.Start();
 
-    while(app->AppRunning())
+    while(app.AppRunning())
     {
-        app->CalculateDeltaTime();
-        app->Input();
-        app->Update();
-        app->RenderUI();
-        app->Render();
+        app.CalculateDeltaTime();
+        app.Input();
+        app.Update();
+        app.RenderUI();
+        app.Render();
     }
 
-    app->CleanUp();
-
-    delete app;
+    app.CleanUp();
 
     return EXIT_SUCCESS;
 }
