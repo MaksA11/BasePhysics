@@ -16,7 +16,13 @@ namespace bp
         {
             delete rb;
         }
+        for(Joint *joint : joints)
+        {
+            delete joint;
+        }
+
         bodies.clear();
+        joints.clear();
     }
 
     Rigidbody *PhysicsScene::AddRigidbody(Rigidbody *rb)
@@ -37,6 +43,26 @@ namespace bp
     void PhysicsScene::RemoveRigidbody(int index)
     {
         Rigidbody::DeleteRigidbody(bodies[index], bodies);
+    }
+
+    Joint *PhysicsScene::CreateJoint(Joint *joint)
+    {
+        joints.push_back(joint);
+        return joint;
+    }
+    Joint *PhysicsScene::CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, JointType jointType)
+    {
+        Joint *joint = Joint::CreateJoint(rb1, rb2, localAnchor1, localAnchor2, jointType);
+        joints.push_back(joint);
+        return joint;
+    }
+    void PhysicsScene::RemoveJoint(Joint *joint)
+    {
+        Joint::DeleteJoint(joint, joints);
+    }
+    void PhysicsScene::RemoveJoint(int index)
+    {
+        Joint::DeleteJoint(joints[index], joints);
     }
 
     void PhysicsScene::Step(float deltaTime, unsigned int substeps, unsigned int iterations)
