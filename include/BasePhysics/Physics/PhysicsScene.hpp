@@ -50,6 +50,7 @@ namespace bp
             void SetGravity(Vec2 val);
 
             const std::vector<Rigidbody *> &GetBodies() const;
+            const std::vector<Joint *> &GetJoints() const;
             const std::vector<ContactManifold> &GetContacts() const;
             const HashGrid &GetHashGrid() const;
 

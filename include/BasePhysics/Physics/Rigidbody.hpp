@@ -41,7 +41,7 @@ namespace bp
 
             static void DeleteRigidbody(Rigidbody *rb, std::vector<Rigidbody *> &bodies);
 
-            Vec2 GetPosition();
+            Vec2 GetPosition() const;
             float GetRotation();
 
             const Collider &GetCollider() const;

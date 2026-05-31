@@ -55,6 +55,7 @@ namespace demo
 			bool renderVertices;
 			bool renderAABBs;
 			bool renderContactPoints;
+			bool renderJoints;
 			bool renderHashGrid;
 
 			int substeps;

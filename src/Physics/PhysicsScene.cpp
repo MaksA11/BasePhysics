@@ -342,6 +342,10 @@ namespace bp
     {
         return bodies;
     }
+    const std::vector<Joint *> &PhysicsScene::GetJoints() const
+    {
+        return joints;
+    }
     const std::vector<ContactManifold> &PhysicsScene::GetContacts() const
     {
         return contacts;

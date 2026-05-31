@@ -45,11 +45,29 @@ namespace bp
 
     void Joint::SolvePosition()
     {
-        
+
     }
 
     void Joint::SolveVelocity()
     {
 
+    }
+
+    const Rigidbody *Joint::GetRigidbody1() const
+    {
+        return rb1;
+    }
+    const Rigidbody *Joint::GetRigidbody2() const
+    {
+        return rb2;
+    }
+
+    Vec2 Joint::GetAnchor1() const
+    {
+        return localAnchor1;
+    }
+    Vec2 Joint::GetAnchor2() const
+    {
+        return localAnchor2;
     }
 }

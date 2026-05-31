@@ -34,7 +34,7 @@ namespace bp
         }
     }
 
-    Vec2 Rigidbody::GetPosition()
+    Vec2 Rigidbody::GetPosition() const
     {
         return position;
     }

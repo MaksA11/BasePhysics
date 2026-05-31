@@ -32,5 +32,11 @@ namespace bp
 
             void SolveVelocity();
             void SolvePosition();
+
+            const Rigidbody *GetRigidbody1() const;
+            const Rigidbody *GetRigidbody2() const;
+
+            Vec2 GetAnchor1() const;
+            Vec2 GetAnchor2() const;
     };
 }

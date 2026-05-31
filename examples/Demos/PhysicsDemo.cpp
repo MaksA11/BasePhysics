@@ -49,6 +49,7 @@ namespace demo
         renderVertices = false;
         renderAABBs = false;
         renderContactPoints = false;
+        renderJoints = false;
         renderHashGrid = false;
 
         substeps = 6;
@@ -139,6 +140,17 @@ namespace demo
         //         colors.push_back(sf::Color(88, 88, 88));
         //     }
         // }
+
+        spawnPreset = bp::BodyPreset();
+        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
+        spawnPreset.position = bp::Vec2(-14.0f, 0.0f);
+        scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        spawnPreset.position = bp::Vec2(14.0f, 0.0f);
+        scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        
+        scene.CreateJoint(scene.GetBodies()[scene.GetBodies().size() - 1], scene.GetBodies()[scene.GetBodies().size() - 2], bp::Vec2::Zero(), bp::Vec2::Zero(), bp::DistanceJoint(28.0f));
     }
 
     void PhysicsDemoApp::Update()
@@ -274,6 +286,21 @@ namespace demo
                 }
             }
 
+            if(renderJoints)
+            {
+                for(bp::Joint *joint : scene.GetJoints())
+                {
+                    bp::Vec2 va = joint->GetRigidbody1()->GetPosition();
+                    bp::Vec2 vb = joint->GetRigidbody2()->GetPosition();
+                    sf::Vertex line[] = {
+                        sf::Vertex(sf::Vector2f(va.x, va.y), sf::Color::Blue),
+                        sf::Vertex(sf::Vector2f(vb.x, vb.y), sf::Color::Blue)
+                    };
+
+                    window->draw(line, 2, sf::Lines);
+                }
+            }
+
             if(renderAABBs)
             {
                 auto aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
@@ -367,6 +394,9 @@ namespace demo
         ImGui::Text("Body count");
         ImGui::Text(std::to_string(scene.GetBodies().size()).c_str());
         ImGui::Separator();
+        ImGui::Text("Joint count");
+        ImGui::Text(std::to_string(scene.GetJoints().size()).c_str());
+        ImGui::Separator();
         ImGui::Text("Contact count");
         ImGui::Text(std::to_string(scene.GetContacts().size()).c_str());
         ImGui::Separator();
@@ -382,7 +412,7 @@ namespace demo
 
         ImGui::Begin("Spawn");
         ImGui::Text("Shape");
-        const char* items[] = { "Circle", "Triangle", "Box", "Pentagon", "Hexagon", "Septagon", "Octagon" };
+        const char *items[] = { "Circle", "Triangle", "Box", "Pentagon", "Hexagon", "Septagon", "Octagon" };
         ImGui::ListBox("##Shape", &shapeIndex, items, IM_ARRAYSIZE(items), 7);
         spawnPreset.shape = shapes[shapeIndex];
         ImGui::Separator();
@@ -475,6 +505,7 @@ namespace demo
         ImGui::Checkbox("Render vertices", &renderVertices);
         ImGui::Checkbox("Render AABBs", &renderAABBs);
         ImGui::Checkbox("Render contact points", &renderContactPoints);
+        ImGui::Checkbox("Render joints", &renderJoints);
         ImGui::Checkbox("Render hash grid", &renderHashGrid);
         ImGui::Separator();
         if(ImGui::Button("Delete all rigidbodies"))
