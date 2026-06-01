@@ -42,7 +42,7 @@ namespace bp
             static void DeleteRigidbody(Rigidbody *rb, std::vector<Rigidbody *> &bodies);
 
             Vec2 GetPosition() const;
-            float GetRotation();
+            float GetRotation() const;
 
             const Collider &GetCollider() const;
             Collider &GetCollider();
@@ -51,9 +51,9 @@ namespace bp
             void MoveTo(Vec2 position);
             void Rotate(float angle);
 
-            Vec2 GetLinearVelocity();
+            Vec2 GetLinearVelocity() const;
             void SetLinearVelocity(Vec2 velocity);
-            float GetAngularVelocity();
+            float GetAngularVelocity() const;
             void SetAngularVelocity(float velocity);
 
             void ApplyImpulse(Vec2 impulse);
@@ -62,18 +62,18 @@ namespace bp
             void ApplyForce(Vec2 force);
             void ApplyTorque(float torque);
 
-            float GetMass();
-            float GetInverseMass();
-            float GetInertia();
-            float GetInverseInertia();
+            float GetMass() const;
+            float GetInverseMass() const;
+            float GetInertia() const;
+            float GetInverseInertia() const;
 
             void IntegrateVelocity(float deltaTime, Vec2 gravity);
             void ApplyDamping(float deltaTime);
             void IntegratePosition(float deltaTime);
 
-            bool IsStatic();
-            bool UsesGravity();
-            bool IsRotationLocked();
+            bool IsStatic() const;
+            bool UsesGravity() const;
+            bool IsRotationLocked() const;
 
             void SetStatic(bool value);
             void UseGravity(bool value);

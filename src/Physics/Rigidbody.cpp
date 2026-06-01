@@ -38,7 +38,7 @@ namespace bp
     {
         return position;
     }
-    float Rigidbody::GetRotation()
+    float Rigidbody::GetRotation() const
     {
         return rotation;
     }
@@ -66,7 +66,7 @@ namespace bp
         rotation = std::fmod(rotation, math::ToRadians(360.0f));
     }
 
-    Vec2 Rigidbody::GetLinearVelocity()
+    Vec2 Rigidbody::GetLinearVelocity() const
     {
         return linearVelocity;
     }
@@ -74,7 +74,7 @@ namespace bp
     {
         linearVelocity = velocity;
     }
-    float Rigidbody::GetAngularVelocity()
+    float Rigidbody::GetAngularVelocity() const
     {
         return angularVelocity;
     }
@@ -109,21 +109,21 @@ namespace bp
         this->torque += torque;
     }
     
-    float Rigidbody::GetMass()
+    float Rigidbody::GetMass() const
     {
         return mass;
     }
-    float Rigidbody::GetInverseMass()
+    float Rigidbody::GetInverseMass() const
     {
         if(isStatic)
             return 0.0f;
         return 1.0f / mass;
     }
-    float Rigidbody::GetInertia()
+    float Rigidbody::GetInertia() const
     {
         return inertia;
     }
-    float Rigidbody::GetInverseInertia()
+    float Rigidbody::GetInverseInertia() const
     {
         if(isStatic || lockRotation)
             return 0.0f;
@@ -174,15 +174,15 @@ namespace bp
             Rotate(angularVelocity * deltaTime);
     }
 
-    bool Rigidbody::IsStatic()
+    bool Rigidbody::IsStatic() const
     {
         return isStatic;
     }
-    bool Rigidbody::UsesGravity()
+    bool Rigidbody::UsesGravity() const
     {
         return usesGravity;
     }
-    bool Rigidbody::IsRotationLocked()
+    bool Rigidbody::IsRotationLocked() const
     {
         return lockRotation;
     }

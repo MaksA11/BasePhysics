@@ -57,17 +57,34 @@ namespace bp
     {
         return rb1;
     }
+    Rigidbody *Joint::GetRigidbody1()
+    {
+        return rb1;
+    }
     const Rigidbody *Joint::GetRigidbody2() const
     {
         return rb2;
     }
+    Rigidbody *Joint::GetRigidbody2()
+    {
+        return rb2;
+    }
 
-    Vec2 Joint::GetAnchor1() const
+    Vec2 Joint::GetLocalAnchor1() const
     {
         return localAnchor1;
     }
-    Vec2 Joint::GetAnchor2() const
+    Vec2 Joint::GetLocalAnchor2() const
     {
         return localAnchor2;
+    }
+
+    Vec2 Joint::GetWorldAnchor1() const
+    {
+        return bp::math::Transform(localAnchor1, rb1->GetPosition(), rb1->GetRotation());
+    }
+    Vec2 Joint::GetWorldAnchor2() const
+    {
+        return bp::math::Transform(localAnchor2, rb2->GetPosition(), rb2->GetRotation());
     }
 }

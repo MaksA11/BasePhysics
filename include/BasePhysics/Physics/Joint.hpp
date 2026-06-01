@@ -34,9 +34,14 @@ namespace bp
             void SolvePosition();
 
             const Rigidbody *GetRigidbody1() const;
+            Rigidbody *GetRigidbody1();
             const Rigidbody *GetRigidbody2() const;
+            Rigidbody *GetRigidbody2();
 
-            Vec2 GetAnchor1() const;
-            Vec2 GetAnchor2() const;
+            Vec2 GetLocalAnchor1() const;
+            Vec2 GetLocalAnchor2() const;
+
+            Vec2 GetWorldAnchor1() const;
+            Vec2 GetWorldAnchor2() const;
     };
 }

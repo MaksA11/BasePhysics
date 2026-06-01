@@ -38,10 +38,20 @@ namespace bp
     }
     void PhysicsScene::RemoveRigidbody(Rigidbody *rb)
     {
+        for(Joint *joint : joints)
+        {
+            if(joint->GetRigidbody1() == rb || joint->GetRigidbody2() == rb)
+                Joint::DeleteJoint(joint, joints);
+        }
         Rigidbody::DeleteRigidbody(rb, bodies);
     }
     void PhysicsScene::RemoveRigidbody(int index)
     {
+        for(Joint *joint : joints)
+        {
+            if(joint->GetRigidbody1() == bodies[index] || joint->GetRigidbody2() == bodies[index])
+                Joint::DeleteJoint(joint, joints);
+        }
         Rigidbody::DeleteRigidbody(bodies[index], bodies);
     }
 
