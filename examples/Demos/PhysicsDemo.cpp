@@ -642,13 +642,13 @@ namespace demo
         {
             const float rbForce = 5.0 * deltaTime;
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-                selectedRb->ApplyImpulse(bp::Vec2::Up() * rbForce);
+                selectedRb->ApplyLinearImpulse(bp::Vec2::Up() * rbForce);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-                selectedRb->ApplyImpulse(-bp::Vec2::Up() * rbForce);
+                selectedRb->ApplyLinearImpulse(-bp::Vec2::Up() * rbForce);
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-                selectedRb->ApplyImpulse(bp::Vec2::Right() * rbForce);
+                selectedRb->ApplyLinearImpulse(bp::Vec2::Right() * rbForce);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-                selectedRb->ApplyImpulse(-bp::Vec2::Right() * rbForce);
+                selectedRb->ApplyLinearImpulse(-bp::Vec2::Right() * rbForce);
 
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
                 selectedRb->ApplyAngularImpulse(bp::math::pi * -0.05f * rbForce);

@@ -287,9 +287,9 @@ namespace bp
         }
         for(int i = 0; i < contacts.size(); i++)
         {
-            rb1->ApplyImpulse(-impulses[i]);
+            rb1->ApplyLinearImpulse(-impulses[i]);
             rb1->ApplyAngularImpulse(math::Cross(r1s[i], -impulses[i]));
-            rb2->ApplyImpulse(impulses[i]);
+            rb2->ApplyLinearImpulse(impulses[i]);
             rb2->ApplyAngularImpulse(math::Cross(r2s[i], impulses[i]));
         }
 
@@ -336,9 +336,9 @@ namespace bp
         }
         for(int i = 0; i < contacts.size(); i++)
         {
-            rb1->ApplyImpulse(-impulses[i]);
+            rb1->ApplyLinearImpulse(-impulses[i]);
             rb1->ApplyAngularImpulse(math::Cross(r1s[i], -impulses[i]));
-            rb2->ApplyImpulse(impulses[i]);
+            rb2->ApplyLinearImpulse(impulses[i]);
             rb2->ApplyAngularImpulse(math::Cross(r2s[i], impulses[i]));
         }
     }

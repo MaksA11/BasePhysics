@@ -426,7 +426,7 @@ namespace demo
                     if(event.mouseButton.button == sf::Mouse::Left && isDragging)
                     {
                         isDragging = false;
-                        whiteBall->ApplyImpulse(whiteBallImpulse);
+                        whiteBall->ApplyLinearImpulse(whiteBallImpulse);
                         whiteBallImpulse = bp::Vec2::Zero();
                     }
                 }

@@ -56,8 +56,11 @@ namespace bp
             float GetAngularVelocity() const;
             void SetAngularVelocity(float velocity);
 
-            void ApplyImpulse(Vec2 impulse);
+            void ApplyLinearImpulse(Vec2 impulse);
             void ApplyAngularImpulse(float impulse);
+
+            void ApplyImpulseAtLocalPoint(Vec2 impulse, Vec2 localPoint);
+            void ApplyImpulseAtWorldPoint(Vec2 impulse, Vec2 worldPoint);
 
             void ApplyForce(Vec2 force);
             void ApplyTorque(float torque);

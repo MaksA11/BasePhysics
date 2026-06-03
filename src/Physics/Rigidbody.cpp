@@ -83,17 +83,36 @@ namespace bp
         angularVelocity = velocity;
     }
 
-    void Rigidbody::ApplyImpulse(Vec2 impulse)
+    void Rigidbody::ApplyLinearImpulse(Vec2 impulse)
     {
         if(isStatic)
             return;
+            
         linearVelocity += impulse * GetInverseMass();
     }
     void Rigidbody::ApplyAngularImpulse(float impulse)
     {
         if(isStatic)
             return;
+
         angularVelocity += impulse * GetInverseInertia();
+    }
+
+    void Rigidbody::ApplyImpulseAtLocalPoint(Vec2 impulse, Vec2 localPoint)
+    {
+        if(isStatic)
+            return;
+
+        linearVelocity += impulse * GetInverseMass();
+        angularVelocity += math::Cross(localPoint, impulse) * GetInverseInertia();
+    }
+    void Rigidbody::ApplyImpulseAtWorldPoint(Vec2 impulse, Vec2 worldPoint)
+    {
+        if(isStatic)
+            return;
+        
+        linearVelocity += impulse * GetInverseMass();
+        angularVelocity += math::Cross(worldPoint - position, impulse) * GetInverseInertia();
     }
 
     void Rigidbody::ApplyForce(Vec2 force)

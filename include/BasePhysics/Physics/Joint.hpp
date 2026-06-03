@@ -9,14 +9,14 @@ namespace bp
     class Joint
     {
         private:
-            Joint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, JointType jointType)
-            : rb1(rb1), rb2(rb2), localAnchor1(localAnchor1), localAnchor2(localAnchor2), jointType(jointType) {}
+            Joint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchorPoint1, Vec2 localAnchorPoint2, JointType jointType)
+            : rb1(rb1), rb2(rb2), localAnchorPoint1(localAnchorPoint1), localAnchorPoint2(localAnchorPoint2), jointType(jointType) {}
 
             Rigidbody *rb1;
             Rigidbody *rb2;
 
-            Vec2 localAnchor1;
-            Vec2 localAnchor2;
+            Vec2 localAnchorPoint1;
+            Vec2 localAnchorPoint2;
 
             JointType jointType;
         
@@ -29,6 +29,18 @@ namespace bp
             static Joint *CreateRopeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, float maxDistance);
 
             static void DeleteJoint(Joint *joint, std::vector<Joint *> &joints);
+
+            bool IsWeld() const;
+            bool IsDistance() const;
+            bool IsSpring() const;
+            bool IsHinge() const;
+            bool IsRope() const;
+
+            const WeldJoint *GetWeld() const;
+            const DistanceJoint *GetDistance() const;
+            const SpringJoint *GetSpring() const;
+            const HingeJoint *GetHinge() const;
+            const RopeJoint *GetRope() const;
 
             void SolveVelocity();
             void SolvePosition();

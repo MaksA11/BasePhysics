@@ -43,12 +43,54 @@ namespace bp
         }
     }
 
-    void Joint::SolvePosition()
+    bool Joint::IsWeld() const
     {
+        return std::holds_alternative<WeldJoint>(this->jointType);
+    }
+    bool Joint::IsDistance() const
+    {
+        return std::holds_alternative<DistanceJoint>(this->jointType);
+    }
+    bool Joint::IsSpring() const
+    {
+        return std::holds_alternative<SpringJoint>(this->jointType);
+    }
+    bool Joint::IsHinge() const
+    {
+        return std::holds_alternative<HingeJoint>(this->jointType);
+    }
+    bool Joint::IsRope() const
+    {
+        return std::holds_alternative<RopeJoint>(this->jointType);
+    }
 
+    const WeldJoint *Joint::GetWeld() const
+    {
+        return std::get_if<WeldJoint>(&this->jointType);
+    }
+    const DistanceJoint *Joint::GetDistance() const
+    {
+        return std::get_if<DistanceJoint>(&this->jointType);
+    }
+    const SpringJoint *Joint::GetSpring() const
+    {
+        return std::get_if<SpringJoint>(&this->jointType);
+    }
+    const HingeJoint *Joint::GetHinge() const
+    {
+        return std::get_if<HingeJoint>(&this->jointType);
+    }
+    const RopeJoint *Joint::GetRope() const
+    {
+        return std::get_if<RopeJoint>(&this->jointType);
     }
 
     void Joint::SolveVelocity()
+    {
+        
+    }
+
+    void Joint::SolvePosition()
     {
 
     }
@@ -72,19 +114,19 @@ namespace bp
 
     Vec2 Joint::GetLocalAnchor1() const
     {
-        return localAnchor1;
+        return localAnchorPoint1;
     }
     Vec2 Joint::GetLocalAnchor2() const
     {
-        return localAnchor2;
+        return localAnchorPoint2;
     }
 
     Vec2 Joint::GetWorldAnchor1() const
     {
-        return bp::math::Transform(localAnchor1, rb1->GetPosition(), rb1->GetRotation());
+        return bp::math::Transform(localAnchorPoint1, rb1->GetPosition(), rb1->GetRotation());
     }
     Vec2 Joint::GetWorldAnchor2() const
     {
-        return bp::math::Transform(localAnchor2, rb2->GetPosition(), rb2->GetRotation());
+        return bp::math::Transform(localAnchorPoint2, rb2->GetPosition(), rb2->GetRotation());
     }
 }
