@@ -56,6 +56,9 @@ namespace bp
             float GetAngularVelocity() const;
             void SetAngularVelocity(float velocity);
 
+            Vec2 Rigidbody::GetVelocityAtLocalPoint(const Vec2 &localPoint) const;
+            Vec2 Rigidbody::GetVelocityAtWorldPoint(const Vec2 &worldPoint) const;
+
             void ApplyLinearImpulse(Vec2 impulse);
             void ApplyAngularImpulse(float impulse);
 

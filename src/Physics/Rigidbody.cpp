@@ -83,6 +83,15 @@ namespace bp
         angularVelocity = velocity;
     }
 
+    Vec2 Rigidbody::GetVelocityAtLocalPoint(const Vec2 &localPoint) const
+    {
+        return linearVelocity + math::Perpendicular(math::Rotate(localPoint, rotation)) * angularVelocity;
+    }
+    Vec2 Rigidbody::GetVelocityAtWorldPoint(const Vec2 &worldPoint) const
+    {
+        return linearVelocity + math::Perpendicular(worldPoint - position) * angularVelocity;
+    }
+
     void Rigidbody::ApplyLinearImpulse(Vec2 impulse)
     {
         if(isStatic)
