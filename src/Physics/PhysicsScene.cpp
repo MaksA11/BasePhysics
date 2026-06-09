@@ -92,6 +92,11 @@ namespace bp
             DetectCollisions();
             for(int iter = 0; iter < iterations; iter++)
             {
+                for(Joint *joint : joints)
+                {
+                    joint->SolveVelocity();
+                }
+
                 for(const ContactManifold &contact : contacts)
                 {
                     ResolveCollision(contact);
@@ -101,11 +106,16 @@ namespace bp
             for(const ContactManifold &contact : contacts)
             {
                 SeparateBodies(contact);
+            }
 
-                Rigidbody *rb1 = bodies[contact.rbIndex1];
-                Rigidbody *rb2 = bodies[contact.rbIndex2];
-                rb1->GetCollider().UpdateWorldGeometry(rb1->GetPosition(), rb1->GetRotation());
-                rb2->GetCollider().UpdateWorldGeometry(rb2->GetPosition(), rb2->GetRotation());
+            for(Joint *joint : joints)
+            {
+                joint->SolvePosition();
+            }
+
+            for(Rigidbody *rb : bodies)
+            {
+                rb->GetCollider().UpdateWorldGeometry(rb->GetPosition(), rb->GetRotation());
             }
         }
     }
