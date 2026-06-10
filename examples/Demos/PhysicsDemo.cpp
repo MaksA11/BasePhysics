@@ -97,18 +97,6 @@ namespace demo
         spawnPreset.rotation = 0.0f;
         spawnPreset.isStatic = false;
 
-        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
-        spawnPreset.position = bp::Vec2(-14.0f, 0.0f);
-        spawnPreset.mass = 0.1f;
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(255, 255, 255));
-        spawnPreset.shape = bp::CircleShape(1.0f);
-        spawnPreset.position = bp::Vec2(14.0f, 0.0f);
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(scene.GetBodies()[scene.GetBodies().size() - 1], scene.GetBodies()[scene.GetBodies().size() - 2], bp::Vec2::Zero(), bp::Vec2::One(), bp::WeldJoint(28.0f));
-        spawnPreset.mass = 1.0f;
-
         spawnPreset.position = bp::Vec2(0.0f, -10.0f);
         spawnPreset.shape = bp::BoxShape(bp::Vec2(18.0f, 0.75f));
         scene.AddRigidbody(spawnPreset);
@@ -153,6 +141,18 @@ namespace demo
         //         colors.push_back(sf::Color(88, 88, 88));
         //     }
         // }
+
+        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
+        spawnPreset.position = bp::Vec2(-10.0f, 0.0f);
+        spawnPreset.mass = 0.1f;
+        scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        spawnPreset.shape = bp::CircleShape(1.0f);
+        spawnPreset.position = bp::Vec2(10.0f, 0.0f);
+        scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        scene.CreateJoint(scene.GetBodies()[scene.GetBodies().size() - 1], scene.GetBodies()[scene.GetBodies().size() - 2], bp::Vec2::Zero(), bp::Vec2::One(), bp::WeldJoint(4.0f));
+        spawnPreset.mass = 1.0f;
     }
 
     void PhysicsDemoApp::Update()

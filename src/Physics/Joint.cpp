@@ -89,28 +89,32 @@ namespace bp
     {
         if(IsWeld())
         {
-            // Vec2 point1 = GetWorldAnchor1();
-            // Vec2 point2 = GetWorldAnchor2();
+            Vec2 anchorPoint = (GetWorldAnchor1() + GetWorldAnchor2()) / 2;
 
-            // Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(point2) - rb2->GetVelocityAtWorldPoint(point1);
-            // float r1x = math::Cross((point1 - rb1->GetPosition()), Vec2::Up());
-            // float r2x = math::Cross((point2 - rb2->GetPosition()), Vec2::Up());
-            // float r1y = math::Cross((point1 - rb1->GetPosition()), Vec2::Right());
-            // float r2y = math::Cross((point2 - rb2->GetPosition()), Vec2::Right());
+            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(anchorPoint) - rb1->GetVelocityAtWorldPoint(anchorPoint);
 
-            // float jx = -relativeVel.x / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1x * r1x) * rb1->GetInverseInertia() + (r2x * r2x) * rb2->GetInverseInertia());
-            // float jy = -relativeVel.y / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1y * r1y) * rb1->GetInverseInertia() + (r2y * r2y) * rb2->GetInverseInertia());
+            Vec2 r1 = anchorPoint - rb1->GetPosition();
+            Vec2 r2 = anchorPoint - rb2->GetPosition();
 
-            // Vec2 impulse = Vec2(jx, jy);
+            float r1x = math::Cross(r1, Vec2::Right());
+            float r2x = math::Cross(r2, Vec2::Right());
 
-            // rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
-            // rb2->ApplyImpulseAtWorldPoint(impulse, point2);
+            float r1y = math::Cross(r1, Vec2::Up());
+            float r2y = math::Cross(r2, Vec2::Up());
 
-            // float relativeAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
-            // float angImpulse = -relativeAngVel / (rb1->GetInverseInertia() + rb2->GetInverseInertia());
+            float jx = -relativeVel.x / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1x * r1x) * rb1->GetInverseInertia() + (r2x * r2x) * rb2->GetInverseInertia());
+            float jy = -relativeVel.y / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1y * r1y) * rb1->GetInverseInertia() + (r2y * r2y) * rb2->GetInverseInertia());
 
-            // rb1->ApplyAngularImpulse(-angImpulse);
-            // rb2->ApplyAngularImpulse(angImpulse);
+            Vec2 impulse = Vec2(jx, jy);
+
+            rb1->ApplyImpulseAtWorldPoint(-impulse, anchorPoint);
+            rb2->ApplyImpulseAtWorldPoint(impulse, anchorPoint);
+
+            float relativeAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
+            float angImpulse = -relativeAngVel / (rb1->GetInverseInertia() + rb2->GetInverseInertia());
+
+            rb1->ApplyAngularImpulse(-angImpulse);
+            rb2->ApplyAngularImpulse(angImpulse);
         }
         else if(IsDistance())
         {
@@ -150,7 +154,26 @@ namespace bp
 
     void Joint::SolvePosition()
     {
-        
+        if(IsWeld())
+        {
+            return;
+        }
+        else if(IsDistance())
+        {
+            return;
+        }
+        else if(IsSpring())
+        {
+            return;
+        }
+        else if(IsHinge())
+        {
+            return;
+        }
+        else if(IsRope())
+        {
+            return;
+        }
     }
 
     const Rigidbody *Joint::GetRigidbody1() const
