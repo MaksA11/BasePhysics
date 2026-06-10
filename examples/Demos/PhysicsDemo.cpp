@@ -151,7 +151,7 @@ namespace demo
         spawnPreset.position = bp::Vec2(10.0f, 0.0f);
         scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(scene.GetBodies()[scene.GetBodies().size() - 1], scene.GetBodies()[scene.GetBodies().size() - 2], bp::Vec2::Zero(), bp::Vec2::One(), bp::WeldJoint(4.0f));
+        scene.CreateJoint(scene.GetBodies()[scene.GetBodies().size() - 1], scene.GetBodies()[scene.GetBodies().size() - 2], bp::Vec2::Zero(), bp::Vec2::One(), bp::RopeJoint(18.0f));
         spawnPreset.mass = 1.0f;
     }
 

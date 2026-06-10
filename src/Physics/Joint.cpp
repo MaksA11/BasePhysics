@@ -148,10 +148,35 @@ namespace bp
         }
         else if(IsRope())
         {
-            return;
+            Vec2 point1 = GetWorldAnchor1();
+            Vec2 point2 = GetWorldAnchor2();
+
+            Vec2 d = point2 - point1;
+            Vec2 n = d.Normalized();
+
+            if(d.MagnitudeSquared() < GetRope()->maxDistance * GetRope()->maxDistance)
+                return;
+
+            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(point2) - rb1->GetVelocityAtWorldPoint(point1);
+
+            float vn = math::Dot(relativeVel, n);
+
+            if(vn <= 0)
+                return;
+
+            float r1n = math::Cross((point1 - rb1->GetPosition()), n);
+            float r2n = math::Cross((point2 - rb2->GetPosition()), n);
+
+            float j = -vn / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1n * r1n) * rb1->GetInverseInertia() + (r2n * r2n) * rb2->GetInverseInertia());
+
+            Vec2 impulse = n * j;
+
+            rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
+            rb2->ApplyImpulseAtWorldPoint(impulse, point2);
         }
     }
 
+    // TODO: implement
     void Joint::SolvePosition()
     {
         if(IsWeld())
