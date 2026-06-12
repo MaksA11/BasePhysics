@@ -18,6 +18,7 @@ namespace bp
             Vec2 localAnchorPoint1;
             Vec2 localAnchorPoint2;
 
+
             JointType jointType;
         
         public:
@@ -42,7 +43,7 @@ namespace bp
             const HingeJoint *GetHinge() const;
             const RopeJoint *GetRope() const;
 
-            void SolveVelocity();
+            void SolveVelocity(float deltaTime, unsigned int iterations);
             void SolvePosition();
 
             const Rigidbody *GetRigidbody1() const;

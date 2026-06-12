@@ -85,7 +85,7 @@ namespace bp
         return std::get_if<RopeJoint>(&this->jointType);
     }
 
-    void Joint::SolveVelocity()
+    void Joint::SolveVelocity(float deltaTime, unsigned int iterations)
     {
         if(IsWeld())
         {
@@ -140,7 +140,25 @@ namespace bp
         }
         else if(IsSpring())
         {
-            return;
+            Vec2 point1 = GetWorldAnchor1();
+            Vec2 point2 = GetWorldAnchor2();
+
+            Vec2 d = point2 - point1;
+            Vec2 n = d.Normalized();
+
+            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(point2) - rb1->GetVelocityAtWorldPoint(point1);
+
+            float vn = math::Dot(relativeVel, n);
+
+            float x = d.Magnitude() - GetSpring()->restDistance;
+            float F = -(GetSpring()->stiffness * x) - (GetSpring()->damping * vn);
+
+            float j = (F * deltaTime) / (float)iterations;
+
+            Vec2 impulse = n * j;
+
+            rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
+            rb2->ApplyImpulseAtWorldPoint(impulse, point2);
         }
         else if(IsHinge())
         {

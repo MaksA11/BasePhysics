@@ -94,7 +94,7 @@ namespace bp
             {
                 for(Joint *joint : joints)
                 {
-                    joint->SolveVelocity();
+                    joint->SolveVelocity(deltaTime, iterations);
                 }
 
                 for(const ContactManifold &contact : contacts)
