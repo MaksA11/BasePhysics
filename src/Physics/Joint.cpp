@@ -144,7 +144,26 @@ namespace bp
         }
         else if(IsHinge())
         {
-            return;
+            Vec2 anchorPoint = (GetWorldAnchor1() + GetWorldAnchor2()) / 2;
+
+            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(anchorPoint) - rb1->GetVelocityAtWorldPoint(anchorPoint);
+
+            Vec2 r1 = anchorPoint - rb1->GetPosition();
+            Vec2 r2 = anchorPoint - rb2->GetPosition();
+
+            float r1x = math::Cross(r1, Vec2::Right());
+            float r2x = math::Cross(r2, Vec2::Right());
+
+            float r1y = math::Cross(r1, Vec2::Up());
+            float r2y = math::Cross(r2, Vec2::Up());
+
+            float jx = -relativeVel.x / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1x * r1x) * rb1->GetInverseInertia() + (r2x * r2x) * rb2->GetInverseInertia());
+            float jy = -relativeVel.y / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1y * r1y) * rb1->GetInverseInertia() + (r2y * r2y) * rb2->GetInverseInertia());
+
+            Vec2 impulse = Vec2(jx, jy);
+
+            rb1->ApplyImpulseAtWorldPoint(-impulse, anchorPoint);
+            rb2->ApplyImpulseAtWorldPoint(impulse, anchorPoint);
         }
         else if(IsRope())
         {

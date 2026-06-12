@@ -143,15 +143,17 @@ namespace demo
         // }
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
-        spawnPreset.position = bp::Vec2(-10.0f, 0.0f);
+        spawnPreset.position = bp::Vec2(-2.0f, 0.0f);
         spawnPreset.mass = 0.1f;
         scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
         spawnPreset.shape = bp::CircleShape(1.0f);
-        spawnPreset.position = bp::Vec2(10.0f, 0.0f);
+        spawnPreset.isSensor = true;
+        spawnPreset.position = bp::Vec2(-2.0f, 1.0f);
         scene.AddRigidbody(spawnPreset);
+        spawnPreset.isSensor = false;
         colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(scene.GetBodies()[scene.GetBodies().size() - 1], scene.GetBodies()[scene.GetBodies().size() - 2], bp::Vec2::Zero(), bp::Vec2::One(), bp::RopeJoint(18.0f));
+        scene.CreateJoint(scene.GetBodies()[scene.GetBodies().size() - 1], scene.GetBodies()[scene.GetBodies().size() - 2], bp::Vec2::Zero(), bp::Vec2(0.0f, 1.0f), bp::HingeJoint(0, 0));
         spawnPreset.mass = 1.0f;
     }
 
