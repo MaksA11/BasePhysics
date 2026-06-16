@@ -77,50 +77,50 @@ namespace demo
         scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(0, 90, 10));
         
-        spawnPreset.position = bp::Vec2(0.0f, -11.5f);
-        spawnPreset.shape = bp::PolygonShape({{0.0f, 1.0f}, {2.5f, -0.5f}, {-2.5f, -0.5f}});
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(90, 90, 90));
+        // spawnPreset.position = bp::Vec2(0.0f, -11.5f);
+        // spawnPreset.shape = bp::PolygonShape({{0.0f, 1.0f}, {2.5f, -0.5f}, {-2.5f, -0.5f}});
+        // scene.AddRigidbody(spawnPreset);
+        // colors.push_back(sf::Color(90, 90, 90));
 
-        spawnPreset.position = bp::Vec2(-6.0f, 8.0f);
-        spawnPreset.rotation = bp::math::pi * -0.15f;
-        spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(0, 90, 10));
+        // spawnPreset.position = bp::Vec2(-6.0f, 8.0f);
+        // spawnPreset.rotation = bp::math::pi * -0.15f;
+        // spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
+        // scene.AddRigidbody(spawnPreset);
+        // colors.push_back(sf::Color(0, 90, 10));
 
-        spawnPreset.position = bp::Vec2(6.0f, 2.0f);
-        spawnPreset.rotation = bp::math::pi * 0.15f;
-        spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(0, 90, 10));
+        // spawnPreset.position = bp::Vec2(6.0f, 2.0f);
+        // spawnPreset.rotation = bp::math::pi * 0.15f;
+        // spawnPreset.shape = bp::BoxShape(bp::Vec2(14.0f, 0.75f));
+        // scene.AddRigidbody(spawnPreset);
+        // colors.push_back(sf::Color(0, 90, 10));
 
         spawnPreset.rotation = 0.0f;
         spawnPreset.isStatic = false;
 
-        spawnPreset.position = bp::Vec2(0.0f, -10.0f);
-        spawnPreset.shape = bp::BoxShape(bp::Vec2(18.0f, 0.75f));
-        scene.AddRigidbody(spawnPreset);
-        colors.push_back(sf::Color(80, 40, 10));
+        // spawnPreset.position = bp::Vec2(0.0f, -10.0f);
+        // spawnPreset.shape = bp::BoxShape(bp::Vec2(18.0f, 0.75f));
+        // scene.AddRigidbody(spawnPreset);
+        // colors.push_back(sf::Color(80, 40, 10));
 
-        spawnPreset.shape = bp::BoxShape(bp::Vec2::One());
-        spawnPreset.mass = 0.01f;
-        int baseWidth = 4;
-        float spacing = 1.0f;
-        bp::Vec2 startPos = bp::Vec2(6.5f, -9.5f);
-        for(int row = 0; row < baseWidth; row++)
-        {
-            int boxesInRow = baseWidth - row;
-            float rowOffset = (boxesInRow - 1) * spacing * 0.5f;
-            for(int i = 0; i < boxesInRow; i++)
-            {
-                float x = startPos.x - rowOffset + (i * spacing);
-                float y = startPos.y + (row * spacing);
-                spawnPreset.position = bp::Vec2(x, y);
-                scene.AddRigidbody(spawnPreset);
-                colors.push_back(sf::Color(88, 88, 88));
-            }
-        }
-        spawnPreset.mass = 1.0f;
+        // spawnPreset.shape = bp::BoxShape(bp::Vec2::One());
+        // spawnPreset.mass = 0.01f;
+        // int baseWidth = 4;
+        // float spacing = 1.0f;
+        // bp::Vec2 startPos = bp::Vec2(6.5f, -9.5f);
+        // for(int row = 0; row < baseWidth; row++)
+        // {
+        //     int boxesInRow = baseWidth - row;
+        //     float rowOffset = (boxesInRow - 1) * spacing * 0.5f;
+        //     for(int i = 0; i < boxesInRow; i++)
+        //     {
+        //         float x = startPos.x - rowOffset + (i * spacing);
+        //         float y = startPos.y + (row * spacing);
+        //         spawnPreset.position = bp::Vec2(x, y);
+        //         scene.AddRigidbody(spawnPreset);
+        //         colors.push_back(sf::Color(88, 88, 88));
+        //     }
+        // }
+        // spawnPreset.mass = 1.0f;
 
         // spawnPreset.isStatic = false;
         // spawnPreset.shape = bp::CircleShape(0.5f);
@@ -142,16 +142,53 @@ namespace demo
         //     }
         // }
 
-        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
-        spawnPreset.position = bp::Vec2(-10.0f, 0.0f);
         spawnPreset.mass = 0.1f;
-        scene.AddRigidbody(spawnPreset);
+
+        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
+        spawnPreset.position = bp::Vec2(-24.0f, -5.0f);
+        bp::Rigidbody *weld1 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        spawnPreset.shape = bp::CircleShape(1.0f);
-        spawnPreset.position = bp::Vec2(10.0f, 0.0f);
-        scene.AddRigidbody(spawnPreset);
+        spawnPreset.position = bp::Vec2(-21.0f, -5.0f);
+        bp::Rigidbody *weld2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(scene.GetBodies()[scene.GetBodies().size() - 1], scene.GetBodies()[scene.GetBodies().size() - 2], bp::Vec2::Zero(), bp::Vec2::Zero(), bp::SpringJoint(18.0f, 2.0f, 0.2f));
+        scene.CreateJoint(weld1, weld2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::WeldJoint(0.0f));
+
+        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
+        spawnPreset.position = bp::Vec2(-14.0f, -5.0f);
+        bp::Rigidbody *distance1 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        spawnPreset.position = bp::Vec2(-10.0f, -5.0f);
+        bp::Rigidbody *distance2 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        scene.CreateJoint(distance1, distance2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::DistanceJoint(2.0f));
+
+        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
+        spawnPreset.position = bp::Vec2(-2.0f, -5.0f);
+        bp::Rigidbody *spring1 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        spawnPreset.position = bp::Vec2(2.0f, -5.0f);
+        bp::Rigidbody *spring2 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        scene.CreateJoint(spring1, spring2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::SpringJoint(2.0f, 1.0f, 0.2f));
+
+        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
+        spawnPreset.position = bp::Vec2(12.0f, -5.0f);
+        bp::Rigidbody *hinge1 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        spawnPreset.position = bp::Vec2(12.0f, -4.0f);
+        bp::Rigidbody *hinge2 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        scene.CreateJoint(hinge1, hinge2, bp::Vec2::Up(), bp::Vec2::Zero(), true, bp::HingeJoint(0.0f, 0.0f));
+
+        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
+        spawnPreset.position = bp::Vec2(21.0f, -5.0f);
+        bp::Rigidbody *rope1 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        spawnPreset.position = bp::Vec2(24.0f, -5.0f);
+        bp::Rigidbody *rope2 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        scene.CreateJoint(rope1, rope2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::RopeJoint(2.0f));
+
         spawnPreset.mass = 1.0f;
     }
 

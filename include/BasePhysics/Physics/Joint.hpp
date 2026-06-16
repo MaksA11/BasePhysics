@@ -9,8 +9,8 @@ namespace bp
     class Joint
     {
         private:
-            Joint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchorPoint1, Vec2 localAnchorPoint2, JointType jointType)
-            : rb1(rb1), rb2(rb2), localAnchorPoint1(localAnchorPoint1), localAnchorPoint2(localAnchorPoint2), jointType(jointType) {}
+            Joint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchorPoint1, Vec2 localAnchorPoint2, bool disableCollision, JointType jointType)
+            : rb1(rb1), rb2(rb2), localAnchorPoint1(localAnchorPoint1), localAnchorPoint2(localAnchorPoint2), disableCollision(disableCollision), jointType(jointType) {}
 
             Rigidbody *rb1;
             Rigidbody *rb2;
@@ -18,16 +18,17 @@ namespace bp
             Vec2 localAnchorPoint1;
             Vec2 localAnchorPoint2;
 
+            bool disableCollision;
 
             JointType jointType;
         
         public:
-            static Joint *CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, JointType jointType);
-            static Joint *CreateWeldJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, float referenceAngle);
-            static Joint *CreateDistanceJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, float distance);
-            static Joint *CreateSpringJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, float restDistance, float stiffness, float damping);
-            static Joint *CreateHingeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, float lowerLimit, float upperLimit);
-            static Joint *CreateRopeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, float maxDistance);
+            static Joint *CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, JointType jointType);
+            static Joint *CreateWeldJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle);
+            static Joint *CreateDistanceJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float distance);
+            static Joint *CreateSpringJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float restDistance, float stiffness, float damping);
+            static Joint *CreateHingeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float lowerLimit, float upperLimit);
+            static Joint *CreateRopeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float maxDistance);
 
             static void DeleteJoint(Joint *joint, std::vector<Joint *> &joints);
 
@@ -50,6 +51,8 @@ namespace bp
             Rigidbody *GetRigidbody1();
             const Rigidbody *GetRigidbody2() const;
             Rigidbody *GetRigidbody2();
+
+            bool IsCollisionDisabled() const;
 
             Vec2 GetLocalAnchor1() const;
             Vec2 GetLocalAnchor2() const;

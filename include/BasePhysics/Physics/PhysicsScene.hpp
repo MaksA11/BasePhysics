@@ -41,7 +41,7 @@ namespace bp
             void RemoveRigidbody(int index);
 
             Joint *CreateJoint(Joint *joint);
-            Joint *CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, JointType jointType);
+            Joint *CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, JointType jointType);
             void RemoveJoint(Joint *joint);
             void RemoveJoint(int index);
 

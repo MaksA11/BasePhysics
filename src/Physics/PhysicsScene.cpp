@@ -60,9 +60,9 @@ namespace bp
         joints.push_back(joint);
         return joint;
     }
-    Joint *PhysicsScene::CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, JointType jointType)
+    Joint *PhysicsScene::CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, JointType jointType)
     {
-        Joint *joint = Joint::CreateJoint(rb1, rb2, localAnchor1, localAnchor2, jointType);
+        Joint *joint = Joint::CreateJoint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
         joints.push_back(joint);
         return joint;
     }
@@ -171,6 +171,17 @@ namespace bp
 
                     if(!collisions::IntersectAABBs(rb1->GetCollider().GetAABB(rb1->GetPosition(), rb1->GetRotation()),
                         rb2->GetCollider().GetAABB(rb2->GetPosition(), rb2->GetRotation())))
+                        continue;
+
+                    bool skipCollision = false;
+
+                    for(Joint *joint : joints)
+                    {
+                        if(((joint->GetRigidbody1() == rb1 && joint->GetRigidbody2() == rb2) || (joint->GetRigidbody1() == rb2 && joint->GetRigidbody2() == rb1)) && joint->IsCollisionDisabled())
+                            skipCollision = true;
+                    }
+
+                    if(skipCollision)
                         continue;
 
                     satCollisionCheckCount++;
