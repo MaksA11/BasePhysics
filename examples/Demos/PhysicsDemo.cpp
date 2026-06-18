@@ -42,10 +42,12 @@ namespace demo
     void PhysicsDemoApp::Start()
     {
         selectedRb = nullptr;
+        draggingJoint = nullptr;
 
         renderBodies = true;
         renderOutlines = true;
         renderCircleLines = true;
+        renderDraggingLine = true;
         renderVertices = false;
         renderAABBs = false;
         renderContactPoints = false;
@@ -58,6 +60,8 @@ namespace demo
 
         gravity = 9.81f;
         scene = bp::PhysicsScene(bp::Vec2(0.0f, -gravity), 3.0f);
+
+        mouseRb = bp::Rigidbody::CreateCircleBody(bp::Vec2::Zero(), 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, true, true);
 
         shapeIndex = 0;
         spawnPreset.position = bp::Vec2(0.0f, -14.0f);
@@ -188,23 +192,23 @@ namespace demo
         colors.push_back(sf::Color(255, 255, 255));
         scene.CreateJoint(rope1, rope2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::RopeJoint(2.0f));
 
-        // spawnPreset.mass = 0.01f;
-        // int segments = 250;
-        // float radius = 0.25f;
-        // spawnPreset.shape = bp::CircleShape(radius);
-        // float spacing = radius; 
-        // float totalLength = (float)(segments - 1) * spacing;
-        // float startX = -totalLength * 0.5f;
-        // bp::Rigidbody *prevRb = nullptr;
-        // for(size_t i = 0; i < segments; i++)
-        // {
-        //     spawnPreset.position = bp::Vec2(startX + (float)i * spacing, 0.0f);
-        //     bp::Rigidbody *rb = scene.AddRigidbody(spawnPreset);
-        //     colors.push_back(sf::Color(255, 255, 255));
-        //     if(prevRb != nullptr)
-        //         scene.CreateJoint(prevRb, rb, bp::Vec2(spacing * 0.5f, 0.0f), bp::Vec2(-spacing * 0.5f, 0.0f), true, bp::SpringJoint(spacing * 0.5f, 500.0f, 30.0f));
-        //     prevRb = rb;
-        // }
+        spawnPreset.mass = 0.01f;
+        int segments = 250;
+        float radius = 0.25f;
+        spawnPreset.shape = bp::CircleShape(radius);
+        float spacing = radius; 
+        float totalLength = (float)(segments - 1) * spacing;
+        float startX = -totalLength * 0.5f;
+        bp::Rigidbody *prevRb = nullptr;
+        for(size_t i = 0; i < segments; i++)
+        {
+            spawnPreset.position = bp::Vec2(startX + (float)i * spacing, 0.0f);
+            bp::Rigidbody *rb = scene.AddRigidbody(spawnPreset);
+            colors.push_back(sf::Color(255, 255, 255));
+            if(prevRb != nullptr)
+                scene.CreateJoint(prevRb, rb, bp::Vec2(spacing * 0.5f, 0.0f), bp::Vec2(-spacing * 0.5f, 0.0f), true, bp::SpringJoint(spacing * 0.5f, 500.0f, 30.0f));
+            prevRb = rb;
+        }
 
         spawnPreset.mass = 1.0f;
     }
@@ -223,6 +227,17 @@ namespace demo
                 scene.RemoveRigidbody(i);
             }
         }
+
+        sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+        bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
+
+        if(deltaTime > 0) 
+        {
+            bp::Vec2 mouseVelocity = (worldPos - mouseRb->GetPosition()) / deltaTime;
+            mouseRb->SetLinearVelocity(mouseVelocity);
+        }
+
+        mouseRb->MoveTo(worldPos);
     }
 
     void PhysicsDemoApp::Render()
@@ -342,10 +357,26 @@ namespace demo
                 }
             }
 
+            if(renderDraggingLine && draggingJoint != nullptr)
+            {
+                bp::Vec2 va = draggingJoint->GetWorldAnchor1();
+                bp::Vec2 vb = draggingJoint->GetWorldAnchor2();
+
+                sf::Vertex line[] = {
+                    sf::Vertex(sf::Vector2f(va.x, va.y), sf::Color::Cyan),
+                    sf::Vertex(sf::Vector2f(vb.x, vb.y), sf::Color::Cyan)
+                };
+
+                window->draw(line, 2, sf::Lines);
+            }
+
             if(renderJoints)
             {
                 for(bp::Joint *joint : scene.GetJoints())
                 {
+                    if(joint == draggingJoint)
+                        continue;
+
                     bp::Vec2 va = joint->GetWorldAnchor1();
                     bp::Vec2 vb = joint->GetWorldAnchor2();
 
@@ -559,6 +590,7 @@ namespace demo
         ImGui::Checkbox("Render bodies", &renderBodies);
         ImGui::Checkbox("Render outlines", &renderOutlines);
         ImGui::Checkbox("Render circle lines", &renderCircleLines);
+        ImGui::Checkbox("Render dragging line", &renderDraggingLine);
         ImGui::Checkbox("Render vertices", &renderVertices);
         ImGui::Checkbox("Render AABBs", &renderAABBs);
         ImGui::Checkbox("Render contact points", &renderContactPoints);
@@ -597,11 +629,6 @@ namespace demo
 
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
-                    sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-                    bp::Vec2 worldPos = camera.ScreenToWorld(mousePos, *window);
-
-                    bp::Rigidbody *mouseRb = bp::Rigidbody::CreateCircleBody(worldPos, 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, true, false, false, true);
-
                     for(bp::Rigidbody *rb : scene.GetBodies())
                     {
                         if(bp::collisions::Collide(rb, mouseRb))
@@ -610,10 +637,14 @@ namespace demo
                             break;
                         }
                         else
-                            selectedRb = nullptr;   
+                            selectedRb = nullptr;
                     }
 
-                    delete mouseRb;
+                    if(selectedRb != nullptr)
+                    {
+                        bp::Vec2 localPosition = bp::math::Rotate(mouseRb->GetPosition() - selectedRb->GetPosition(), selectedRb->GetRotation());
+                        draggingJoint = scene.CreateJoint(mouseRb, selectedRb, bp::Vec2::Zero(), localPosition, true, bp::SpringJoint(0.0f, 50.0f, 5.0f)); 
+                    }
                 }
                 if(event.mouseButton.button == sf::Mouse::Right)
                 {
@@ -635,6 +666,11 @@ namespace demo
             {
                 if(event.mouseButton.button == sf::Mouse::Middle)
                     isDragging = false;
+                if(event.mouseButton.button == sf::Mouse::Left)
+                {
+                    scene.RemoveJoint(draggingJoint);
+                    draggingJoint = nullptr;
+                }
             }
 
             if(event.type == sf::Event::MouseWheelScrolled && !ImGui::GetIO().WantCaptureMouse)

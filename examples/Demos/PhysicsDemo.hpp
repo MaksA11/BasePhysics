@@ -37,6 +37,8 @@ namespace demo
 			float guiScale;
 			
 			bp::Rigidbody *selectedRb;
+			bp::Rigidbody *mouseRb;
+			bp::Joint *draggingJoint;
 
 			int shapeIndex;
 			const std::array<bp::ColliderShape, 7> shapes = {
@@ -52,6 +54,7 @@ namespace demo
 			bool renderBodies;
 			bool renderOutlines;
 			bool renderCircleLines;
+			bool renderDraggingLine;
 			bool renderVertices;
 			bool renderAABBs;
 			bool renderContactPoints;
