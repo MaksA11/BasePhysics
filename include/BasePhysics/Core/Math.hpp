@@ -15,6 +15,16 @@ namespace bp::math
         return angle * pi / 180.0f;
     }
 
+    inline float NormalizeAngle(float angle)
+    {
+        while(angle > pi)
+            angle -= 2.0f * pi;
+        while(angle < -pi)
+            angle += 2.0f * pi;
+
+        return angle;
+    }
+
     inline float Dot(const Vec2 &vec1, const Vec2 &vec2)
     {
         return (vec1.x * vec2.x) + (vec1.y * vec2.y);

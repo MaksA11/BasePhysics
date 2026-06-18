@@ -49,12 +49,11 @@ namespace demo
         renderVertices = false;
         renderAABBs = false;
         renderContactPoints = false;
-        // renderJoints = false;
-        renderJoints = true;
+        renderJoints = false;
         renderHashGrid = false;
 
         substeps = 6;
-        iterations = 6;
+        iterations = 16;
         fpsLimit = 500;
 
         gravity = 9.81f;
@@ -188,6 +187,24 @@ namespace demo
         bp::Rigidbody *rope2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
         scene.CreateJoint(rope1, rope2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::RopeJoint(2.0f));
+
+        // spawnPreset.mass = 0.01f;
+        // int segments = 250;
+        // float radius = 0.25f;
+        // spawnPreset.shape = bp::CircleShape(radius);
+        // float spacing = radius; 
+        // float totalLength = (float)(segments - 1) * spacing;
+        // float startX = -totalLength * 0.5f;
+        // bp::Rigidbody *prevRb = nullptr;
+        // for(size_t i = 0; i < segments; i++)
+        // {
+        //     spawnPreset.position = bp::Vec2(startX + (float)i * spacing, 0.0f);
+        //     bp::Rigidbody *rb = scene.AddRigidbody(spawnPreset);
+        //     colors.push_back(sf::Color(255, 255, 255));
+        //     if(prevRb != nullptr)
+        //         scene.CreateJoint(prevRb, rb, bp::Vec2(spacing * 0.5f, 0.0f), bp::Vec2(-spacing * 0.5f, 0.0f), true, bp::SpringJoint(spacing * 0.5f, 500.0f, 30.0f));
+        //     prevRb = rb;
+        // }
 
         spawnPreset.mass = 1.0f;
     }
