@@ -48,6 +48,7 @@ namespace bp
             void Step(float deltaTime, unsigned int substeps, unsigned int iterations);
 
             void SetGravity(Vec2 val);
+            void Clear();
 
             const std::vector<Rigidbody *> &GetBodies() const;
             const std::vector<Joint *> &GetJoints() const;

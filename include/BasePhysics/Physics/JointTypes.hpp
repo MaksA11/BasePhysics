@@ -28,10 +28,11 @@ namespace bp
     };
     struct HingeJoint
     {
+        float referenceAngle;
         float lowerLimit;
         float upperLimit;
 
-        HingeJoint(float lowerLimit, float upperLimit) : lowerLimit(lowerLimit), upperLimit(upperLimit) {}
+        HingeJoint(float referenceAngle, float lowerLimit, float upperLimit) : referenceAngle(referenceAngle), lowerLimit(lowerLimit), upperLimit(upperLimit) {}
     };
     struct RopeJoint
     {

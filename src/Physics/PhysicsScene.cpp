@@ -2,7 +2,7 @@
 
 namespace bp
 {
-    PhysicsScene::PhysicsScene() : gravity(0.0f, -9.81f), hashGrid(2.5f), checkCounter(0), aabbCollisionCheckCount(0), satCollisionCheckCount(0)
+    PhysicsScene::PhysicsScene() : gravity(0.0f, -9.81f), hashGrid(3.0f), checkCounter(0), aabbCollisionCheckCount(0), satCollisionCheckCount(0)
     {
         contacts.reserve(1024);
     }
@@ -315,6 +315,21 @@ namespace bp
     void PhysicsScene::SetGravity(Vec2 val)
     {
         gravity = val;
+    }
+    void PhysicsScene::Clear()
+    {
+        for(Rigidbody *rb : bodies)
+        {
+            delete rb;
+        }
+        for(Joint *joint : joints)
+        {
+            delete joint;
+        }
+
+        bodies.clear();
+        joints.clear();
+        contacts.clear();
     }
 
     const std::vector<Rigidbody *> &PhysicsScene::GetBodies() const

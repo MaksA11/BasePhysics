@@ -59,7 +59,7 @@ namespace demo
         fpsLimit = 500;
 
         gravity = 9.81f;
-        scene = bp::PhysicsScene(bp::Vec2(0.0f, -gravity), 3.0f);
+        scene.SetGravity(bp::Vec2(0.0f, -gravity));
 
         mouseRb = bp::Rigidbody::CreateCircleBody(bp::Vec2::Zero(), 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, true, true);
 
@@ -181,7 +181,7 @@ namespace demo
         spawnPreset.position = bp::Vec2(12.0f, -4.0f);
         bp::Rigidbody *hinge2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(hinge1, hinge2, bp::Vec2::Up(), bp::Vec2::Zero(), true, bp::HingeJoint(0.0f, 0.0f));
+        scene.CreateJoint(hinge1, hinge2, bp::Vec2::Up(), bp::Vec2::Zero(), true, bp::HingeJoint(0.0f, -bp::math::pi, bp::math::pi));
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
         spawnPreset.position = bp::Vec2(21.0f, -5.0f);
@@ -192,23 +192,23 @@ namespace demo
         colors.push_back(sf::Color(255, 255, 255));
         scene.CreateJoint(rope1, rope2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::RopeJoint(2.0f));
 
-        spawnPreset.mass = 0.01f;
-        int segments = 250;
-        float radius = 0.25f;
-        spawnPreset.shape = bp::CircleShape(radius);
-        float spacing = radius; 
-        float totalLength = (float)(segments - 1) * spacing;
-        float startX = -totalLength * 0.5f;
-        bp::Rigidbody *prevRb = nullptr;
-        for(size_t i = 0; i < segments; i++)
-        {
-            spawnPreset.position = bp::Vec2(startX + (float)i * spacing, 0.0f);
-            bp::Rigidbody *rb = scene.AddRigidbody(spawnPreset);
-            colors.push_back(sf::Color(255, 255, 255));
-            if(prevRb != nullptr)
-                scene.CreateJoint(prevRb, rb, bp::Vec2(spacing * 0.5f, 0.0f), bp::Vec2(-spacing * 0.5f, 0.0f), true, bp::SpringJoint(spacing * 0.5f, 500.0f, 30.0f));
-            prevRb = rb;
-        }
+        // spawnPreset.mass = 0.01f;
+        // int segments = 250;
+        // float radius = 0.25f;
+        // spawnPreset.shape = bp::CircleShape(radius);
+        // float spacing = radius;
+        // float totalLength = (float)(segments - 1) * spacing;
+        // float startX = -totalLength * 0.5f;
+        // bp::Rigidbody *prevRb = nullptr;
+        // for(size_t i = 0; i < segments; i++)
+        // {
+        //     spawnPreset.position = bp::Vec2(startX + (float)i * spacing, 0.0f);
+        //     bp::Rigidbody *rb = scene.AddRigidbody(spawnPreset);
+        //     colors.push_back(sf::Color(255, 255, 255));
+        //     if(prevRb)
+        //         scene.CreateJoint(prevRb, rb, bp::Vec2(spacing * 0.5f, 0.0f), bp::Vec2(-spacing * 0.5f, 0.0f), true, bp::SpringJoint(spacing * 0.5f, 500.0f, 30.0f));
+        //     prevRb = rb;
+        // }
 
         spawnPreset.mass = 1.0f;
     }
@@ -223,7 +223,15 @@ namespace demo
             {
                 colors.erase(colors.begin() + i);
                 if(scene.GetBodies()[i] == selectedRb)
+                {
                     selectedRb = nullptr;
+                    if(draggingJoint)
+                    {
+                        scene.RemoveJoint(draggingJoint);
+                        draggingJoint = nullptr;
+                    }
+                }
+                
                 scene.RemoveRigidbody(i);
             }
         }
@@ -357,7 +365,7 @@ namespace demo
                 }
             }
 
-            if(renderDraggingLine && draggingJoint != nullptr)
+            if(renderDraggingLine && draggingJoint)
             {
                 bp::Vec2 va = draggingJoint->GetWorldAnchor1();
                 bp::Vec2 vb = draggingJoint->GetWorldAnchor2();
@@ -640,10 +648,10 @@ namespace demo
                             selectedRb = nullptr;
                     }
 
-                    if(selectedRb != nullptr)
+                    if(selectedRb)
                     {
-                        bp::Vec2 localPosition = bp::math::Rotate(mouseRb->GetPosition() - selectedRb->GetPosition(), selectedRb->GetRotation());
-                        draggingJoint = scene.CreateJoint(mouseRb, selectedRb, bp::Vec2::Zero(), localPosition, true, bp::SpringJoint(0.0f, 50.0f, 5.0f)); 
+                        bp::Vec2 localPosition = bp::math::Rotate(mouseRb->GetPosition() - selectedRb->GetPosition(), -selectedRb->GetRotation());
+                        draggingJoint = scene.CreateJoint(mouseRb, selectedRb, bp::Vec2::Zero(), localPosition, true, bp::SpringJoint(0.0f, 50.0f, 5.0f));
                     }
                 }
                 if(event.mouseButton.button == sf::Mouse::Right)
@@ -763,14 +771,30 @@ namespace demo
         }
         colors.clear();
         colors.shrink_to_fit();
+        
+        scene.Clear();
+
+        if(mouseRb)
+        {
+            delete mouseRb;
+            mouseRb = nullptr;
+        }
+
         Start();
     }
     void PhysicsDemoApp::CleanUp()
     {
         ImGui::SFML::Shutdown();
+
         window->close();
         delete window;
         window = nullptr;
+
+        if(mouseRb)
+        {
+            delete mouseRb;
+            mouseRb = nullptr;
+        }
     }
     bool PhysicsDemoApp::AppRunning()
     {

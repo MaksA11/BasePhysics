@@ -21,9 +21,9 @@ namespace bp
         JointType jointType = SpringJoint(restDistance, stiffness, damping);
         return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
     }
-    Joint *Joint::CreateHingeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float lowerLimit, float upperLimit)
+    Joint *Joint::CreateHingeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle, float lowerLimit, float upperLimit)
     {
-        JointType jointType = HingeJoint(lowerLimit, upperLimit);
+        JointType jointType = HingeJoint(referenceAngle, lowerLimit, upperLimit);
         return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
     }
     Joint *Joint::CreateRopeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float maxDistance)
@@ -89,7 +89,7 @@ namespace bp
     {
         if(IsWeld())
         {
-            Vec2 anchorPoint = (GetWorldAnchor1() + GetWorldAnchor2()) / 2;
+            Vec2 anchorPoint = (GetWorldAnchor1() + GetWorldAnchor2()) * 0.5f;
 
             Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(anchorPoint) - rb1->GetVelocityAtWorldPoint(anchorPoint);
 
@@ -162,7 +162,7 @@ namespace bp
         }
         else if(IsHinge())
         {
-            Vec2 anchorPoint = (GetWorldAnchor1() + GetWorldAnchor2()) / 2;
+            Vec2 anchorPoint = (GetWorldAnchor1() + GetWorldAnchor2()) * 0.5f;
 
             Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(anchorPoint) - rb1->GetVelocityAtWorldPoint(anchorPoint);
 
@@ -182,6 +182,20 @@ namespace bp
 
             rb1->ApplyImpulseAtWorldPoint(-impulse, anchorPoint);
             rb2->ApplyImpulseAtWorldPoint(impulse, anchorPoint);
+
+            float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
+            float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
+
+            float angleDiff = currentRelAngle - GetHinge()->referenceAngle;
+            angleDiff = math::NormalizeAngle(angleDiff);
+
+            float jAng = 0.0f;
+
+            if((angleDiff <= GetHinge()->lowerLimit && relAngVel < 0) || (angleDiff >= GetHinge()->upperLimit && relAngVel > 0))
+                jAng = -relAngVel / (rb1->GetInverseInertia() + rb2->GetInverseInertia());
+            
+            rb1->ApplyAngularImpulse(-jAng);
+            rb2->ApplyAngularImpulse(jAng);
         }
         else if(IsRope())
         {
@@ -240,20 +254,20 @@ namespace bp
             rb2->Move(-correction * rb2->GetInverseMass());
 
             float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
-            float angleError = currentRelAngle - GetWeld()->referenceAngle;
+            float angError = currentRelAngle - GetWeld()->referenceAngle;
             
-            angleError = math::NormalizeAngle(angleError);
+            angError = math::NormalizeAngle(angError);
 
             float invInertiaSum = rb1->GetInverseInertia() + rb2->GetInverseInertia();
 
             if(invInertiaSum <= 0.0f)
                 return;
 
-            const float angularPercent = 0.2f;
-            float impulse = (angleError / invInertiaSum) * angularPercent;
+            const float angPercent = 0.2f;
+            float angCorrection = (angError / invInertiaSum) * angPercent;
 
-            rb1->Rotate(impulse * rb1->GetInverseInertia());
-            rb2->Rotate(-impulse * rb2->GetInverseInertia());
+            rb1->Rotate(angCorrection * rb1->GetInverseInertia());
+            rb2->Rotate(-angCorrection * rb2->GetInverseInertia());
         }
         else if(IsDistance())
         {
@@ -310,6 +324,33 @@ namespace bp
 
             rb1->Move(correction * rb1->GetInverseMass());
             rb2->Move(-correction * rb2->GetInverseMass());
+
+            float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
+            float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
+
+            float angleDiff = currentRelAngle - GetHinge()->referenceAngle;
+            angleDiff = math::NormalizeAngle(angleDiff);
+
+            float angError = 0.0f;
+
+            if(angleDiff <= GetHinge()->lowerLimit && relAngVel < 0)
+                angError = angleDiff - GetHinge()->lowerLimit;
+            if(angleDiff >= GetHinge()->upperLimit && relAngVel > 0)
+                angError = angleDiff - GetHinge()->upperLimit;
+
+            if(std::abs(angError) <= 0.0f)
+                return;
+
+            float invInertiaSum = rb1->GetInverseInertia() + rb2->GetInverseInertia();
+
+            if(invInertiaSum <= 0.0f)
+                return;
+
+            const float angPercent = 0.2f;
+            float angCorrection = (angError * angPercent) / invInertiaSum;
+
+            rb1->Rotate(angCorrection * rb1->GetInverseInertia());
+            rb2->Rotate(-angCorrection * rb2->GetInverseInertia());
         }
         else if(IsRope())
         {
