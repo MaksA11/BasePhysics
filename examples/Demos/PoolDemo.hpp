@@ -36,6 +36,8 @@ namespace demo
 			bool isPlacing;
 			bool canBePlaced;
 
+			float guiScale;
+
 			bp::Vec2 whiteBallImpulse;
 			float whiteBallImpulseMaxMagnitude;
 			float whiteBallImpulseMultiplier;
@@ -53,7 +55,7 @@ namespace demo
 		public:
 			PoolDemoApp();
 
-			void Init(unsigned int width, unsigned int height, const char *name, WindowType windowType);
+			void Init(size_t width, size_t height, const char *name, float guiScale, WindowType windowType);
 
 			void Start();
 			void Update();

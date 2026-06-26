@@ -13,17 +13,17 @@ namespace bp
     {
         private:
             float cellSize;
-            std::vector<int> heads;
+            std::vector<size_t> heads;
             std::vector<GridEntry> entries;
 
-            static constexpr int gridSize = 4096;
-            static constexpr int prime1 = 73856093;
-            static constexpr int prime2 = 19349663;
+            static constexpr size_t gridSize = 4096;
+            static constexpr size_t prime1 = 73856093;
+            static constexpr size_t prime2 = 19349663;
 
             inline size_t GenerateHash(int x, int y) const;
 
             void Clear();
-            void MapBodyToCells(int rbIndex, const AABB &aabb);
+            void MapBodyToCells(size_t rbIndex, const AABB &aabb);
 
         public:
             HashGrid();
@@ -31,10 +31,10 @@ namespace bp
 
             void Refresh(const std::vector<Rigidbody *> &bodies);
             
-            int GetHead(int hash) const;
-            const GridEntry &GetEntry(int index) const;
+            size_t GetHead(size_t hash) const;
+            const GridEntry &GetEntry(size_t index) const;
 
-            static int GetGridSize();
+            static size_t GetGridSize();
             float GetCellSize() const;
     };
 }

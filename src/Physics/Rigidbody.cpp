@@ -65,6 +65,10 @@ namespace bp
         rotation += angle;
         rotation = std::fmod(rotation, math::ToRadians(360.0f));
     }
+    void Rigidbody::SetRotation(float rotation)
+    {
+        this->rotation = rotation;
+    }
 
     Vec2 Rigidbody::GetLinearVelocity() const
     {

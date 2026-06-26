@@ -4,7 +4,9 @@ namespace bp
 {
     struct GridEntry
     {
-        int rbIndex;
-        int next;
+        size_t rbIndex;
+        size_t next;
+
+        GridEntry(size_t rbIndex, size_t next) : rbIndex(rbIndex), next(next) {}
     };
 }

@@ -24,13 +24,13 @@ namespace bp
         PolygonShape() {}
         PolygonShape(std::vector<Vec2> vertices) : vertices(vertices)
         {
-            int n = vertices.size();
+            size_t n = vertices.size();
 
             worldVertices.resize(n);
             worldNormals.resize(n);
             normals.resize(n);
 
-            for(int i = 0; i < n; i++)
+            for(size_t i = 0; i < n; i++)
             {
                 Vec2 v1 = vertices[i];
                 Vec2 v2 = vertices[(i + 1) % n];

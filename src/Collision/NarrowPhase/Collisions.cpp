@@ -2,80 +2,80 @@
 
 namespace bp::collisions
 {
-    bool Collide(Rigidbody *bodyA, Rigidbody *bodyB, Vec2 &outNormal, float &outDepth, std::vector<Vec2> &outContacts)
+    bool Collide(Rigidbody *rb1, Rigidbody *rb2, Vec2 &outNormal, float &outDepth, std::vector<Vec2> &outContacts)
     {
         outNormal = Vec2::Zero();
         outDepth = 0.0f;
 
-        if(bodyA == bodyB)
+        if(rb1 == rb2)
             return false;
         
-        if(bodyA->GetCollider().IsCircle())
+        if(rb1->GetCollider().IsCircle())
         {
-            if(bodyB->GetCollider().IsCircle())
+            if(rb2->GetCollider().IsCircle())
             {
-                if(collisions::IntersectCircles(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition(), outNormal, outDepth))
+                if(collisions::IntersectCircles(*rb1->GetCollider().GetCircle(), *rb2->GetCollider().GetCircle(), rb1->GetPosition(), rb2->GetPosition(), outNormal, outDepth))
                 {
-                    outContacts.push_back(FindCirclesContactPoint(*bodyA->GetCollider().GetCircle(), bodyA->GetPosition(), bodyB->GetPosition()));
+                    outContacts.push_back(FindCirclesContactPoint(*rb1->GetCollider().GetCircle(), rb1->GetPosition(), rb2->GetPosition()));
                     return true;
                 }
             }
-            else if(bodyB->GetCollider().IsBox())
+            else if(rb2->GetCollider().IsBox())
             {
-                if(collisions::IntersectCirclePolygon(*bodyA->GetCollider().GetCircle(), bodyB->GetCollider().GetBox()->ToPolygon(), bodyA->GetPosition(), bodyB->GetPosition(),
-                    bodyB->GetRotation(), outNormal, outDepth))
+                if(collisions::IntersectCirclePolygon(*rb1->GetCollider().GetCircle(), rb2->GetCollider().GetBox()->ToPolygon(), rb1->GetPosition(), rb2->GetPosition(),
+                    rb2->GetRotation(), outNormal, outDepth))
                 {
-                    outContacts.push_back(FindCirclePolygonContactPoint(*bodyA->GetCollider().GetCircle(), bodyB->GetCollider().GetBox()->ToPolygon(),
-                        bodyA->GetPosition(), bodyB->GetPosition(), bodyB->GetRotation()));
+                    outContacts.push_back(FindCirclePolygonContactPoint(*rb1->GetCollider().GetCircle(), rb2->GetCollider().GetBox()->ToPolygon(),
+                        rb1->GetPosition(), rb2->GetPosition(), rb2->GetRotation()));
                     return true;
                 }
             }
-            else if(bodyB->GetCollider().IsPolygon())
+            else if(rb2->GetCollider().IsPolygon())
             {
-                if(collisions::IntersectCirclePolygon(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetPolygon(), bodyA->GetPosition(), bodyB->GetPosition(),
-                    bodyB->GetRotation(), outNormal, outDepth))
+                if(collisions::IntersectCirclePolygon(*rb1->GetCollider().GetCircle(), *rb2->GetCollider().GetPolygon(), rb1->GetPosition(), rb2->GetPosition(),
+                    rb2->GetRotation(), outNormal, outDepth))
                 {
-                    outContacts.push_back(FindCirclePolygonContactPoint(*bodyA->GetCollider().GetCircle(), *bodyB->GetCollider().GetPolygon(),
-                        bodyA->GetPosition(), bodyB->GetPosition(), bodyB->GetRotation()));
+                    outContacts.push_back(FindCirclePolygonContactPoint(*rb1->GetCollider().GetCircle(), *rb2->GetCollider().GetPolygon(),
+                        rb1->GetPosition(), rb2->GetPosition(), rb2->GetRotation()));
                     return true;
                 }
             }
         }
-        else if(bodyA->GetCollider().IsBox())
+        else if(rb1->GetCollider().IsBox())
         {
-            if(bodyB->GetCollider().IsBox())
+            if(rb2->GetCollider().IsBox())
             {
-                if(collisions::IntersectPolygons(bodyA->GetCollider().GetBox()->ToPolygon(), bodyB->GetCollider().GetBox()->ToPolygon(), bodyA->GetPosition(), bodyB->GetPosition(),
-                    bodyA->GetRotation(), bodyB->GetRotation(), outNormal, outDepth))
+                if(collisions::IntersectPolygons(rb1->GetCollider().GetBox()->ToPolygon(), rb2->GetCollider().GetBox()->ToPolygon(), rb1->GetPosition(), rb2->GetPosition(),
+                    rb1->GetRotation(), rb2->GetRotation(), outNormal, outDepth))
                 {
                     Vec2 contact1, contact2;
-                    int contactCount = FindPolygonsContactPoints(bodyA->GetCollider().GetBox()->ToPolygon(), bodyB->GetCollider().GetBox()->ToPolygon(), bodyA->GetPosition(),
-                        bodyB->GetPosition(), bodyA->GetRotation(), bodyB->GetRotation(), contact1, contact2);
+                    int contactCount = FindPolygonsContactPoints(rb1->GetCollider().GetBox()->ToPolygon(), rb2->GetCollider().GetBox()->ToPolygon(), rb1->GetPosition(),
+                        rb2->GetPosition(), rb1->GetRotation(), rb2->GetRotation(), contact1, contact2);
                     outContacts.push_back(contact1);
                     if(contactCount == 2)
                         outContacts.push_back(contact2);
                     return true;
                 }
             }
-            else if(bodyB->GetCollider().IsCircle())
+            else if(rb2->GetCollider().IsCircle())
             {
-                if(collisions::IntersectCirclePolygon(*bodyB->GetCollider().GetCircle(), bodyA->GetCollider().GetBox()->ToPolygon(), bodyB->GetPosition(), bodyA->GetPosition(),
-                    bodyA->GetRotation(), outNormal, outDepth))
+                if(collisions::IntersectCirclePolygon(*rb2->GetCollider().GetCircle(), rb1->GetCollider().GetBox()->ToPolygon(), rb2->GetPosition(), rb1->GetPosition(),
+                    rb1->GetRotation(), outNormal, outDepth))
                 {
                     outNormal = -outNormal;
-                    outContacts.push_back(FindCirclePolygonContactPoint(*bodyB->GetCollider().GetCircle(), bodyA->GetCollider().GetBox()->ToPolygon(),
-                        bodyB->GetPosition(), bodyA->GetPosition(), bodyA->GetRotation()));
+                    outContacts.push_back(FindCirclePolygonContactPoint(*rb2->GetCollider().GetCircle(), rb1->GetCollider().GetBox()->ToPolygon(),
+                        rb2->GetPosition(), rb1->GetPosition(), rb1->GetRotation()));
                     return true;
                 }
             }
-            else if(bodyB->GetCollider().IsPolygon())
+            else if(rb2->GetCollider().IsPolygon())
             {
-                if(collisions::IntersectPolygons(bodyA->GetCollider().GetBox()->ToPolygon(), *bodyB->GetCollider().GetPolygon(), bodyA->GetPosition(), bodyB->GetPosition(),
-                    bodyA->GetRotation(), bodyB->GetRotation(), outNormal, outDepth))
+                if(collisions::IntersectPolygons(rb1->GetCollider().GetBox()->ToPolygon(), *rb2->GetCollider().GetPolygon(), rb1->GetPosition(), rb2->GetPosition(),
+                    rb1->GetRotation(), rb2->GetRotation(), outNormal, outDepth))
                 {
                     Vec2 contact1, contact2;
-                    int contactCount = FindPolygonsContactPoints(bodyA->GetCollider().GetBox()->ToPolygon(), *bodyB->GetCollider().GetPolygon(), bodyA->GetPosition(),
-                        bodyB->GetPosition(), bodyA->GetRotation(), bodyB->GetRotation(), contact1, contact2);
+                    int contactCount = FindPolygonsContactPoints(rb1->GetCollider().GetBox()->ToPolygon(), *rb2->GetCollider().GetPolygon(), rb1->GetPosition(),
+                        rb2->GetPosition(), rb1->GetRotation(), rb2->GetRotation(), contact1, contact2);
                     outContacts.push_back(contact1);
                     if(contactCount == 2)
                         outContacts.push_back(contact2);
@@ -83,41 +83,41 @@ namespace bp::collisions
                 }
             }
         }
-        else if(bodyA->GetCollider().IsPolygon())
+        else if(rb1->GetCollider().IsPolygon())
         {
-            if(bodyB->GetCollider().IsPolygon())
+            if(rb2->GetCollider().IsPolygon())
             {
-                if(collisions::IntersectPolygons(*bodyA->GetCollider().GetPolygon(), *bodyB->GetCollider().GetPolygon(), bodyA->GetPosition(), bodyB->GetPosition(),
-                    bodyA->GetRotation(), bodyB->GetRotation(), outNormal, outDepth))
+                if(collisions::IntersectPolygons(*rb1->GetCollider().GetPolygon(), *rb2->GetCollider().GetPolygon(), rb1->GetPosition(), rb2->GetPosition(),
+                    rb1->GetRotation(), rb2->GetRotation(), outNormal, outDepth))
                 {
                     Vec2 contact1, contact2;
-                    int contactCount = FindPolygonsContactPoints(*bodyA->GetCollider().GetPolygon(), *bodyB->GetCollider().GetPolygon(), bodyA->GetPosition(),
-                        bodyB->GetPosition(), bodyA->GetRotation(), bodyB->GetRotation(), contact1, contact2);
+                    int contactCount = FindPolygonsContactPoints(*rb1->GetCollider().GetPolygon(), *rb2->GetCollider().GetPolygon(), rb1->GetPosition(),
+                        rb2->GetPosition(), rb1->GetRotation(), rb2->GetRotation(), contact1, contact2);
                     outContacts.push_back(contact1);
                     if(contactCount == 2)
                         outContacts.push_back(contact2);
                     return true;
                 }
             }
-            else if(bodyB->GetCollider().IsCircle())
+            else if(rb2->GetCollider().IsCircle())
             {
-                if(collisions::IntersectCirclePolygon(*bodyB->GetCollider().GetCircle(), *bodyA->GetCollider().GetPolygon(), bodyB->GetPosition(), bodyA->GetPosition(),
-                    bodyA->GetRotation(), outNormal, outDepth))
+                if(collisions::IntersectCirclePolygon(*rb2->GetCollider().GetCircle(), *rb1->GetCollider().GetPolygon(), rb2->GetPosition(), rb1->GetPosition(),
+                    rb1->GetRotation(), outNormal, outDepth))
                 {
                     outNormal = -outNormal;
-                    outContacts.push_back(FindCirclePolygonContactPoint(*bodyB->GetCollider().GetCircle(), *bodyA->GetCollider().GetPolygon(),
-                        bodyB->GetPosition(), bodyA->GetPosition(), bodyA->GetRotation()));
+                    outContacts.push_back(FindCirclePolygonContactPoint(*rb2->GetCollider().GetCircle(), *rb1->GetCollider().GetPolygon(),
+                        rb2->GetPosition(), rb1->GetPosition(), rb1->GetRotation()));
                     return true;
                 }
             }
-            else if(bodyB->GetCollider().IsBox())
+            else if(rb2->GetCollider().IsBox())
             {
-                if(collisions::IntersectPolygons(*bodyA->GetCollider().GetPolygon(), bodyB->GetCollider().GetBox()->ToPolygon(), bodyA->GetPosition(), bodyB->GetPosition(),
-                    bodyA->GetRotation(), bodyB->GetRotation(), outNormal, outDepth))
+                if(collisions::IntersectPolygons(*rb1->GetCollider().GetPolygon(), rb2->GetCollider().GetBox()->ToPolygon(), rb1->GetPosition(), rb2->GetPosition(),
+                    rb1->GetRotation(), rb2->GetRotation(), outNormal, outDepth))
                 {
                     Vec2 contact1, contact2;
-                    int contactCount = FindPolygonsContactPoints(*bodyA->GetCollider().GetPolygon(), bodyB->GetCollider().GetBox()->ToPolygon(), bodyA->GetPosition(),
-                        bodyB->GetPosition(), bodyA->GetRotation(), bodyB->GetRotation(), contact1, contact2);
+                    int contactCount = FindPolygonsContactPoints(*rb1->GetCollider().GetPolygon(), rb2->GetCollider().GetBox()->ToPolygon(), rb1->GetPosition(),
+                        rb2->GetPosition(), rb1->GetRotation(), rb2->GetRotation(), contact1, contact2);
                     outContacts.push_back(contact1);
                     if(contactCount == 2)
                         outContacts.push_back(contact2);
@@ -128,13 +128,13 @@ namespace bp::collisions
 
         return false;
     }
-    bool Collide(Rigidbody *bodyA, Rigidbody *bodyB)
+    bool Collide(Rigidbody *rb1, Rigidbody *rb2)
     {
         Vec2 normal;
         float depth;
         std::vector<Vec2> contacts;
 
-        return Collide(bodyA, bodyB, normal, depth, contacts);
+        return Collide(rb1, rb2, normal, depth, contacts);
     }
 
     bool IntersectCircles(const CircleShape &a, const CircleShape &b, Vec2 posA, Vec2 posB, Vec2 &outNormal, float &outDepth)
@@ -161,9 +161,9 @@ namespace bp::collisions
         const std::vector<Vec2> *verts[2] = { &a.worldVertices, &b.worldVertices };
         const std::vector<Vec2> *axes[2] = { &a.worldNormals, &b.worldNormals };
         
-        for(int i = 0; i < 2; i++)
+        for(size_t i = 0; i < 2; i++)
         {
-            for(int j = 0; j < axes[i]->size(); j++)
+            for(size_t j = 0; j < axes[i]->size(); j++)
             {
                 Vec2 axis = (*axes[i])[j];
 
@@ -199,7 +199,7 @@ namespace bp::collisions
         const std::vector<Vec2> &verts = b.worldVertices;
         const std::vector<Vec2> &axes = b.worldNormals;
 
-        for(int i = 0; i < axes.size(); i++)
+        for(size_t i = 0; i < axes.size(); i++)
         {
             Vec2 axis = axes[i];
             float min1, max1;
@@ -219,7 +219,7 @@ namespace bp::collisions
             }
         }
 
-        int cpIndex = geometry::FindClosestPointIndex(posA, verts);
+        size_t cpIndex = geometry::FindClosestPointIndex(posA, verts);
         Vec2 cp = verts[cpIndex];
 
         Vec2 axis = cp - posA;
@@ -267,7 +267,7 @@ namespace bp::collisions
 
         std::vector<Vec2> verts = b.worldVertices;
 
-        for(int i = 0; i < verts.size(); i++)
+        for(size_t i = 0; i < verts.size(); i++)
         {
             Vec2 vert1 = verts[i];
             Vec2 vert2 = verts[(i + 1) % verts.size()];
@@ -286,7 +286,7 @@ namespace bp::collisions
     }
     int FindPolygonsContactPoints(const PolygonShape &a, const PolygonShape &b, Vec2 posA, Vec2 posB, float rotA, float rotB, Vec2 &outContact1, Vec2 &outContact2)
     {
-        int contactCount = 0;
+        size_t contactCount = 0;
         outContact1 = Vec2::Zero();
         outContact2 = Vec2::Zero();
         
@@ -295,11 +295,11 @@ namespace bp::collisions
         std::vector<Vec2> vertsA = a.worldVertices;
         std::vector<Vec2> vertsB = b.worldVertices;
 
-        for(int i = 0; i < vertsA.size(); i++)
+        for(size_t i = 0; i < vertsA.size(); i++)
         {
             Vec2 vert = vertsA[i];
 
-            for(int j = 0; j < vertsB.size(); j++)
+            for(size_t j = 0; j < vertsB.size(); j++)
             {
                 Vec2 vert1 = vertsB[j];
                 Vec2 vert2 = vertsB[(j + 1) % vertsB.size()];
@@ -323,11 +323,11 @@ namespace bp::collisions
                 }
             }
         }
-        for(int i = 0; i < vertsB.size(); i++)
+        for(size_t i = 0; i < vertsB.size(); i++)
         {
             Vec2 vert = vertsB[i];
 
-            for(int j = 0; j < vertsA.size(); j++)
+            for(size_t j = 0; j < vertsA.size(); j++)
             {
                 Vec2 vert1 = vertsA[j];
                 Vec2 vert2 = vertsA[(j + 1) % vertsA.size()];

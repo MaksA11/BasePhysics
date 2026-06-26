@@ -20,11 +20,11 @@ namespace bp
             std::vector<ContactManifold> contacts;
             
             HashGrid hashGrid;
-            std::vector<int> pairCheckMatrix;
-            int checkCounter;
+            std::vector<size_t> pairCheckMatrix;
+            size_t checkCounter;
 
-            int aabbCollisionCheckCount;
-            int satCollisionCheckCount;
+            size_t aabbCollisionCheckCount;
+            size_t satCollisionCheckCount;
 
             void DetectCollisions();
             void SeparateBodies(const ContactManifold &contact);
@@ -41,16 +41,16 @@ namespace bp
                 float restitution, float friction, bool isStatic, bool lockRotation, bool usesGravity, bool isSensor);
                 
             void RemoveRigidbody(Rigidbody *rb);
-            void RemoveRigidbody(int index);
+            void RemoveRigidbody(size_t index);
 
             Joint *CreateJoint(Joint *joint);
             Joint *CreateJoint(JointPreset preset);
             Joint *CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, JointType jointType);
 
             void RemoveJoint(Joint *joint);
-            void RemoveJoint(int index);
+            void RemoveJoint(size_t index);
 
-            void Step(float deltaTime, unsigned int substeps, unsigned int iterations);
+            void Step(float deltaTime, size_t substeps, size_t iterations);
 
             void SetGravity(Vec2 val);
             void Clear();
@@ -60,7 +60,7 @@ namespace bp
             const std::vector<ContactManifold> &GetContacts() const;
             const HashGrid &GetHashGrid() const;
 
-            int GetAABBCollisionCheckCount() const;
-            int GetSATCollisionCheckCount() const;
+            size_t GetAABBCollisionCheckCount() const;
+            size_t GetSATCollisionCheckCount() const;
     };
 }

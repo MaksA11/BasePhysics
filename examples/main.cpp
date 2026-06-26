@@ -7,9 +7,11 @@
 #define HEIGHT 1440
 
 #ifdef _WIN32
-#define WINDOW_TYPE demo::WindowType::BORDERLESS
+    constexpr demo::WindowType WINDOW_TYPE = demo::WindowType::BORDERLESS;
+    constexpr float GUI_SCALE = 1.0f;
 #elif __linux__
-#define WINDOW_TYPE demo::WindowType::WINDOW
+    constexpr demo::WindowType WINDOW_TYPE = demo::WindowType::WINDOW;
+    constexpr float GUI_SCALE = 1.8f;
 #endif
 
 int main(int argc, char *argv[])
@@ -21,7 +23,7 @@ int main(int argc, char *argv[])
 		{
             demo::PoolDemoApp app = demo::PoolDemoApp();
 
-            app.Init(WIDTH, HEIGHT, "BasePhysics Demo", WINDOW_TYPE);
+            app.Init(WIDTH, HEIGHT, "BasePhysics Demo", GUI_SCALE, WINDOW_TYPE);
             app.Start();
 
             while(app.AppRunning())
@@ -42,7 +44,7 @@ int main(int argc, char *argv[])
     demo::PhysicsDemoApp app = demo::PhysicsDemoApp();
     // demo::PoolDemoApp app = demo::PoolDemoApp();
 	
-    app.Init(WIDTH, HEIGHT, "BasePhysics Demo", WINDOW_TYPE);
+    app.Init(WIDTH, HEIGHT, "BasePhysics Demo", GUI_SCALE, WINDOW_TYPE);
     app.Start();
 
     while(app.AppRunning())

@@ -7,6 +7,7 @@ namespace demo
         deltaTime = 0.0f;
         appRunning = true;
         isDragging = false;
+        guiScale = 1.0f;
         isPlacing = false;
         canBePlaced = true;
         whiteBallImpulse = bp::Vec2::Zero();
@@ -14,7 +15,7 @@ namespace demo
         whiteBallImpulseMultiplier = 4.25f;
     }
 
-    void PoolDemoApp::Init(unsigned int width, unsigned int height, const char *name, WindowType windowType)
+    void PoolDemoApp::Init(size_t width, size_t height, const char *name, float guiScale, WindowType windowType)
     {
         if(windowType == WINDOW)
             window = new sf::RenderWindow(sf::VideoMode(width, height), name);
@@ -28,6 +29,7 @@ namespace demo
             exit(EXIT_FAILURE);
         }
 
+        this->guiScale = guiScale;
         ImGui::SFML::Init(*window);
         window->setFramerateLimit(500);
         clock = sf::Clock();
@@ -110,7 +112,7 @@ namespace demo
             {0.0f, (y + 0.25f)}, {0.0f, -(y + 0.25f)}
         };
 
-        for(int i = 0; i < 6; i++)
+        for(size_t i = 0; i < 6; i++)
         {
             hole.position = holePositions[i];
             holes.push_back(scene.AddRigidbody(hole));
@@ -118,14 +120,14 @@ namespace demo
         }
 
         hole.shape = bp::CircleShape(0.75f);
-        for(int i = 0; i < 4; i++)
+        for(size_t i = 0; i < 4; i++)
         {
             hole.position = holePositions[i];
             scene.AddRigidbody(hole);
             colors.push_back(sf::Color(15, 15, 15));
         }
         hole.shape = bp::CircleShape(0.7f);
-        for(int i = 4; i < 6; i++)
+        for(size_t i = 4; i < 6; i++)
         {
             hole.position = holePositions[i];
             scene.AddRigidbody(hole);
@@ -141,9 +143,9 @@ namespace demo
         const float xStep = std::sqrt(3.0f) * radius + spacing;
         int i = 0;
         
-        for(int col = 0; col < rows; col++)
+        for(size_t col = 0; col < rows; col++)
         {
-            for(int row = 0; row <= col; row++)
+            for(size_t row = 0; row <= col; row++)
             {
                 float x = origin.x - col * xStep;
                 float y = origin.y + row * yStep - (col * yStep * 0.5f);
@@ -312,11 +314,8 @@ namespace demo
             {
                 polygon.setPointCount(rb->GetCollider().GetPolygon()->vertices.size());
         
-                for(int i = 0; i < rb->GetCollider().GetPolygon()->vertices.size(); i++)
-                {
-                    polygon.setPoint(i, sf::Vector2f(rb->GetCollider().GetPolygon()->vertices[i].x,
-                        rb->GetCollider().GetPolygon()->vertices[i].y));
-                }
+                for(size_t i = 0; i < rb->GetCollider().GetPolygon()->vertices.size(); i++)
+                    polygon.setPoint(i, sf::Vector2f(rb->GetCollider().GetPolygon()->vertices[i].x, rb->GetCollider().GetPolygon()->vertices[i].y));
                 
                 polygon.setPosition(rb->GetPosition().x, rb->GetPosition().y);
                 polygon.setRotation(bp::math::ToDegrees(rb->GetRotation()));
@@ -461,10 +460,7 @@ namespace demo
     }
     void PoolDemoApp::Reset()
     {
-        for(int i = scene.GetBodies().size() - 1; i >= 0; i--)
-        {
-            scene.RemoveRigidbody(i);
-        }
+        scene.Clear();
         colors.clear();
         colors.shrink_to_fit();
         bounds.clear();

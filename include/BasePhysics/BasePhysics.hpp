@@ -10,6 +10,7 @@
 #include <BasePhysics/Collision/ColliderShapes.hpp>
 #include <BasePhysics/Collision/Collider.hpp>
 #include <BasePhysics/Collision/BroadPhase/AABB.hpp>
+#include <BasePhysics/Collision/BroadPhase/GridEntry.hpp>
 #include <BasePhysics/Collision/BroadPhase/HashGrid.hpp>
 #include <BasePhysics/Collision/NarrowPhase/ContactManifold.hpp>
 #include <BasePhysics/Collision/NarrowPhase/Collisions.hpp>

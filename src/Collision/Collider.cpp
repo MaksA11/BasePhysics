@@ -61,7 +61,7 @@ namespace bp
             float numerator = 0.0f;
             float denominator = 0.0f;
 
-            for(int i = 0; i < verts.size(); i++)
+            for(size_t i = 0; i < verts.size(); i++)
             {
                 const Vec2 &v1 = verts[i];
                 const Vec2 &v2 = verts[(i + 1) % verts.size()];

@@ -48,7 +48,7 @@ namespace bp
             const RevoluteJoint *GetRevolute() const;
             const RopeJoint *GetRope() const;
 
-            void SolveVelocity(float deltaTime, unsigned int iterations);
+            void SolveVelocity(float deltaTime, size_t iterations);
             void SolvePosition();
 
             const Rigidbody *GetRigidbody1() const;

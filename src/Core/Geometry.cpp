@@ -28,12 +28,12 @@ namespace bp::geometry
         return math::DistanceSquared(point, outClosestPoint);
     }
 
-    int FindClosestPointIndex(Vec2 center, const std::vector<Vec2> &vertices)
+    size_t FindClosestPointIndex(Vec2 center, const std::vector<Vec2> &vertices)
     {
-        int result = -1;
+        size_t result = std::numeric_limits<size_t>::max();
         float minDistSq = std::numeric_limits<float>::max();
 
-        for(int i = 0; i < vertices.size(); i++)
+        for(size_t i = 0; i < vertices.size(); i++)
         {
             float distSq = math::DistanceSquared(vertices[i], center);
             if(distSq < minDistSq)

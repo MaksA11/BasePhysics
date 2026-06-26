@@ -13,13 +13,9 @@ namespace bp
     PhysicsScene::~PhysicsScene()
     {
         for(Rigidbody *rb : bodies)
-        {
             delete rb;
-        }
         for(Joint *joint : joints)
-        {
             delete joint;
-        }
 
         bodies.clear();
         joints.clear();
@@ -54,7 +50,7 @@ namespace bp
         }
         Rigidbody::DeleteRigidbody(rb, bodies);
     }
-    void PhysicsScene::RemoveRigidbody(int index)
+    void PhysicsScene::RemoveRigidbody(size_t index)
     {
         for(Joint *joint : joints)
         {
@@ -87,16 +83,16 @@ namespace bp
     {
         Joint::DeleteJoint(joint, joints);
     }
-    void PhysicsScene::RemoveJoint(int index)
+    void PhysicsScene::RemoveJoint(size_t index)
     {
         Joint::DeleteJoint(joints[index], joints);
     }
 
-    void PhysicsScene::Step(float deltaTime, unsigned int substeps, unsigned int iterations)
+    void PhysicsScene::Step(float deltaTime, size_t substeps, size_t iterations)
     {
         deltaTime /= (float)substeps;
 
-        for(int substep = 0; substep < substeps; substep++)
+        for(size_t substep = 0; substep < substeps; substep++)
         {
             for(Rigidbody *rb : bodies)
             {
@@ -107,33 +103,23 @@ namespace bp
             }
             
             DetectCollisions();
-            for(int iter = 0; iter < iterations; iter++)
+            for(size_t iter = 0; iter < iterations; iter++)
             {
                 for(Joint *joint : joints)
-                {
                     joint->SolveVelocity(deltaTime, iterations);
-                }
 
                 for(const ContactManifold &contact : contacts)
-                {
                     ResolveCollision(contact);
-                }
             }
             
             for(const ContactManifold &contact : contacts)
-            {
                 SeparateBodies(contact);
-            }
 
             for(Joint *joint : joints)
-            {
                 joint->SolvePosition();
-            }
 
             for(Rigidbody *rb : bodies)
-            {
                 rb->GetCollider().UpdateWorldGeometry(rb->GetPosition(), rb->GetRotation());
-            }
         }
     }
 
@@ -145,34 +131,34 @@ namespace bp
         contacts.clear();
         hashGrid.Refresh(bodies);
 
-        int n = (int)bodies.size();
-        if(pairCheckMatrix.size() < (size_t)n * n)
+        size_t n = bodies.size();
+        if(pairCheckMatrix.size() < n * n)
         {
-            pairCheckMatrix.assign((size_t)n * n, 0);
+            pairCheckMatrix.assign(n * n, 0);
             checkCounter = 0;
         }
         checkCounter++;
-        if(checkCounter >= std::numeric_limits<int>::max() - 1)
+        if(checkCounter >= std::numeric_limits<size_t>::max() - 1)
         {
             std::fill(pairCheckMatrix.begin(), pairCheckMatrix.end(), 0);
             checkCounter = 1;
         }
 
-        for(int hash = 0; hash < HashGrid::GetGridSize(); hash++)
+        for(size_t hash = 0; hash < HashGrid::GetGridSize(); hash++)
         {
-            for(int i = hashGrid.GetHead(hash); i != -1; i = hashGrid.GetEntry(i).next)
+            for(size_t i = hashGrid.GetHead(hash); i != -1; i = hashGrid.GetEntry(i).next)
             {
-                for(int j = hashGrid.GetEntry(i).next; j != -1; j = hashGrid.GetEntry(j).next)
+                for(size_t j = hashGrid.GetEntry(i).next; j != -1; j = hashGrid.GetEntry(j).next)
                 {
-                    int rb1Index = hashGrid.GetEntry(i).rbIndex;
-                    int rb2Index = hashGrid.GetEntry(j).rbIndex;
+                    size_t rb1Index = hashGrid.GetEntry(i).rbIndex;
+                    size_t rb2Index = hashGrid.GetEntry(j).rbIndex;
 
                     if(rb1Index == rb2Index)
                         continue;
 
-                    int minIndex = std::min(rb1Index, rb2Index);
-                    int maxIndex = std::max(rb1Index, rb2Index);
-                    int matrixIndex = minIndex * n + maxIndex;
+                    size_t minIndex = std::min(rb1Index, rb2Index);
+                    size_t maxIndex = std::max(rb1Index, rb2Index);
+                    size_t matrixIndex = minIndex * n + maxIndex;
 
                     if(pairCheckMatrix[matrixIndex] == checkCounter)
                         continue;
@@ -220,9 +206,9 @@ namespace bp
             }
         }
 
-        // for(int i = 0; i < (int)bodies.size() - 1; i++)
+        // for(size_t i = 0; i < bodies.size() - 1; i++)
         // {
-        //     for(int j = i + 1; j < (int)bodies.size(); j++)
+        //     for(size_t j = i + 1; j < bodies.size(); j++)
         //     {
         //         aabbCollisionCheckCount++;
 
@@ -276,7 +262,7 @@ namespace bp
 
         const Vec2 &normal = contact.normal;
         const std::vector<Vec2> &contacts = contact.contactPoints;
-        int contactCount = contacts.size();
+        size_t contactCount = contacts.size();
 
         float e = std::min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
         float sf = std::sqrt(rb1->GetCollider().GetFriction() * rb2->GetCollider().GetFriction());
@@ -336,13 +322,9 @@ namespace bp
     void PhysicsScene::Clear()
     {
         for(Rigidbody *rb : bodies)
-        {
             delete rb;
-        }
         for(Joint *joint : joints)
-        {
             delete joint;
-        }
 
         bodies.clear();
         joints.clear();
@@ -366,11 +348,11 @@ namespace bp
         return hashGrid;
     }
 
-    int PhysicsScene::GetAABBCollisionCheckCount() const
+    size_t PhysicsScene::GetAABBCollisionCheckCount() const
     {
         return aabbCollisionCheckCount;
     }
-    int PhysicsScene::GetSATCollisionCheckCount() const
+    size_t PhysicsScene::GetSATCollisionCheckCount() const
     {
         return satCollisionCheckCount;
     }

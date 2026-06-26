@@ -85,7 +85,7 @@ namespace bp
         return std::get_if<RopeJoint>(&this->jointType);
     }
 
-    void Joint::SolveVelocity(float deltaTime, unsigned int iterations)
+    void Joint::SolveVelocity(float deltaTime, size_t iterations)
     {
         if(IsWeld())
         {

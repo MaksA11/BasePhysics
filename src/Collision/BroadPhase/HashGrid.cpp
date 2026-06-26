@@ -4,12 +4,12 @@ namespace bp
 {
     HashGrid::HashGrid() : cellSize(2.5f)
     {
-        heads.assign(gridSize, -1);
+        heads.assign(gridSize, std::numeric_limits<size_t>::max());
         entries.reserve(4096);
     }
     HashGrid::HashGrid(float cellSize) : cellSize(cellSize)
     {
-        heads.assign(gridSize, -1);
+        heads.assign(gridSize, std::numeric_limits<size_t>::max());
         entries.reserve(4096);
     }
 
@@ -20,10 +20,10 @@ namespace bp
 
     void HashGrid::Clear()
     {
-        std::fill(heads.begin(), heads.end(), -1);
+        std::fill(heads.begin(), heads.end(), std::numeric_limits<size_t>::max());
         entries.clear();
     }
-    void HashGrid::MapBodyToCells(int rbIndex, const AABB &aabb)
+    void HashGrid::MapBodyToCells(size_t rbIndex, const AABB &aabb)
     {
         int minX = static_cast<int>(std::floor(aabb.min.x / cellSize));
         int maxX = static_cast<int>(std::floor(aabb.max.x / cellSize));
@@ -34,9 +34,9 @@ namespace bp
         {
             for(int y = minY; y <= maxY; ++y)
             {
-                int hash = GenerateHash(x, y);
-                entries.push_back({rbIndex, heads[hash]});
-                heads[hash] = (int)entries.size() - 1;
+                size_t hash = GenerateHash(x, y);
+                entries.push_back(GridEntry(rbIndex, heads[hash]));
+                heads[hash] = entries.size() - 1;
             }
         }
     }
@@ -44,7 +44,7 @@ namespace bp
     void HashGrid::Refresh(const std::vector<Rigidbody *> &bodies)
     {
         Clear();
-        for(int i = 0; i < (int)bodies.size(); i++)
+        for(size_t i = 0; i < bodies.size(); i++)
         {
             Rigidbody *rb = bodies[i];
             AABB aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
@@ -53,15 +53,15 @@ namespace bp
         }
     }
 
-    int HashGrid::GetHead(int hash) const
+    size_t HashGrid::GetHead(size_t hash) const
     {
         return heads[hash];
     }
-    const GridEntry &HashGrid::GetEntry(int index) const
+    const GridEntry &HashGrid::GetEntry(size_t index) const
     {
         return entries[index];
     }
-    int HashGrid::GetGridSize()
+    size_t HashGrid::GetGridSize()
     {
         return gridSize;
     }

@@ -50,6 +50,7 @@ namespace bp
             void Move(Vec2 delta);
             void MoveTo(Vec2 position);
             void Rotate(float angle);
+            void SetRotation(float rotation);
 
             Vec2 GetLinearVelocity() const;
             void SetLinearVelocity(Vec2 velocity);

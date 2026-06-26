@@ -1,11 +1,5 @@
 #include "PhysicsDemo.hpp"
 
-#ifdef _WIN32
-#define GUI_SCALE 1.0f
-#elif __linux__
-#define GUI_SCALE 1.8f
-#endif
-
 namespace demo
 {
     PhysicsDemoApp::PhysicsDemoApp()
@@ -14,10 +8,10 @@ namespace demo
         appRunning = true;
         fps = 0.0f;
         isDragging = false;
-        guiScale = GUI_SCALE;
+        guiScale = 1.0f;
     }
 
-    void PhysicsDemoApp::Init(unsigned int width, unsigned int height, const char *name, WindowType windowType)
+    void PhysicsDemoApp::Init(size_t width, size_t height, const char *name, float guiScale, WindowType windowType)
     {
         if(windowType == WINDOW)
             window = new sf::RenderWindow(sf::VideoMode(width, height), name);
@@ -31,6 +25,7 @@ namespace demo
             exit(EXIT_FAILURE);
         }
 
+        this->guiScale = guiScale;
         ImGui::SFML::Init(*window);
         window->setFramerateLimit(500);
         clock = sf::Clock();
@@ -111,11 +106,11 @@ namespace demo
         // int baseWidth = 4;
         // float spacing = 1.0f;
         // bp::Vec2 startPos = bp::Vec2(6.5f, -9.5f);
-        // for(int row = 0; row < baseWidth; row++)
+        // for(size_t row = 0; row < baseWidth; row++)
         // {
         //     int boxesInRow = baseWidth - row;
         //     float rowOffset = (boxesInRow - 1) * spacing * 0.5f;
-        //     for(int i = 0; i < boxesInRow; i++)
+        //     for(size_t i = 0; i < boxesInRow; i++)
         //     {
         //         float x = startPos.x - rowOffset + (i * spacing);
         //         float y = startPos.y + (row * spacing);
@@ -132,11 +127,11 @@ namespace demo
         // int baseWidth = 67;
         // float spacing = 1.0f;
         // bp::Vec2 startPos = bp::Vec2(0.0f, -11.5f);
-        // for(int row = 0; row < baseWidth; row++)
+        // for(size_t row = 0; row < baseWidth; row++)
         // {
         //     int boxesInRow = baseWidth - row;
         //     float rowOffset = (boxesInRow - 1) * spacing * 0.5f;
-        //     for(int i = 0; i < boxesInRow; i++)
+        //     for(size_t i = 0; i < boxesInRow; i++)
         //     {
         //         float x = startPos.x - rowOffset + (i * spacing);
         //         float y = startPos.y + (row * spacing);
@@ -218,7 +213,7 @@ namespace demo
     {
         scene.Step(deltaTime, substeps, iterations);
 
-        for(int i = 0; i < scene.GetBodies().size(); i++)
+        for(size_t i = 0; i < scene.GetBodies().size(); i++)
         {
             if(scene.GetBodies()[i]->GetPosition().y < -50.0f)
             {
@@ -311,7 +306,7 @@ namespace demo
                     {
                         sf::CircleShape vertex;
                         std::vector<bp::Vec2> vertices = rb->GetCollider().GetBox()->ToPolygon().worldVertices;
-                        for(int i = 0; i < vertices.size(); i++)
+                        for(size_t i = 0; i < vertices.size(); i++)
                         {
                             float radius = 0.05f;
                             vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
@@ -327,7 +322,7 @@ namespace demo
                 {
                     polygon.setPointCount(rb->GetCollider().GetPolygon()->vertices.size());
             
-                    for(int i = 0; i < rb->GetCollider().GetPolygon()->vertices.size(); i++)
+                    for(size_t i = 0; i < rb->GetCollider().GetPolygon()->vertices.size(); i++)
                     {
                         polygon.setPoint(i, sf::Vector2f(rb->GetCollider().GetPolygon()->vertices[i].x,
                             rb->GetCollider().GetPolygon()->vertices[i].y));
@@ -352,7 +347,7 @@ namespace demo
                         sf::CircleShape vertex;
                         const bp::PolygonShape &polygon = *rb->GetCollider().GetPolygon();
                         std::vector<bp::Vec2> vertices = polygon.worldVertices;
-                        for(int i = 0; i < vertices.size(); i++)
+                        for(size_t i = 0; i < vertices.size(); i++)
                         {
                             float radius = 0.05f;
                             vertex.setPosition(sf::Vector2f(vertices[i].x, vertices[i].y));
@@ -484,7 +479,7 @@ namespace demo
                 sf::CircleShape circle;
                 float radius = 0.05f;
 
-                for(int i = 0; i < contact.contactPoints.size(); i++)
+                for(size_t i = 0; i < contact.contactPoints.size(); i++)
                 {
                     circle.setPosition(sf::Vector2f(contact.contactPoints[i].x, contact.contactPoints[i].y));
                     circle.setRadius(radius);
@@ -588,7 +583,7 @@ namespace demo
             if(ImGui::Button("Delete rigidbody"))
             {
                 const std::vector<bp::Rigidbody *> &bodies = scene.GetBodies();
-                for(int i = 0; i < bodies.size(); i++)
+                for(size_t i = 0; i < bodies.size(); i++)
                 {
                     if(bodies[i] == selectedRb)
                     {
@@ -630,7 +625,7 @@ namespace demo
         ImGui::Separator();
         if(ImGui::Button("Delete all rigidbodies"))
         {
-            for(int i = scene.GetBodies().size() - 1; i > 0; --i)
+            for(size_t i = scene.GetBodies().size() - 1; i > 0; --i)
             {
                 colors.erase(colors.begin() + i);
                 scene.RemoveRigidbody(i);
@@ -711,7 +706,7 @@ namespace demo
             {
                 if(event.key.code == sf::Keyboard::R)
                 {
-                    for(int i = 0; i < 10; i++)
+                    for(size_t i = 0; i < 10; i++)
                     {
                         sf::Vector2f center = camera.GetPosition();
                         sf::Vector2f size = camera.GetViewSize();
@@ -731,7 +726,7 @@ namespace demo
                 if(event.key.code == sf::Keyboard::Delete)
                 {
                     const std::vector<bp::Rigidbody *> &bodies = scene.GetBodies();
-                    for(int i = 0; i < bodies.size(); i++)
+                    for(size_t i = 0; i < bodies.size(); i++)
                     {
                         if(bodies[i] == selectedRb)
                         {
@@ -788,10 +783,6 @@ namespace demo
     }
     void PhysicsDemoApp::Reset()
     {
-        for(int i = scene.GetBodies().size() - 1; i >= 0; i--)
-        {
-            scene.RemoveRigidbody(i);
-        }
         colors.clear();
         colors.shrink_to_fit();
         
