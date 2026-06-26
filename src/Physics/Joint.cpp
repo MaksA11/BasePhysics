@@ -21,9 +21,9 @@ namespace bp
         JointType jointType = SpringJoint(restDistance, stiffness, damping);
         return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
     }
-    Joint *Joint::CreateHingeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle, float lowerLimit, float upperLimit)
+    Joint *Joint::CreateRevoluteJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle, float lowerLimit, float upperLimit)
     {
-        JointType jointType = HingeJoint(referenceAngle, lowerLimit, upperLimit);
+        JointType jointType = RevoluteJoint(referenceAngle, lowerLimit, upperLimit);
         return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
     }
     Joint *Joint::CreateRopeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float maxDistance)
@@ -55,9 +55,9 @@ namespace bp
     {
         return std::holds_alternative<SpringJoint>(this->jointType);
     }
-    bool Joint::IsHinge() const
+    bool Joint::IsRevolute() const
     {
-        return std::holds_alternative<HingeJoint>(this->jointType);
+        return std::holds_alternative<RevoluteJoint>(this->jointType);
     }
     bool Joint::IsRope() const
     {
@@ -76,9 +76,9 @@ namespace bp
     {
         return std::get_if<SpringJoint>(&this->jointType);
     }
-    const HingeJoint *Joint::GetHinge() const
+    const RevoluteJoint *Joint::GetRevolute() const
     {
-        return std::get_if<HingeJoint>(&this->jointType);
+        return std::get_if<RevoluteJoint>(&this->jointType);
     }
     const RopeJoint *Joint::GetRope() const
     {
@@ -160,7 +160,7 @@ namespace bp
             rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
             rb2->ApplyImpulseAtWorldPoint(impulse, point2);
         }
-        else if(IsHinge())
+        else if(IsRevolute())
         {
             Vec2 anchorPoint = (GetWorldAnchor1() + GetWorldAnchor2()) * 0.5f;
 
@@ -186,12 +186,12 @@ namespace bp
             float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
             float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
 
-            float angleDiff = currentRelAngle - GetHinge()->referenceAngle;
+            float angleDiff = currentRelAngle - GetRevolute()->referenceAngle;
             angleDiff = math::NormalizeAngle(angleDiff);
 
             float jAng = 0.0f;
 
-            if((angleDiff <= GetHinge()->lowerLimit && relAngVel < 0) || (angleDiff >= GetHinge()->upperLimit && relAngVel > 0))
+            if((angleDiff <= GetRevolute()->lowerLimit && relAngVel < 0) || (angleDiff >= GetRevolute()->upperLimit && relAngVel > 0))
                 jAng = -relAngVel / (rb1->GetInverseInertia() + rb2->GetInverseInertia());
             
             rb1->ApplyAngularImpulse(-jAng);
@@ -301,7 +301,7 @@ namespace bp
             rb1->Move(correction * rb1->GetInverseMass());
             rb2->Move(-correction * rb2->GetInverseMass());
         }
-        else if(IsHinge())
+        else if(IsRevolute())
         {
             Vec2 point1 = GetWorldAnchor1();
             Vec2 point2 = GetWorldAnchor2();
@@ -328,15 +328,15 @@ namespace bp
             float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
             float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
 
-            float angleDiff = currentRelAngle - GetHinge()->referenceAngle;
+            float angleDiff = currentRelAngle - GetRevolute()->referenceAngle;
             angleDiff = math::NormalizeAngle(angleDiff);
 
             float angError = 0.0f;
 
-            if(angleDiff <= GetHinge()->lowerLimit && relAngVel < 0)
-                angError = angleDiff - GetHinge()->lowerLimit;
-            if(angleDiff >= GetHinge()->upperLimit && relAngVel > 0)
-                angError = angleDiff - GetHinge()->upperLimit;
+            if(angleDiff <= GetRevolute()->lowerLimit && relAngVel < 0)
+                angError = angleDiff - GetRevolute()->lowerLimit;
+            if(angleDiff >= GetRevolute()->upperLimit && relAngVel > 0)
+                angError = angleDiff - GetRevolute()->upperLimit;
 
             if(std::abs(angError) <= 0.0f)
                 return;

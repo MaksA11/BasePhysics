@@ -51,6 +51,7 @@ namespace demo
         renderVertices = false;
         renderAABBs = false;
         renderContactPoints = false;
+        renderAnchorPoints = false;
         renderJoints = false;
         renderHashGrid = false;
 
@@ -176,12 +177,12 @@ namespace demo
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
         spawnPreset.position = bp::Vec2(12.0f, -5.0f);
-        bp::Rigidbody *hinge1 = scene.AddRigidbody(spawnPreset);
+        bp::Rigidbody *revolute1 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
         spawnPreset.position = bp::Vec2(12.0f, -4.0f);
-        bp::Rigidbody *hinge2 = scene.AddRigidbody(spawnPreset);
+        bp::Rigidbody *revolute2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(hinge1, hinge2, bp::Vec2::Up(), bp::Vec2::Zero(), true, bp::HingeJoint(0.0f, -bp::math::pi, bp::math::pi));
+        scene.CreateJoint(revolute1, revolute2, bp::Vec2::Up(), bp::Vec2::Zero(), true, bp::RevoluteJoint(0.0f, -bp::math::pi, bp::math::pi));
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
         spawnPreset.position = bp::Vec2(21.0f, -5.0f);
@@ -397,6 +398,27 @@ namespace demo
                 }
             }
 
+            if(renderAnchorPoints)
+            {
+                sf::CircleShape anchor1;
+                sf::CircleShape anchor2;
+                for(bp::Joint *joint : scene.GetJoints())
+                {
+                    float radius = 0.05f;
+                    anchor1.setPosition(sf::Vector2f(joint->GetWorldAnchor1().x, joint->GetWorldAnchor1().y));
+                    anchor2.setPosition(sf::Vector2f(joint->GetWorldAnchor2().x, joint->GetWorldAnchor2().y));
+                    anchor1.setRadius(radius);
+                    anchor2.setRadius(radius);
+                    anchor1.setFillColor(joint == draggingJoint ? sf::Color::Cyan : sf::Color::Blue);
+                    anchor2.setFillColor(joint == draggingJoint ? sf::Color::Cyan : sf::Color::Blue);
+                    anchor1.setOrigin(sf::Vector2f(radius, radius));
+                    anchor2.setOrigin(sf::Vector2f(radius, radius));
+
+                    window->draw(anchor1);
+                    window->draw(anchor2);
+                }
+            }
+
             if(renderAABBs)
             {
                 auto aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
@@ -602,6 +624,7 @@ namespace demo
         ImGui::Checkbox("Render vertices", &renderVertices);
         ImGui::Checkbox("Render AABBs", &renderAABBs);
         ImGui::Checkbox("Render contact points", &renderContactPoints);
+        ImGui::Checkbox("Render anchor points", &renderAnchorPoints);
         ImGui::Checkbox("Render joints", &renderJoints);
         ImGui::Checkbox("Render hash grid", &renderHashGrid);
         ImGui::Separator();

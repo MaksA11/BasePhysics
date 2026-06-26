@@ -27,7 +27,7 @@ namespace bp
             static Joint *CreateWeldJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle);
             static Joint *CreateDistanceJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float distance);
             static Joint *CreateSpringJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float restDistance, float stiffness, float damping);
-            static Joint *CreateHingeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle, float lowerLimit, float upperLimit);
+            static Joint *CreateRevoluteJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle, float lowerLimit, float upperLimit);
             static Joint *CreateRopeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float maxDistance);
 
             static void DeleteJoint(Joint *joint, std::vector<Joint *> &joints);
@@ -35,13 +35,13 @@ namespace bp
             bool IsWeld() const;
             bool IsDistance() const;
             bool IsSpring() const;
-            bool IsHinge() const;
+            bool IsRevolute() const;
             bool IsRope() const;
 
             const WeldJoint *GetWeld() const;
             const DistanceJoint *GetDistance() const;
             const SpringJoint *GetSpring() const;
-            const HingeJoint *GetHinge() const;
+            const RevoluteJoint *GetRevolute() const;
             const RopeJoint *GetRope() const;
 
             void SolveVelocity(float deltaTime, unsigned int iterations);

@@ -26,13 +26,13 @@ namespace bp
 
         SpringJoint(float restDistance, float stiffness, float damping) : restDistance(restDistance), stiffness(stiffness), damping(damping) {}
     };
-    struct HingeJoint
+    struct RevoluteJoint
     {
         float referenceAngle;
         float lowerLimit;
         float upperLimit;
 
-        HingeJoint(float referenceAngle, float lowerLimit, float upperLimit) : referenceAngle(referenceAngle), lowerLimit(lowerLimit), upperLimit(upperLimit) {}
+        RevoluteJoint(float referenceAngle, float lowerLimit, float upperLimit) : referenceAngle(referenceAngle), lowerLimit(lowerLimit), upperLimit(upperLimit) {}
     };
     struct RopeJoint
     {
@@ -41,5 +41,5 @@ namespace bp
         RopeJoint(float maxDistance) : maxDistance(maxDistance) {}
     };
 
-    using JointType = std::variant<WeldJoint, DistanceJoint, SpringJoint, HingeJoint, RopeJoint>;
+    using JointType = std::variant<WeldJoint, DistanceJoint, SpringJoint, RevoluteJoint, RopeJoint>;
 }
