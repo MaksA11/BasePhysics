@@ -37,11 +37,16 @@ namespace bp
 
             Rigidbody *AddRigidbody(Rigidbody *rb);
             Rigidbody *AddRigidbody(BodyPreset preset);
+            Rigidbody *AddRigidbody(Vec2 position, float rotation, ColliderShape shape, float mass, float linearDamping, float angularDamping,
+                float restitution, float friction, bool isStatic, bool lockRotation, bool usesGravity, bool isSensor);
+                
             void RemoveRigidbody(Rigidbody *rb);
             void RemoveRigidbody(int index);
 
             Joint *CreateJoint(Joint *joint);
+            Joint *CreateJoint(JointPreset preset);
             Joint *CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, JointType jointType);
+
             void RemoveJoint(Joint *joint);
             void RemoveJoint(int index);
 

@@ -36,6 +36,15 @@ namespace bp
         bodies.push_back(rb);
         return rb;
     }
+    Rigidbody *PhysicsScene::AddRigidbody(Vec2 position, float rotation, ColliderShape shape, float mass, float linearDamping, float angularDamping,
+        float restitution, float friction, bool isStatic, bool lockRotation, bool usesGravity, bool isSensor)
+    {
+        BodyPreset preset = BodyPreset(position, rotation, shape, mass, linearDamping, angularDamping, restitution, friction, isStatic, usesGravity, isSensor, lockRotation);
+        Rigidbody *rb = Rigidbody::CreateRigidbody(preset);
+        bodies.push_back(rb);
+        return rb;
+    }
+
     void PhysicsScene::RemoveRigidbody(Rigidbody *rb)
     {
         for(Joint *joint : joints)
@@ -60,12 +69,20 @@ namespace bp
         joints.push_back(joint);
         return joint;
     }
-    Joint *PhysicsScene::CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, JointType jointType)
+    Joint *PhysicsScene::CreateJoint(JointPreset preset)
     {
-        Joint *joint = Joint::CreateJoint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
+        Joint *joint = Joint::CreateJoint(preset);
         joints.push_back(joint);
         return joint;
     }
+    Joint *PhysicsScene::CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, JointType jointType)
+    {
+        JointPreset preset = JointPreset(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
+        Joint *joint = Joint::CreateJoint(preset);
+        joints.push_back(joint);
+        return joint;
+    }
+
     void PhysicsScene::RemoveJoint(Joint *joint)
     {
         Joint::DeleteJoint(joint, joints);

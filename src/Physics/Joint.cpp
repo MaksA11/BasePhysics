@@ -2,9 +2,9 @@
 
 namespace bp
 {
-    Joint *Joint::CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, JointType jointType)
+    Joint *Joint::CreateJoint(JointPreset preset)
     {
-        return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
+        return new Joint(preset);
     }
     Joint *Joint::CreateWeldJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle)
     {
@@ -406,11 +406,6 @@ namespace bp
         return rb2;
     }
 
-    bool Joint::IsCollisionDisabled() const
-    {
-        return disableCollision;
-    }
-
     Vec2 Joint::GetLocalAnchor1() const
     {
         return localAnchorPoint1;
@@ -419,7 +414,6 @@ namespace bp
     {
         return localAnchorPoint2;
     }
-
     Vec2 Joint::GetWorldAnchor1() const
     {
         return bp::math::Transform(localAnchorPoint1, rb1->GetPosition(), rb1->GetRotation());
@@ -427,5 +421,15 @@ namespace bp
     Vec2 Joint::GetWorldAnchor2() const
     {
         return bp::math::Transform(localAnchorPoint2, rb2->GetPosition(), rb2->GetRotation());
+    }
+        
+    bool Joint::IsCollisionDisabled() const
+    {
+        return disableCollision;
+    }
+
+    void Joint::DisableCollision(bool value)
+    {
+        disableCollision = value;
     }
 }

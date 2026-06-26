@@ -18,5 +18,6 @@
 #include <BasePhysics/Physics/BodyPreset.hpp>
 #include <BasePhysics/Physics/Rigidbody.hpp>
 #include <BasePhysics/Physics/JointTypes.hpp>
+#include <BasePhysics/Physics/JointPreset.hpp>
 #include <BasePhysics/Physics/Joint.hpp>
 #include <BasePhysics/Physics/PhysicsScene.hpp>

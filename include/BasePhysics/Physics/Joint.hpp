@@ -3,6 +3,7 @@
 #include <BasePhysics/Core/Vec2.hpp>
 #include <BasePhysics/Physics/Rigidbody.hpp>
 #include <BasePhysics/Physics/JointTypes.hpp>
+#include <BasePhysics/Physics/JointPreset.hpp>
 
 namespace bp
 {
@@ -10,7 +11,10 @@ namespace bp
     {
         private:
             Joint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchorPoint1, Vec2 localAnchorPoint2, bool disableCollision, JointType jointType)
-            : rb1(rb1), rb2(rb2), localAnchorPoint1(localAnchorPoint1), localAnchorPoint2(localAnchorPoint2), disableCollision(disableCollision), jointType(jointType) {}
+                : rb1(rb1), rb2(rb2), localAnchorPoint1(localAnchorPoint1), localAnchorPoint2(localAnchorPoint2), disableCollision(disableCollision), jointType(jointType) {}
+            Joint(JointPreset preset)
+                : rb1(preset.rb1), rb2(preset.rb2), localAnchorPoint1(preset.localAnchorPoint1), localAnchorPoint2(preset.localAnchorPoint2),
+                disableCollision(preset.disableCollision), jointType(preset.jointType) {}
 
             Rigidbody *rb1;
             Rigidbody *rb2;
@@ -23,7 +27,7 @@ namespace bp
             JointType jointType;
         
         public:
-            static Joint *CreateJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, JointType jointType);
+            static Joint *CreateJoint(JointPreset preset);
             static Joint *CreateWeldJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle);
             static Joint *CreateDistanceJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float distance);
             static Joint *CreateSpringJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float restDistance, float stiffness, float damping);
@@ -51,13 +55,14 @@ namespace bp
             Rigidbody *GetRigidbody1();
             const Rigidbody *GetRigidbody2() const;
             Rigidbody *GetRigidbody2();
+            
+            Vec2 GetLocalAnchor1() const;
+            Vec2 GetLocalAnchor2() const;
+            Vec2 GetWorldAnchor1() const;
+            Vec2 GetWorldAnchor2() const;
 
             bool IsCollisionDisabled() const;
 
-            Vec2 GetLocalAnchor1() const;
-            Vec2 GetLocalAnchor2() const;
-
-            Vec2 GetWorldAnchor1() const;
-            Vec2 GetWorldAnchor2() const;
-    };
+            void DisableCollision(bool value);
+        };
 }
