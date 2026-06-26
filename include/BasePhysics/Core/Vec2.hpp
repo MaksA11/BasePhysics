@@ -9,16 +9,8 @@ namespace bp
     {
         float x, y;
         
-        Vec2()
-        {
-            x = 0.0f;
-            y = 0.0f;
-        }
-        Vec2(float x, float y)
-        {
-            this->x = x;
-            this->y = y;
-        }
+        Vec2() : x(0.0f), y(0.0f) {}
+        Vec2(float x, float y) : x(x), y(y) {}
 
         static Vec2 Zero()
         {
@@ -28,13 +20,22 @@ namespace bp
         {
             return Vec2(1.0f, 1.0f);
         }
+
         static Vec2 Up()
         {
             return Vec2(0.0f, 1.0f);
         }
+        static Vec2 Down()
+        {
+            return Vec2(0.0f, -1.0f);
+        }
         static Vec2 Right()
         {
             return Vec2(1.0f, 0.0f);
+        }
+        static Vec2 Left()
+        {
+            return Vec2(-1.0f, 0.0f);
         }
 
         float Magnitude() const

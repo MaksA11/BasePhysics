@@ -154,7 +154,7 @@ namespace demo
         spawnPreset.position = bp::Vec2(-21.0f, -5.0f);
         bp::Rigidbody *weld2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(weld1, weld2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::WeldJoint(0.0f));
+        scene.CreateJoint(weld1, weld2, bp::Vec2::Right(), bp::Vec2::Left(), false, bp::WeldJoint(0.0f));
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
         spawnPreset.position = bp::Vec2(-14.0f, -5.0f);
@@ -163,7 +163,7 @@ namespace demo
         spawnPreset.position = bp::Vec2(-10.0f, -5.0f);
         bp::Rigidbody *distance2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(distance1, distance2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::DistanceJoint(2.0f));
+        scene.CreateJoint(distance1, distance2, bp::Vec2::Right(), bp::Vec2::Left(), false, bp::DistanceJoint(2.0f));
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
         spawnPreset.position = bp::Vec2(-2.0f, -5.0f);
@@ -172,7 +172,7 @@ namespace demo
         spawnPreset.position = bp::Vec2(2.0f, -5.0f);
         bp::Rigidbody *spring2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(spring1, spring2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::SpringJoint(2.0f, 1.0f, 0.2f));
+        scene.CreateJoint(spring1, spring2, bp::Vec2::Right(), bp::Vec2::Left(), false, bp::SpringJoint(2.0f, 1.0f, 0.2f));
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
         spawnPreset.position = bp::Vec2(12.0f, -5.0f);
@@ -190,7 +190,7 @@ namespace demo
         spawnPreset.position = bp::Vec2(24.0f, -5.0f);
         bp::Rigidbody *rope2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        scene.CreateJoint(rope1, rope2, bp::Vec2::Right(), -bp::Vec2::Right(), false, bp::RopeJoint(2.0f));
+        scene.CreateJoint(rope1, rope2, bp::Vec2::Right(), bp::Vec2::Left(), false, bp::RopeJoint(2.0f));
 
         // spawnPreset.mass = 0.01f;
         // int segments = 250;
@@ -742,11 +742,11 @@ namespace demo
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
                 selectedRb->ApplyLinearImpulse(bp::Vec2::Up() * rbForce);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-                selectedRb->ApplyLinearImpulse(-bp::Vec2::Up() * rbForce);
+                selectedRb->ApplyLinearImpulse(bp::Vec2::Down() * rbForce);
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
                 selectedRb->ApplyLinearImpulse(bp::Vec2::Right() * rbForce);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-                selectedRb->ApplyLinearImpulse(-bp::Vec2::Right() * rbForce);
+                selectedRb->ApplyLinearImpulse(bp::Vec2::Left() * rbForce);
 
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::E))
                 selectedRb->ApplyAngularImpulse(bp::math::pi * -0.05f * rbForce);
