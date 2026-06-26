@@ -16,12 +16,12 @@ namespace bp
 
         ContactManifold() : rbIndex1(std::numeric_limits<size_t>::max()), rbIndex2(std::numeric_limits<size_t>::max()), normal(Vec2::Zero()), depth(0.0f) {}
         
-        ContactManifold(int rbIndex1, int rbIndex2, Vec2 normal, float depth, Vec2 contactPoint1)
+        ContactManifold(size_t rbIndex1, size_t rbIndex2, Vec2 normal, float depth, Vec2 contactPoint1)
             : rbIndex1(rbIndex1), rbIndex2(rbIndex2), normal(normal), depth(depth)
         {
             contactPoints.push_back(contactPoint1);
         }
-        ContactManifold(int rbIndex1, int rbIndex2, Vec2 normal, float depth, Vec2 contactPoint1, Vec2 contactPoint2)
+        ContactManifold(size_t rbIndex1, size_t rbIndex2, Vec2 normal, float depth, Vec2 contactPoint1, Vec2 contactPoint2)
             : rbIndex1(rbIndex1), rbIndex2(rbIndex2), normal(normal), depth(depth)
         {
             contactPoints.push_back(contactPoint1);

@@ -28,12 +28,6 @@ namespace bp
         
         public:
             static Joint *CreateJoint(JointPreset preset);
-            static Joint *CreateWeldJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle);
-            static Joint *CreateDistanceJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float distance);
-            static Joint *CreateSpringJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float restDistance, float stiffness, float damping);
-            static Joint *CreateRevoluteJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle, float lowerLimit, float upperLimit);
-            static Joint *CreateRopeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float maxDistance);
-
             static void DeleteJoint(Joint *joint, std::vector<Joint *> &joints);
 
             bool IsWeld() const;
@@ -62,7 +56,6 @@ namespace bp
             Vec2 GetWorldAnchor2() const;
 
             bool IsCollisionDisabled() const;
-
             void DisableCollision(bool value);
         };
 }

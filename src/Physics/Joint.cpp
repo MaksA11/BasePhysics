@@ -6,31 +6,6 @@ namespace bp
     {
         return new Joint(preset);
     }
-    Joint *Joint::CreateWeldJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle)
-    {
-        JointType jointType = WeldJoint(referenceAngle);
-        return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
-    }
-    Joint *Joint::CreateDistanceJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float distance)
-    {
-        JointType jointType = DistanceJoint(distance);
-        return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
-    }
-    Joint *Joint::CreateSpringJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float restDistance, float stiffness, float damping)
-    {
-        JointType jointType = SpringJoint(restDistance, stiffness, damping);
-        return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
-    }
-    Joint *Joint::CreateRevoluteJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float referenceAngle, float lowerLimit, float upperLimit)
-    {
-        JointType jointType = RevoluteJoint(referenceAngle, lowerLimit, upperLimit);
-        return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
-    }
-    Joint *Joint::CreateRopeJoint(Rigidbody *rb1, Rigidbody *rb2, Vec2 localAnchor1, Vec2 localAnchor2, bool disableCollision, float maxDistance)
-    {
-        JointType jointType = RopeJoint(maxDistance);
-        return new Joint(rb1, rb2, localAnchor1, localAnchor2, disableCollision, jointType);
-    }
 
     void Joint::DeleteJoint(Joint *joint, std::vector<Joint *> &joints)
     {

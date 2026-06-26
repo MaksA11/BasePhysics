@@ -57,7 +57,7 @@ namespace demo
         gravity = 9.81f;
         scene.SetGravity(bp::Vec2(0.0f, -gravity));
 
-        mouseRb = bp::Rigidbody::CreateCircleBody(bp::Vec2::Zero(), 0.0f, 0.00005f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, true, true);
+        mouseRb = bp::Rigidbody::CreateRigidbody(bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.00005f), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, true, true));
 
         shapeIndex = 0;
         spawnPreset.position = bp::Vec2(0.0f, -14.0f);
