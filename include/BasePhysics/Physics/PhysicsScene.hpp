@@ -32,8 +32,9 @@ namespace bp
 
         public:
             PhysicsScene();
-            PhysicsScene(Vec2 gravity, float cellSize = 2.5f);
             ~PhysicsScene();
+
+            void Init(Vec2 gravity, float cellSize);
 
             Rigidbody *AddRigidbody(Rigidbody *rb);
             Rigidbody *AddRigidbody(BodyPreset preset);
@@ -62,5 +63,8 @@ namespace bp
 
             size_t GetAABBCollisionCheckCount() const;
             size_t GetSATCollisionCheckCount() const;
+
+            PhysicsScene(const PhysicsScene &) = delete;
+            PhysicsScene & operator = (const PhysicsScene &) = delete;
     };
 }

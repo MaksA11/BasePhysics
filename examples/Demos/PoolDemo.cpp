@@ -13,6 +13,10 @@ namespace demo
         whiteBallImpulse = bp::Vec2::Zero();
         whiteBallImpulseMaxMagnitude = 45.0f;
         whiteBallImpulseMultiplier = 4.25f;
+
+        whiteBall = nullptr;
+        eightBall = nullptr;
+        innerTable = nullptr;
     }
 
     void PoolDemoApp::Init(size_t width, size_t height, const char *name, float guiScale, WindowType windowType)
@@ -41,7 +45,7 @@ namespace demo
     void PoolDemoApp::Start()
     {
         camera.SetZoom(62.5f);
-        scene = bp::PhysicsScene(bp::Vec2::Zero(), 1.25f);
+        scene.Init(bp::Vec2::Zero(), 1.25f);
 
         const float outerBoundWidth = 8.5f;
         const float innerBoundWidth = 7.55f;

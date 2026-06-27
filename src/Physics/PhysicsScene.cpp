@@ -2,11 +2,7 @@
 
 namespace bp
 {
-    PhysicsScene::PhysicsScene() : gravity(0.0f, -9.81f), hashGrid(3.0f), checkCounter(0), aabbCollisionCheckCount(0), satCollisionCheckCount(0)
-    {
-        contacts.reserve(1024);
-    }
-    PhysicsScene::PhysicsScene(Vec2 gravity, float cellSize) : gravity(gravity), hashGrid(cellSize), checkCounter(0), aabbCollisionCheckCount(0), satCollisionCheckCount(0)
+    PhysicsScene::PhysicsScene() : gravity(0.0f, -9.81f), hashGrid(HashGrid(3.0f)), checkCounter(0), aabbCollisionCheckCount(0), satCollisionCheckCount(0)
     {
         contacts.reserve(1024);
     }
@@ -19,6 +15,12 @@ namespace bp
 
         bodies.clear();
         joints.clear();
+    }
+
+    void PhysicsScene::Init(Vec2 gravity, float cellSize)
+    {
+        this->gravity = gravity;
+        hashGrid = HashGrid(cellSize);
     }
 
     Rigidbody *PhysicsScene::AddRigidbody(Rigidbody *rb)
@@ -43,20 +45,32 @@ namespace bp
 
     void PhysicsScene::RemoveRigidbody(Rigidbody *rb)
     {
+        std::vector<Joint *> jointsToDelete;
+
         for(Joint *joint : joints)
         {
             if(joint->GetRigidbody1() == rb || joint->GetRigidbody2() == rb)
-                Joint::DeleteJoint(joint, joints);
+                jointsToDelete.push_back(joint);
         }
+
+        for(Joint *joint : jointsToDelete)
+            Joint::DeleteJoint(joint, joints);
+
         Rigidbody::DeleteRigidbody(rb, bodies);
     }
     void PhysicsScene::RemoveRigidbody(size_t index)
     {
+        std::vector<Joint *> jointsToDelete;
+
         for(Joint *joint : joints)
         {
             if(joint->GetRigidbody1() == bodies[index] || joint->GetRigidbody2() == bodies[index])
-                Joint::DeleteJoint(joint, joints);
+                jointsToDelete.push_back(joint);
         }
+
+        for(Joint *joint : jointsToDelete)
+            Joint::DeleteJoint(joint, joints);
+
         Rigidbody::DeleteRigidbody(bodies[index], bodies);
     }
 

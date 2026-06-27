@@ -6,7 +6,6 @@ namespace bp
     {
         return new Joint(preset);
     }
-
     void Joint::DeleteJoint(Joint *joint, std::vector<Joint *> &joints)
     {
         auto it = std::find(joints.begin(), joints.end(), joint);

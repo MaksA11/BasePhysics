@@ -9,6 +9,10 @@ namespace demo
         fps = 0.0f;
         isDragging = false;
         guiScale = 1.0f;
+
+        selectedRb = nullptr;
+        draggingJoint = nullptr;
+        mouseRb = nullptr;
     }
 
     void PhysicsDemoApp::Init(size_t width, size_t height, const char *name, float guiScale, WindowType windowType)
@@ -55,7 +59,7 @@ namespace demo
         fpsLimit = 500;
 
         gravity = 9.81f;
-        scene.SetGravity(bp::Vec2(0.0f, -gravity));
+        scene.Init(bp::Vec2(0.0f, -gravity), 2.5f);
 
         mouseRb = bp::Rigidbody::CreateRigidbody(bp::BodyPreset(bp::Vec2::Zero(), 0.0f, bp::CircleShape(0.00005f), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, true, true));
 

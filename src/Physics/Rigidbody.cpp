@@ -7,7 +7,6 @@ namespace bp
         Collider collider = Collider(preset.shape, preset.restitution, preset.friction, preset.isSensor);
         return new Rigidbody(preset, collider);
     }
-
     void Rigidbody::DeleteRigidbody(Rigidbody *rb, std::vector<Rigidbody *> &bodies)
     {
         auto it = std::find(bodies.begin(), bodies.end(), rb);

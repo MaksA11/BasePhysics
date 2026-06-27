@@ -2,7 +2,7 @@
 
 namespace bp
 {
-    HashGrid::HashGrid() : cellSize(2.5f)
+    HashGrid::HashGrid() : cellSize(3.0f)
     {
         heads.assign(gridSize, std::numeric_limits<size_t>::max());
         entries.reserve(4096);
