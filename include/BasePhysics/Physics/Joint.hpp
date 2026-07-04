@@ -33,12 +33,14 @@ namespace bp
             bool IsWeld() const;
             bool IsDistance() const;
             bool IsSpring() const;
+            bool IsSlider() const;
             bool IsRevolute() const;
             bool IsRope() const;
 
             const WeldJoint *GetWeld() const;
             const DistanceJoint *GetDistance() const;
             const SpringJoint *GetSpring() const;
+            const SliderJoint *GetSlider() const;
             const RevoluteJoint *GetRevolute() const;
             const RopeJoint *GetRope() const;
 

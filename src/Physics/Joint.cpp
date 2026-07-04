@@ -29,6 +29,10 @@ namespace bp
     {
         return std::holds_alternative<SpringJoint>(this->jointType);
     }
+    bool Joint::IsSlider() const
+    {
+        return std::holds_alternative<SliderJoint>(this->jointType);
+    }
     bool Joint::IsRevolute() const
     {
         return std::holds_alternative<RevoluteJoint>(this->jointType);
@@ -49,6 +53,10 @@ namespace bp
     const SpringJoint *Joint::GetSpring() const
     {
         return std::get_if<SpringJoint>(&this->jointType);
+    }
+    const SliderJoint *Joint::GetSlider() const
+    {
+        return std::get_if<SliderJoint>(&this->jointType);
     }
     const RevoluteJoint *Joint::GetRevolute() const
     {
@@ -133,6 +141,55 @@ namespace bp
 
             rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
             rb2->ApplyImpulseAtWorldPoint(impulse, point2);
+        }
+        else if(IsSlider())
+        {
+            Vec2 anchorPoint = (GetWorldAnchor1() + GetWorldAnchor2()) * 0.5f;
+
+            Vec2 worldAxis = math::Rotate(GetSlider()->localAxis, rb1->GetRotation());
+            Vec2 perpAxis = math::Perpendicular(worldAxis);
+
+            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(anchorPoint) - rb1->GetVelocityAtWorldPoint(anchorPoint);
+            float vPerp = math::Dot(relativeVel, perpAxis);
+
+            Vec2 r1 = anchorPoint - rb1->GetPosition();
+            Vec2 r2 = anchorPoint - rb2->GetPosition();
+
+            float r1p = math::Cross(r1, perpAxis);
+            float r2p = math::Cross(r2, perpAxis);
+
+            float lateralImpulse = -vPerp / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1p * r1p) * rb1->GetInverseInertia() + (r2p * r2p) * rb2->GetInverseInertia());
+            Vec2 impulse = perpAxis * lateralImpulse;
+
+            rb1->ApplyImpulseAtWorldPoint(-impulse, anchorPoint);
+            rb2->ApplyImpulseAtWorldPoint(impulse, anchorPoint);
+            
+            float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
+            float angImpulse = -relAngVel / (rb1->GetInverseInertia() + rb2->GetInverseInertia());
+
+            rb1->ApplyAngularImpulse(-angImpulse);
+            rb2->ApplyAngularImpulse(angImpulse);
+
+            Vec2 d = GetWorldAnchor2() - GetWorldAnchor1();
+            float currentTranslation = math::Dot(d, worldAxis);
+            float vAxis = math::Dot(relativeVel, worldAxis);
+
+            float limitImpulseMag = 0.0f;
+
+            if((currentTranslation <= GetSlider()->lowerLimit && vAxis < 0.0f) || (currentTranslation >= GetSlider()->upperLimit && vAxis > 0.0f))
+            {
+                float r1a = math::Cross(r1, worldAxis);
+                float r2a = math::Cross(r2, worldAxis);
+                float K = rb1->GetInverseMass() + rb2->GetInverseMass() + (r1a * r1a) * rb1->GetInverseInertia() + (r2a * r2a) * rb2->GetInverseInertia();
+                
+                if(K > 0.0f)
+                    limitImpulseMag = -vAxis / K;
+            }
+
+            Vec2 limitImpulse = worldAxis * limitImpulseMag;
+
+            rb1->ApplyImpulseAtWorldPoint(-limitImpulse, anchorPoint);
+            rb2->ApplyImpulseAtWorldPoint(limitImpulse, anchorPoint);
         }
         else if(IsRevolute())
         {
@@ -274,6 +331,60 @@ namespace bp
 
             rb1->Move(correction * rb1->GetInverseMass());
             rb2->Move(-correction * rb2->GetInverseMass());
+        }
+        else if(IsSlider())
+        {
+            Vec2 delta = GetWorldAnchor2() - GetWorldAnchor1();
+
+            Vec2 worldAxis = math::Rotate(GetSlider()->localAxis, rb1->GetRotation());
+            Vec2 perpAxis = math::Perpendicular(worldAxis);
+
+            float error = math::Dot(delta, perpAxis);
+            float invMassSum = rb1->GetInverseMass() + rb2->GetInverseMass();
+
+            if(invMassSum <= 0)
+                return;
+
+            const float percent = 0.4f;
+            const float slop = 0.005f;
+
+            if(std::abs(error) < slop)
+                return;
+
+            Vec2 correction = perpAxis * ((error - slop) * percent / invMassSum);
+
+            rb1->Move(correction * rb1->GetInverseMass());
+            rb2->Move(-correction * rb2->GetInverseMass());
+
+            float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
+            float angError = currentRelAngle - GetSlider()->referenceAngle;
+            
+            angError = math::NormalizeAngle(angError);
+
+            float invInertiaSum = rb1->GetInverseInertia() + rb2->GetInverseInertia();
+
+            if(invInertiaSum <= 0.0f)
+                return;
+
+            const float angPercent = 0.2f;
+            float angCorrection = (angError / invInertiaSum) * angPercent;
+
+            rb1->Rotate(angCorrection * rb1->GetInverseInertia());
+            rb2->Rotate(-angCorrection * rb2->GetInverseInertia());
+
+            float currentTranslation = math::Dot(delta, worldAxis);
+            float limitError = 0.0f;
+
+            if(currentTranslation <= GetSlider()->lowerLimit)
+                limitError = currentTranslation - GetSlider()->lowerLimit;
+            else if(currentTranslation >= GetSlider()->upperLimit)
+                limitError = currentTranslation - GetSlider()->upperLimit;
+
+            float limitCorrectionMag = (limitError > 0.0f ? limitError - slop : limitError + slop) * percent;
+            Vec2 limitCorrection = worldAxis * (limitCorrectionMag / invMassSum);
+
+            rb1->Move(limitCorrection * rb1->GetInverseMass());
+            rb2->Move(-limitCorrection * rb2->GetInverseMass());
         }
         else if(IsRevolute())
         {

@@ -151,34 +151,43 @@ namespace demo
         spawnPreset.position = bp::Vec2(-24.0f, -5.0f);
         bp::Rigidbody *weld1 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        spawnPreset.position = bp::Vec2(-21.0f, -5.0f);
+        spawnPreset.position = bp::Vec2(-22.0f, -5.0f);
         bp::Rigidbody *weld2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
         scene.CreateJoint(weld1, weld2, bp::Vec2::Right(), bp::Vec2::Left(), false, bp::WeldJoint(0.0f));
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
-        spawnPreset.position = bp::Vec2(-14.0f, -5.0f);
+        spawnPreset.position = bp::Vec2(-16.0f, -5.0f);
         bp::Rigidbody *distance1 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        spawnPreset.position = bp::Vec2(-10.0f, -5.0f);
+        spawnPreset.position = bp::Vec2(-12.0f, -5.0f);
         bp::Rigidbody *distance2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
         scene.CreateJoint(distance1, distance2, bp::Vec2::Right(), bp::Vec2::Left(), false, bp::DistanceJoint(2.0f));
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
-        spawnPreset.position = bp::Vec2(-2.0f, -5.0f);
+        spawnPreset.position = bp::Vec2(-6.0f, -5.0f);
         bp::Rigidbody *spring1 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        spawnPreset.position = bp::Vec2(2.0f, -5.0f);
+        spawnPreset.position = bp::Vec2(-2.0f, -5.0f);
         bp::Rigidbody *spring2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
         scene.CreateJoint(spring1, spring2, bp::Vec2::Right(), bp::Vec2::Left(), false, bp::SpringJoint(2.0f, 1.0f, 0.2f));
 
         spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
-        spawnPreset.position = bp::Vec2(12.0f, -5.0f);
+        spawnPreset.position = bp::Vec2(5.0f, -5.0f);
+        bp::Rigidbody *slider1 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        spawnPreset.position = bp::Vec2(9.0f, -5.0f);
+        bp::Rigidbody *slider2 = scene.AddRigidbody(spawnPreset);
+        colors.push_back(sf::Color(255, 255, 255));
+        scene.CreateJoint(slider1, slider2, bp::Vec2::Right(), bp::Vec2::Left(), false, bp::SliderJoint(bp::Vec2::Right(), 0.0f, 0.0f, 2.0f));
+
+        spawnPreset.shape = bp::BoxShape(bp::Vec2::One() * 2.0f);
+        spawnPreset.position = bp::Vec2(15.0f, -5.0f);
         bp::Rigidbody *revolute1 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
-        spawnPreset.position = bp::Vec2(12.0f, -4.0f);
+        spawnPreset.position = bp::Vec2(15.0f, -4.0f);
         bp::Rigidbody *revolute2 = scene.AddRigidbody(spawnPreset);
         colors.push_back(sf::Color(255, 255, 255));
         scene.CreateJoint(revolute1, revolute2, bp::Vec2::Up(), bp::Vec2::Zero(), true, bp::RevoluteJoint(0.0f, -bp::math::pi, bp::math::pi));
