@@ -37,6 +37,10 @@ namespace bp
     {
         return std::holds_alternative<RevoluteJoint>(this->jointType);
     }
+    bool Joint::IsTorsionSpring() const
+    {
+        return std::holds_alternative<TorsionSpringJoint>(this->jointType);
+    }
     bool Joint::IsRope() const
     {
         return std::holds_alternative<RopeJoint>(this->jointType);
@@ -61,6 +65,10 @@ namespace bp
     const RevoluteJoint *Joint::GetRevolute() const
     {
         return std::get_if<RevoluteJoint>(&this->jointType);
+    }
+    const TorsionSpringJoint *Joint::GetTorsionSpring() const
+    {
+        return std::get_if<TorsionSpringJoint>(&this->jointType);
     }
     const RopeJoint *Joint::GetRope() const
     {
@@ -227,6 +235,41 @@ namespace bp
             
             rb1->ApplyAngularImpulse(-jAng);
             rb2->ApplyAngularImpulse(jAng);
+        }
+        else if(IsTorsionSpring())
+        {
+            Vec2 anchorPoint = (GetWorldAnchor1() + GetWorldAnchor2()) * 0.5f;
+
+            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(anchorPoint) - rb1->GetVelocityAtWorldPoint(anchorPoint);
+
+            Vec2 r1 = anchorPoint - rb1->GetPosition();
+            Vec2 r2 = anchorPoint - rb2->GetPosition();
+
+            float r1x = math::Cross(r1, Vec2::Right());
+            float r2x = math::Cross(r2, Vec2::Right());
+
+            float r1y = math::Cross(r1, Vec2::Up());
+            float r2y = math::Cross(r2, Vec2::Up());
+
+            float jx = -relativeVel.x / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1x * r1x) * rb1->GetInverseInertia() + (r2x * r2x) * rb2->GetInverseInertia());
+            float jy = -relativeVel.y / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1y * r1y) * rb1->GetInverseInertia() + (r2y * r2y) * rb2->GetInverseInertia());
+
+            Vec2 impulse = Vec2(jx, jy);
+
+            rb1->ApplyImpulseAtWorldPoint(-impulse, anchorPoint);
+            rb2->ApplyImpulseAtWorldPoint(impulse, anchorPoint);
+
+            float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
+            float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
+
+            float angError = currentRelAngle - GetTorsionSpring()->restAngle;
+            angError = math::NormalizeAngle(angError);
+
+            float T = -(GetTorsionSpring()->stiffness * angError) - (GetTorsionSpring()->damping * relAngVel);
+            float angImpulse = (T * deltaTime) / (float)iterations;
+
+            rb1->ApplyAngularImpulse(-angImpulse);
+            rb2->ApplyAngularImpulse(angImpulse);
         }
         else if(IsRope())
         {
@@ -436,6 +479,30 @@ namespace bp
 
             rb1->Rotate(angCorrection * rb1->GetInverseInertia());
             rb2->Rotate(-angCorrection * rb2->GetInverseInertia());
+        }
+        else if(IsTorsionSpring())
+        {
+            Vec2 point1 = GetWorldAnchor1();
+            Vec2 point2 = GetWorldAnchor2();
+
+            Vec2 error = point2 - point1;
+            float invMassSum = rb1->GetInverseMass() + rb2->GetInverseMass();
+
+            if(invMassSum <= 0.0f)
+                return;
+
+            const float percent = 0.4f;
+            const float slop = 0.005f;
+
+            float errorMag = error.Magnitude();
+
+            if(errorMag < slop)
+                return;
+
+            Vec2 correction = (error / errorMag) * (errorMag - slop) * percent / invMassSum;
+
+            rb1->Move(correction * rb1->GetInverseMass());
+            rb2->Move(-correction * rb2->GetInverseMass());
         }
         else if(IsRope())
         {

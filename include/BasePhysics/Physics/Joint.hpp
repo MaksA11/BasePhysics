@@ -35,6 +35,7 @@ namespace bp
             bool IsSpring() const;
             bool IsSlider() const;
             bool IsRevolute() const;
+            bool IsTorsionSpring() const;
             bool IsRope() const;
 
             const WeldJoint *GetWeld() const;
@@ -42,6 +43,7 @@ namespace bp
             const SpringJoint *GetSpring() const;
             const SliderJoint *GetSlider() const;
             const RevoluteJoint *GetRevolute() const;
+            const TorsionSpringJoint *GetTorsionSpring() const;
             const RopeJoint *GetRope() const;
 
             void SolveVelocity(float deltaTime, size_t iterations);

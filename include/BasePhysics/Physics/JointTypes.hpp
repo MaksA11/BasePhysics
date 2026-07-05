@@ -45,6 +45,14 @@ namespace bp
 
         RevoluteJoint(float referenceAngle, float lowerLimit, float upperLimit) : referenceAngle(referenceAngle), lowerLimit(lowerLimit), upperLimit(upperLimit) {}
     };
+    struct TorsionSpringJoint
+    {
+        float restAngle;
+        float stiffness;
+        float damping;
+
+        TorsionSpringJoint(float restAngle, float stiffness, float damping) : restAngle(restAngle), stiffness(stiffness), damping(damping) {}
+    };
     struct RopeJoint
     {
         float maxDistance;
@@ -52,5 +60,5 @@ namespace bp
         RopeJoint(float maxDistance) : maxDistance(maxDistance) {}
     };
 
-    using JointType = std::variant<WeldJoint, DistanceJoint, SpringJoint, SliderJoint, RevoluteJoint, RopeJoint>;
+    using JointType = std::variant<WeldJoint, DistanceJoint, SpringJoint, SliderJoint, RevoluteJoint, TorsionSpringJoint, RopeJoint>;
 }
