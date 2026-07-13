@@ -82,7 +82,7 @@ namespace demo
         
         // spawnPreset.position = bp::Vec2(0.0f, -11.5f);
         // spawnPreset.shape = bp::PolygonShape({{0.0f, 1.0f}, {2.5f, -0.5f}, {-2.5f, -0.5f}});
-        // scene.AddRigidbody(spawnPreset);
+        // bp::Rigidbody *scale1 = scene.AddRigidbody(spawnPreset);
         // colors.push_back(sf::Color(90, 90, 90));
 
         // spawnPreset.position = bp::Vec2(-6.0f, 8.0f);
@@ -102,8 +102,10 @@ namespace demo
 
         // spawnPreset.position = bp::Vec2(0.0f, -10.0f);
         // spawnPreset.shape = bp::BoxShape(bp::Vec2(18.0f, 0.75f));
-        // scene.AddRigidbody(spawnPreset);
+        // bp::Rigidbody *scale2 = scene.AddRigidbody(spawnPreset);
         // colors.push_back(sf::Color(80, 40, 10));
+
+        // scene.CreateJoint(scale1, scale2, bp::Vec2(0.0f, 1.0f), bp::Vec2(0.0f, -0.375f), true, bp::RevoluteJoint(0.0f, -bp::math::pi, bp::math::pi));
 
         // spawnPreset.shape = bp::BoxShape(bp::Vec2::One());
         // spawnPreset.mass = 0.01f;
@@ -204,23 +206,23 @@ namespace demo
         colors.push_back(sf::Color(0, 0, 0));
         scene.CreateJoint(rope1, rope2, bp::Vec2::Right(), bp::Vec2::Left(), false, bp::RopeJoint(2.0f));
 
-        // spawnPreset.mass = 0.01f;
-        // int segments = 250;
-        // float radius = 0.25f;
-        // spawnPreset.shape = bp::CircleShape(radius);
-        // float spacing = radius;
-        // float totalLength = (float)(segments - 1) * spacing;
-        // float startX = -totalLength * 0.5f;
-        // bp::Rigidbody *prevRb = nullptr;
-        // for(size_t i = 0; i < segments; i++)
-        // {
-        //     spawnPreset.position = bp::Vec2(startX + (float)i * spacing, 0.0f);
-        //     bp::Rigidbody *rb = scene.AddRigidbody(spawnPreset);
-        //     colors.push_back(sf::Color(255, 255, 255));
-        //     if(prevRb)
-        //         scene.CreateJoint(prevRb, rb, bp::Vec2(spacing * 0.5f, 0.0f), bp::Vec2(-spacing * 0.5f, 0.0f), true, bp::SpringJoint(spacing * 0.5f, 500.0f, 30.0f));
-        //     prevRb = rb;
-        // }
+        spawnPreset.mass = 0.01f;
+        int segments = 250;
+        float radius = 0.25f;
+        spawnPreset.shape = bp::CircleShape(radius);
+        float spacing = radius;
+        float totalLength = (float)(segments - 1) * spacing;
+        float startX = -totalLength * 0.5f;
+        bp::Rigidbody *prevRb = nullptr;
+        for(size_t i = 0; i < segments; i++)
+        {
+            spawnPreset.position = bp::Vec2(startX + (float)i * spacing, 0.0f);
+            bp::Rigidbody *rb = scene.AddRigidbody(spawnPreset);
+            colors.push_back(sf::Color(255, 255, 255));
+            if(prevRb)
+                scene.CreateJoint(prevRb, rb, bp::Vec2(spacing * 0.5f, 0.0f), bp::Vec2(-spacing * 0.5f, 0.0f), true, bp::SpringJoint(spacing * 0.5f, 500.0f, 30.0f));
+            prevRb = rb;
+        }
 
         spawnPreset.mass = 1.0f;
     }
@@ -268,7 +270,7 @@ namespace demo
         sf::CircleShape circle;
         sf::ConvexShape polygon;
 
-        int i = 0;
+        size_t i = 0;
         for(bp::Rigidbody *rb : scene.GetBodies())
         {
             if(renderBodies)
@@ -293,6 +295,7 @@ namespace demo
                     {
                         bp::Vec2 va = bp::math::Transform(bp::Vec2::Zero(), rb->GetPosition(), rb->GetRotation());
                         bp::Vec2 vb = bp::math::Transform(bp::Vec2(circle.getRadius(), 0.0f), rb->GetPosition(), rb->GetRotation());
+
                         sf::Vertex line[] = {
                             sf::Vertex(sf::Vector2f(va.x, va.y), sf::Color::Black),
                             sf::Vertex(sf::Vector2f(vb.x, vb.y), sf::Color::Black)
@@ -433,8 +436,10 @@ namespace demo
             if(renderAABBs)
             {
                 auto aabb = rb->GetCollider().GetAABB(rb->GetPosition(), rb->GetRotation());
-                sf::Vector2f size(aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y);
-                sf::Vector2f position(aabb.min.x, aabb.min.y);
+
+                sf::Vector2f size = sf::Vector2f(aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y);
+                sf::Vector2f position = sf::Vector2f(aabb.min.x, aabb.min.y);
+
                 rectangle.setPosition(position);
                 rectangle.setSize(size);
                 rectangle.setFillColor(sf::Color::Transparent);
@@ -495,9 +500,15 @@ namespace demo
                 sf::CircleShape circle;
                 float radius = 0.05f;
 
-                for(size_t i = 0; i < contact.contactPoints.size(); i++)
+                size_t contactCount = contact.contactCount;
+                std::vector<bp::Vec2> contacts;
+                contacts.push_back(contact.contactPoint1);
+                if(contactCount > 1)
+                    contacts.push_back(contact.contactPoint2);
+
+                for(size_t i = 0; i < contactCount; i++)
                 {
-                    circle.setPosition(sf::Vector2f(contact.contactPoints[i].x, contact.contactPoints[i].y));
+                    circle.setPosition(sf::Vector2f(contacts[i].x, contacts[i].y));
                     circle.setRadius(radius);
                     circle.setFillColor(sf::Color::Magenta);
                     circle.setOrigin(sf::Vector2f(radius, radius));

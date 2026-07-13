@@ -102,17 +102,17 @@ namespace bp
         Joint::DeleteJoint(joints[index], joints);
     }
 
-    void PhysicsScene::Step(float deltaTime, size_t substeps, size_t iterations)
+    void PhysicsScene::Step(float timestep, size_t substeps, size_t iterations)
     {
-        deltaTime /= (float)substeps;
+        timestep /= (float)substeps;
 
         for(size_t substep = 0; substep < substeps; substep++)
         {
             for(Rigidbody *rb : bodies)
             {
-                rb->IntegrateVelocity(deltaTime, gravity);
-                rb->ApplyDamping(deltaTime);
-                rb->IntegratePosition(deltaTime);
+                rb->IntegrateVelocity(timestep, gravity);
+                rb->ApplyDamping(timestep);
+                rb->IntegratePosition(timestep);
                 rb->GetCollider().UpdateWorldGeometry(rb->GetPosition(), rb->GetRotation());
             }
             
@@ -120,7 +120,7 @@ namespace bp
             for(size_t iter = 0; iter < iterations; iter++)
             {
                 for(Joint *joint : joints)
-                    joint->SolveVelocity(deltaTime, iterations);
+                    joint->SolveVelocity(timestep, iterations);
 
                 for(const ContactManifold &contact : contacts)
                     ResolveCollision(contact);
@@ -209,12 +209,10 @@ namespace bp
 
                     if(collisions::Collide(rb1, rb2, normal, depth, contactPoints))
                     {
-                        if(!contactPoints.empty())
-                        {
+                        if(contactPoints.size() == 1)
                             contacts.emplace_back(rb1Index, rb2Index, normal, depth, contactPoints[0]);
-                            if(contactPoints.size() > 1) 
-                                contacts.back().contactPoints.push_back(contactPoints[1]);
-                        }
+                        if(contactPoints.size() == 2)
+                            contacts.emplace_back(rb1Index, rb2Index, normal, depth, contactPoints[0], contactPoints[1]);
                     }
                 }
             }
@@ -275,8 +273,11 @@ namespace bp
         Rigidbody *rb2 = bodies[contact.rbIndex2];
 
         const Vec2 &normal = contact.normal;
-        const std::vector<Vec2> &contacts = contact.contactPoints;
-        size_t contactCount = contacts.size();
+        size_t contactCount = contact.contactCount;
+        std::vector<Vec2> contacts;
+        contacts.push_back(contact.contactPoint1);
+        if(contactCount > 1)
+            contacts.push_back(contact.contactPoint2);
 
         float e = std::min(rb1->GetCollider().GetRestitution(), rb2->GetCollider().GetRestitution());
         float sf = std::sqrt(rb1->GetCollider().GetFriction() * rb2->GetCollider().GetFriction());
@@ -360,6 +361,49 @@ namespace bp
     const HashGrid &PhysicsScene::GetHashGrid() const
     {
         return hashGrid;
+    }
+
+    size_t PhysicsScene::GetRigidbodyCount() const
+    {
+        return bodies.size();
+    }
+    size_t PhysicsScene::GetJointCount() const
+    {
+        return joints.size();
+    }
+    size_t PhysicsScene::GetRigidbodyIndex(Rigidbody *rb) const
+    {
+        for(size_t i = 0; i < bodies.size(); i++)
+        {
+            if(rb == bodies[i])
+                return i;
+        }
+
+        return std::numeric_limits<size_t>::max();
+    }
+    size_t PhysicsScene::GetJointIndex(Joint *joint) const
+    {
+        for(size_t i = 0; i < joints.size(); i++)
+        {
+            if(joint == joints[i])
+                return i;
+        }
+
+        return std::numeric_limits<size_t>::max();
+    }
+    Rigidbody *PhysicsScene::GetRigidbody(size_t index) const
+    {
+        if(index > bodies.size() - 1)
+            return nullptr;
+
+        return bodies[index];
+    }
+    Joint *PhysicsScene::GetJoint(size_t index) const
+    {
+        if(index > joints.size() - 1)
+            return nullptr;
+
+        return joints[index];
     }
 
     size_t PhysicsScene::GetAABBCollisionCheckCount() const

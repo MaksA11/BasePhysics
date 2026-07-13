@@ -35,12 +35,12 @@ namespace bp
             float GetRestitution() const;
             float GetFriction() const;
 
-            const AABB &GetAABB(Vec2 pos, float rot) const;
+            const AABB &GetAABB(Vec2 position, float rotation) const;
 
             float CalculateInertia(float mass);
-            void UpdateWorldGeometry(Vec2 pos, float rot);
+            void UpdateWorldGeometry(Vec2 position, float rotation);
 
-            void SetSensor(bool val);
+            void SetSensor(bool value);
             const bool IsSensor() const;
     };
 }

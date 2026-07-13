@@ -37,7 +37,7 @@ namespace bp
         return friction;
     }
 
-    const AABB &Collider::GetAABB(Vec2 pos, float rot) const
+    const AABB &Collider::GetAABB(Vec2 position, float rotation) const
     {
         return aabb;
     }
@@ -78,13 +78,13 @@ namespace bp
 
         return 1.0f;
     }
-    void Collider::UpdateWorldGeometry(Vec2 pos, float rot)
+    void Collider::UpdateWorldGeometry(Vec2 position, float rotation)
     {
-        std::visit([this, pos, rot](auto &&shape)
+        std::visit([this, position, rotation](auto &&shape)
         {
             using T = std::decay_t<decltype(shape)>;
             if constexpr(std::is_same_v<T, CircleShape>) 
-                this->aabb = AABB(pos - Vec2(shape.radius, shape.radius), pos + Vec2(shape.radius, shape.radius));
+                this->aabb = AABB(position - Vec2(shape.radius, shape.radius), position + Vec2(shape.radius, shape.radius));
             else if constexpr(std::is_same_v<T, PolygonShape> || std::is_same_v<T, BoxShape>) 
             {
                 PolygonShape &poly = [&]() -> PolygonShape &
@@ -95,8 +95,8 @@ namespace bp
                         return shape;
                 }();
 
-                float cosA = std::cos(rot);
-                float sinA = std::sin(rot);
+                float cosA = std::cos(rotation);
+                float sinA = std::sin(rotation);
 
                 Vec2 min(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
                 Vec2 max(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
@@ -107,8 +107,8 @@ namespace bp
                     float vy = poly.vertices[i].y;
 
                     Vec2 &worldV = poly.worldVertices[i];
-                    worldV.x = vx * cosA - vy * sinA + pos.x;
-                    worldV.y = vx * sinA + vy * cosA + pos.y;
+                    worldV.x = vx * cosA - vy * sinA + position.x;
+                    worldV.y = vx * sinA + vy * cosA + position.y;
 
                     if(worldV.x < min.x)
                         min.x = worldV.x;
@@ -130,9 +130,9 @@ namespace bp
         }, this->shape);
     }
 
-    void Collider::SetSensor(bool val)
+    void Collider::SetSensor(bool value)
     {
-        isSensor = val;
+        isSensor = value;
     }
     const bool Collider::IsSensor() const
     {

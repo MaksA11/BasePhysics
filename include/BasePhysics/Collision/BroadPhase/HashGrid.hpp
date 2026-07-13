@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <limits>
 
 #include <BasePhysics/Core/Vec2.hpp>
 #include <BasePhysics/Physics/Rigidbody.hpp>

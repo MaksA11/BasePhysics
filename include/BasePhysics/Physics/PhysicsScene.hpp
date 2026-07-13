@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <limits>
 
 #include <BasePhysics/Collision/Collider.hpp>
 #include <BasePhysics/Collision/NarrowPhase/Collisions.hpp>
@@ -51,7 +52,7 @@ namespace bp
             void RemoveJoint(Joint *joint);
             void RemoveJoint(size_t index);
 
-            void Step(float deltaTime, size_t substeps, size_t iterations);
+            void Step(float timestep, size_t substeps, size_t iterations);
 
             void SetGravity(Vec2 val);
             void Clear();
@@ -60,6 +61,13 @@ namespace bp
             const std::vector<Joint *> &GetJoints() const;
             const std::vector<ContactManifold> &GetContacts() const;
             const HashGrid &GetHashGrid() const;
+
+            size_t GetRigidbodyCount() const;
+            size_t GetJointCount() const;
+            size_t GetRigidbodyIndex(Rigidbody *rb) const;
+            size_t GetJointIndex(Joint *joint) const;
+            Rigidbody *GetRigidbody(size_t index) const;
+            Joint *GetJoint(size_t index) const;
 
             size_t GetAABBCollisionCheckCount() const;
             size_t GetSATCollisionCheckCount() const;

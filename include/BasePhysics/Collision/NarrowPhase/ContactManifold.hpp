@@ -12,20 +12,16 @@ namespace bp
         size_t rbIndex1, rbIndex2;
         Vec2 normal;
         float depth;
-        std::vector<Vec2> contactPoints;
+        
+        size_t contactCount;
+        Vec2 contactPoint1, contactPoint2;
 
-        ContactManifold() : rbIndex1(std::numeric_limits<size_t>::max()), rbIndex2(std::numeric_limits<size_t>::max()), normal(Vec2::Zero()), depth(0.0f) {}
+        ContactManifold() : rbIndex1(std::numeric_limits<size_t>::max()), rbIndex2(std::numeric_limits<size_t>::max()),
+            normal(Vec2::Zero()), depth(0.0f), contactCount(0), contactPoint1(Vec2::Zero()), contactPoint2(Vec2::Zero()) {}
         
         ContactManifold(size_t rbIndex1, size_t rbIndex2, Vec2 normal, float depth, Vec2 contactPoint1)
-            : rbIndex1(rbIndex1), rbIndex2(rbIndex2), normal(normal), depth(depth)
-        {
-            contactPoints.push_back(contactPoint1);
-        }
+            : rbIndex1(rbIndex1), rbIndex2(rbIndex2), normal(normal), depth(depth), contactCount(1), contactPoint1(contactPoint1), contactPoint2(Vec2::Zero()) {}
         ContactManifold(size_t rbIndex1, size_t rbIndex2, Vec2 normal, float depth, Vec2 contactPoint1, Vec2 contactPoint2)
-            : rbIndex1(rbIndex1), rbIndex2(rbIndex2), normal(normal), depth(depth)
-        {
-            contactPoints.push_back(contactPoint1);
-            contactPoints.push_back(contactPoint2);
-        }
+            : rbIndex1(rbIndex1), rbIndex2(rbIndex2), normal(normal), depth(depth), contactCount(2), contactPoint1(contactPoint1), contactPoint2(contactPoint2) {}
     };
 }

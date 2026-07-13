@@ -70,9 +70,9 @@ namespace bp
             float GetInertia() const;
             float GetInverseInertia() const;
 
-            void IntegrateVelocity(float deltaTime, Vec2 gravity);
-            void ApplyDamping(float deltaTime);
-            void IntegratePosition(float deltaTime);
+            void IntegrateVelocity(float timestep, Vec2 gravity);
+            void ApplyDamping(float timestep);
+            void IntegratePosition(float timestep);
 
             bool IsStatic() const;
             bool UsesGravity() const;

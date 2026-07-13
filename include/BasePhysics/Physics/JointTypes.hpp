@@ -19,14 +19,6 @@ namespace bp
 
         DistanceJoint(float distance) : distance(distance) {}
     };
-    struct SpringJoint
-    {
-        float restDistance;
-        float stiffness;
-        float damping;
-
-        SpringJoint(float restDistance, float stiffness, float damping) : restDistance(restDistance), stiffness(stiffness), damping(damping) {}
-    };
     struct SliderJoint
     {
         Vec2 localAxis;
@@ -36,6 +28,20 @@ namespace bp
 
         SliderJoint(Vec2 localAxis, float referenceAngle, float lowerLimit = -std::numeric_limits<float>::max(), float upperLimit = std::numeric_limits<float>::max())
             : localAxis(localAxis), referenceAngle(referenceAngle), lowerLimit(lowerLimit), upperLimit(upperLimit) {}
+    };
+    struct RopeJoint
+    {
+        float maxDistance;
+
+        RopeJoint(float maxDistance) : maxDistance(maxDistance) {}
+    };
+    struct SpringJoint
+    {
+        float restDistance;
+        float stiffness;
+        float damping;
+
+        SpringJoint(float restDistance, float stiffness, float damping) : restDistance(restDistance), stiffness(stiffness), damping(damping) {}
     };
     struct RevoluteJoint
     {
@@ -52,12 +58,6 @@ namespace bp
         float damping;
 
         TorsionSpringJoint(float restAngle, float stiffness, float damping) : restAngle(restAngle), stiffness(stiffness), damping(damping) {}
-    };
-    struct RopeJoint
-    {
-        float maxDistance;
-
-        RopeJoint(float maxDistance) : maxDistance(maxDistance) {}
     };
 
     using JointType = std::variant<WeldJoint, DistanceJoint, SpringJoint, SliderJoint, RevoluteJoint, TorsionSpringJoint, RopeJoint>;

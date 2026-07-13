@@ -67,21 +67,21 @@ namespace bp
             y /= mag;
         }
 
-        Vec2 operator + (const Vec2 &vec) const
+        Vec2 operator + (const Vec2 &vector) const
         {
-            return Vec2(x + vec.x, y + vec.y);
+            return Vec2(x + vector.x, y + vector.y);
         }
-        Vec2 operator - (const Vec2 &vec) const
+        Vec2 operator - (const Vec2 &vector) const
         {
-            return Vec2(x - vec.x, y - vec.y);
+            return Vec2(x - vector.x, y - vector.y);
         }
         Vec2 operator * (const float scalar) const
         {
             return Vec2(x * scalar, y * scalar);
         }
-        friend Vec2 operator * (float scalar, const Vec2 &vec)
+        friend Vec2 operator * (float scalar, const Vec2 &vector)
         {
-            return Vec2(vec.x * scalar, vec.y * scalar);
+            return Vec2(vector.x * scalar, vector.y * scalar);
         }
         Vec2 operator / (const float scalar) const
         {
@@ -91,17 +91,17 @@ namespace bp
                 return Vec2(x / scalar, y / scalar);
         }
 
-        Vec2 &operator += (const Vec2 &vec)
+        Vec2 &operator += (const Vec2 &vector)
         {
-            x += vec.x;
-            y += vec.y;
+            x += vector.x;
+            y += vector.y;
 
             return *this;
         }
-        Vec2 &operator -= (const Vec2 &vec)
+        Vec2 &operator -= (const Vec2 &vector)
         {
-            x -= vec.x;
-            y -= vec.y;
+            x -= vector.x;
+            y -= vector.y;
 
             return *this;
         }
@@ -134,15 +134,15 @@ namespace bp
         }
 
         
-        bool operator == (const Vec2 &vec) const
+        bool operator == (const Vec2 &vector) const
         {
             const float epsilon = 0.00005f;
-            return std::fabs(x - vec.x) < epsilon && std::fabs(y - vec.y) < epsilon;
+            return std::fabs(x - vector.x) < epsilon && std::fabs(y - vector.y) < epsilon;
         }
 
-        bool operator != (const Vec2 &vec) const
+        bool operator != (const Vec2 &vector) const
         {
-            return !(*this == vec);
+            return !(*this == vector);
         }
 
         std::string ToString() const

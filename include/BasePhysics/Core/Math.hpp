@@ -25,25 +25,25 @@ namespace bp::math
         return angle;
     }
 
-    inline float Dot(const Vec2 &vec1, const Vec2 &vec2)
+    inline float Dot(const Vec2 &vector1, const Vec2 &vector2)
     {
-        return (vec1.x * vec2.x) + (vec1.y * vec2.y);
+        return (vector1.x * vector2.x) + (vector1.y * vector2.y);
     }
-    inline float Cross(const Vec2 &vec1, const Vec2 &vec2)
+    inline float Cross(const Vec2 &vector1, const Vec2 &vector2)
     {
-        return (vec1.x * vec2.y) - (vec1.y * vec2.x);
+        return (vector1.x * vector2.y) - (vector1.y * vector2.x);
     }
-    inline float DistanceSquared(const Vec2 &vec1, const Vec2 &vec2)
+    inline float DistanceSquared(const Vec2 &vector1, const Vec2 &vector2)
     {
-        return (vec1.x - vec2.x) * (vec1.x - vec2.x) + (vec1.y - vec2.y) * (vec1.y - vec2.y);
+        return (vector1.x - vector2.x) * (vector1.x - vector2.x) + (vector1.y - vector2.y) * (vector1.y - vector2.y);
     }
-    inline float Distance(const Vec2 &vec1, const Vec2 &vec2)
+    inline float Distance(const Vec2 &vector1, const Vec2 &vector2)
     {
-        return std::sqrt(DistanceSquared(vec1, vec2));
+        return std::sqrt(DistanceSquared(vector1, vector2));
     }
-    inline Vec2 Perpendicular(Vec2 vec)
+    inline Vec2 Perpendicular(Vec2 vector)
     {
-        return Vec2(-vec.y, vec.x);
+        return Vec2(-vector.y, vector.x);
     }
 
     inline Vec2 Transform(const Vec2 &vertexPosition, Vec2 position, float angle)

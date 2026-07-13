@@ -9,30 +9,30 @@ namespace bp::utils
 {
     constexpr float epsilon = 0.00005f;
 
-    inline bool NearlyEqual(float val1, float val2)
+    inline bool NearlyEqual(float value1, float value2)
     {
-        return std::abs(val1 - val2) < epsilon;
+        return std::abs(value1 - value2) < epsilon;
     }
-    inline bool NearlyEqual(const Vec2 &vec1, const Vec2 &vec2)
+    inline bool NearlyEqual(const Vec2 &vector1, const Vec2 &vector2)
     {
-        return math::DistanceSquared(vec1, vec2) < epsilon * epsilon;
+        return math::DistanceSquared(vector1, vector2) < epsilon * epsilon;
     }
 
-    inline Vec2 ClampMagnitude(const Vec2 &vec, float minVal, float maxVal)
+    inline Vec2 ClampMagnitude(const Vec2 &vector, float minValue, float maxValue)
     {
-        const float magSq = vec.MagnitudeSquared();
+        const float magSq = vector.MagnitudeSquared();
 
         if(magSq == 0.0f)
-            return vec;
+            return vector;
 
         const float mag = std::sqrt(magSq);
 
-        if(mag < minVal)
-            return vec * (minVal / mag);
+        if(mag < minValue)
+            return vector * (minValue / mag);
 
-        if(mag > maxVal)
-            return vec * (maxVal / mag);
+        if(mag > maxValue)
+            return vector * (maxValue / mag);
 
-        return vec;
+        return vector;
     }
 }

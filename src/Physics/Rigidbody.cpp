@@ -146,30 +146,30 @@ namespace bp
         return 1.0f / inertia;
     }
 
-    void Rigidbody::IntegrateVelocity(float deltaTime, Vec2 gravity)
+    void Rigidbody::IntegrateVelocity(float timestep, Vec2 gravity)
     {
         if(isStatic)
 		    return;
 
         Vec2 acceleration = force / mass;
-        linearVelocity += acceleration * deltaTime;
+        linearVelocity += acceleration * timestep;
 
         float angularAcceleration = torque / inertia;
-        angularVelocity += angularAcceleration * deltaTime;
+        angularVelocity += angularAcceleration * timestep;
 
         if(usesGravity)
-            linearVelocity += gravity * deltaTime;
+            linearVelocity += gravity * timestep;
 
         force = Vec2::Zero();
         torque = 0.0f;
     }
-    void Rigidbody::ApplyDamping(float deltaTime)
+    void Rigidbody::ApplyDamping(float timestep)
     {
         if(isStatic)
 		    return;
 
-        linearVelocity *= 1.0f / (1.0f + deltaTime * linearDamping);
-        angularVelocity *= 1.0f / (1.0f + deltaTime * angularDamping);
+        linearVelocity *= 1.0f / (1.0f + timestep * linearDamping);
+        angularVelocity *= 1.0f / (1.0f + timestep * angularDamping);
 
         float linearThreshold = 0.0001f;
         float angularThreshold = 0.0001f;
@@ -180,14 +180,14 @@ namespace bp
         if(std::abs(angularVelocity) < angularThreshold)
             angularVelocity = 0.0f;
     }
-    void Rigidbody::IntegratePosition(float deltaTime)
+    void Rigidbody::IntegratePosition(float timestep)
     {
         if(isStatic)
 		    return;
 
-        Move(linearVelocity * deltaTime);
+        Move(linearVelocity * timestep);
         if(!lockRotation)
-            Rotate(angularVelocity * deltaTime);
+            Rotate(angularVelocity * timestep);
     }
 
     bool Rigidbody::IsStatic() const

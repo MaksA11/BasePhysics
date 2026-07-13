@@ -25,13 +25,17 @@ namespace bp
     {
         return std::holds_alternative<DistanceJoint>(this->jointType);
     }
-    bool Joint::IsSpring() const
-    {
-        return std::holds_alternative<SpringJoint>(this->jointType);
-    }
     bool Joint::IsSlider() const
     {
         return std::holds_alternative<SliderJoint>(this->jointType);
+    }
+    bool Joint::IsRope() const
+    {
+        return std::holds_alternative<RopeJoint>(this->jointType);
+    }
+    bool Joint::IsSpring() const
+    {
+        return std::holds_alternative<SpringJoint>(this->jointType);
     }
     bool Joint::IsRevolute() const
     {
@@ -40,10 +44,6 @@ namespace bp
     bool Joint::IsTorsionSpring() const
     {
         return std::holds_alternative<TorsionSpringJoint>(this->jointType);
-    }
-    bool Joint::IsRope() const
-    {
-        return std::holds_alternative<RopeJoint>(this->jointType);
     }
 
     const WeldJoint *Joint::GetWeld() const
@@ -54,13 +54,17 @@ namespace bp
     {
         return std::get_if<DistanceJoint>(&this->jointType);
     }
-    const SpringJoint *Joint::GetSpring() const
-    {
-        return std::get_if<SpringJoint>(&this->jointType);
-    }
     const SliderJoint *Joint::GetSlider() const
     {
         return std::get_if<SliderJoint>(&this->jointType);
+    }
+    const RopeJoint *Joint::GetRope() const
+    {
+        return std::get_if<RopeJoint>(&this->jointType);
+    }
+    const SpringJoint *Joint::GetSpring() const
+    {
+        return std::get_if<SpringJoint>(&this->jointType);
     }
     const RevoluteJoint *Joint::GetRevolute() const
     {
@@ -70,12 +74,8 @@ namespace bp
     {
         return std::get_if<TorsionSpringJoint>(&this->jointType);
     }
-    const RopeJoint *Joint::GetRope() const
-    {
-        return std::get_if<RopeJoint>(&this->jointType);
-    }
 
-    void Joint::SolveVelocity(float deltaTime, size_t iterations)
+    void Joint::SolveVelocity(float timestep, size_t iterations)
     {
         if(IsWeld())
         {
@@ -111,41 +111,19 @@ namespace bp
             Vec2 point1 = GetWorldAnchor1();
             Vec2 point2 = GetWorldAnchor2();
 
-            Vec2 d = point2 - point1;
-            Vec2 n = d.Normalized();
+            Vec2 delta = point2 - point1;
+            Vec2 normal = delta.Normalized();
 
             Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(point2) - rb1->GetVelocityAtWorldPoint(point1);
 
-            float vn = math::Dot(relativeVel, n);
+            float vn = math::Dot(relativeVel, normal);
 
-            float r1n = math::Cross((point1 - rb1->GetPosition()), n);
-            float r2n = math::Cross((point2 - rb2->GetPosition()), n);
+            float r1n = math::Cross((point1 - rb1->GetPosition()), normal);
+            float r2n = math::Cross((point2 - rb2->GetPosition()), normal);
 
             float j = -vn / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1n * r1n) * rb1->GetInverseInertia() + (r2n * r2n) * rb2->GetInverseInertia());
 
-            Vec2 impulse = n * j;
-
-            rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
-            rb2->ApplyImpulseAtWorldPoint(impulse, point2);
-        }
-        else if(IsSpring())
-        {
-            Vec2 point1 = GetWorldAnchor1();
-            Vec2 point2 = GetWorldAnchor2();
-
-            Vec2 d = point2 - point1;
-            Vec2 n = d.Normalized();
-
-            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(point2) - rb1->GetVelocityAtWorldPoint(point1);
-
-            float vn = math::Dot(relativeVel, n);
-
-            float x = d.Magnitude() - GetSpring()->restDistance;
-            float F = -(GetSpring()->stiffness * x) - (GetSpring()->damping * vn);
-
-            float j = (F * deltaTime) / (float)iterations;
-
-            Vec2 impulse = n * j;
+            Vec2 impulse = normal * j;
 
             rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
             rb2->ApplyImpulseAtWorldPoint(impulse, point2);
@@ -172,14 +150,14 @@ namespace bp
             rb1->ApplyImpulseAtWorldPoint(-impulse, anchorPoint);
             rb2->ApplyImpulseAtWorldPoint(impulse, anchorPoint);
             
-            float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
-            float angImpulse = -relAngVel / (rb1->GetInverseInertia() + rb2->GetInverseInertia());
+            float relativeAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
+            float angImpulse = -relativeAngVel / (rb1->GetInverseInertia() + rb2->GetInverseInertia());
 
             rb1->ApplyAngularImpulse(-angImpulse);
             rb2->ApplyAngularImpulse(angImpulse);
 
-            Vec2 d = GetWorldAnchor2() - GetWorldAnchor1();
-            float currentTranslation = math::Dot(d, worldAxis);
+            Vec2 delta = GetWorldAnchor2() - GetWorldAnchor1();
+            float currentTranslation = math::Dot(delta, worldAxis);
             float vAxis = math::Dot(relativeVel, worldAxis);
 
             float limitImpulseMag = 0.0f;
@@ -198,6 +176,56 @@ namespace bp
 
             rb1->ApplyImpulseAtWorldPoint(-limitImpulse, anchorPoint);
             rb2->ApplyImpulseAtWorldPoint(limitImpulse, anchorPoint);
+        }
+        else if(IsRope())
+        {
+            Vec2 point1 = GetWorldAnchor1();
+            Vec2 point2 = GetWorldAnchor2();
+
+            Vec2 delta = point2 - point1;
+            Vec2 normal = delta.Normalized();
+
+            if(delta.MagnitudeSquared() < GetRope()->maxDistance * GetRope()->maxDistance)
+                return;
+
+            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(point2) - rb1->GetVelocityAtWorldPoint(point1);
+
+            float vn = math::Dot(relativeVel, normal);
+
+            if(vn <= 0.0f)
+                return;
+
+            float r1n = math::Cross((point1 - rb1->GetPosition()), normal);
+            float r2n = math::Cross((point2 - rb2->GetPosition()), normal);
+
+            float j = -vn / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1n * r1n) * rb1->GetInverseInertia() + (r2n * r2n) * rb2->GetInverseInertia());
+
+            Vec2 impulse = normal * j;
+
+            rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
+            rb2->ApplyImpulseAtWorldPoint(impulse, point2);
+        }
+        else if(IsSpring())
+        {
+            Vec2 point1 = GetWorldAnchor1();
+            Vec2 point2 = GetWorldAnchor2();
+
+            Vec2 delta = point2 - point1;
+            Vec2 normal = delta.Normalized();
+
+            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(point2) - rb1->GetVelocityAtWorldPoint(point1);
+
+            float vn = math::Dot(relativeVel, normal);
+
+            float x = delta.Magnitude() - GetSpring()->restDistance;
+            float F = -(GetSpring()->stiffness * x) - (GetSpring()->damping * vn);
+
+            float j = (F * timestep) / (float)iterations;
+            
+            Vec2 impulse = normal * j;
+            
+            rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
+            rb2->ApplyImpulseAtWorldPoint(impulse, point2);
         }
         else if(IsRevolute())
         {
@@ -222,19 +250,19 @@ namespace bp
             rb1->ApplyImpulseAtWorldPoint(-impulse, anchorPoint);
             rb2->ApplyImpulseAtWorldPoint(impulse, anchorPoint);
 
-            float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
-            float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
+            float currentRelativeAngle = rb2->GetRotation() - rb1->GetRotation();
+            float relativeAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
 
-            float angleDiff = currentRelAngle - GetRevolute()->referenceAngle;
+            float angleDiff = currentRelativeAngle - GetRevolute()->referenceAngle;
             angleDiff = math::NormalizeAngle(angleDiff);
 
-            float jAng = 0.0f;
+            float angImpulse = 0.0f;
 
-            if((angleDiff <= GetRevolute()->lowerLimit && relAngVel < 0) || (angleDiff >= GetRevolute()->upperLimit && relAngVel > 0))
-                jAng = -relAngVel / (rb1->GetInverseInertia() + rb2->GetInverseInertia());
+            if((angleDiff <= GetRevolute()->lowerLimit && relativeAngVel < 0) || (angleDiff >= GetRevolute()->upperLimit && relativeAngVel > 0))
+                angImpulse = -relativeAngVel / (rb1->GetInverseInertia() + rb2->GetInverseInertia());
             
-            rb1->ApplyAngularImpulse(-jAng);
-            rb2->ApplyAngularImpulse(jAng);
+            rb1->ApplyAngularImpulse(-angImpulse);
+            rb2->ApplyAngularImpulse(angImpulse);
         }
         else if(IsTorsionSpring())
         {
@@ -259,45 +287,17 @@ namespace bp
             rb1->ApplyImpulseAtWorldPoint(-impulse, anchorPoint);
             rb2->ApplyImpulseAtWorldPoint(impulse, anchorPoint);
 
-            float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
-            float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
+            float currentRelativeAngle = rb2->GetRotation() - rb1->GetRotation();
+            float relativeAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
 
-            float angError = currentRelAngle - GetTorsionSpring()->restAngle;
+            float angError = currentRelativeAngle - GetTorsionSpring()->restAngle;
             angError = math::NormalizeAngle(angError);
 
-            float T = -(GetTorsionSpring()->stiffness * angError) - (GetTorsionSpring()->damping * relAngVel);
-            float angImpulse = (T * deltaTime) / (float)iterations;
+            float T = -(GetTorsionSpring()->stiffness * angError) - (GetTorsionSpring()->damping * relativeAngVel);
+            float angImpulse = (T * timestep) / (float)iterations;
 
             rb1->ApplyAngularImpulse(-angImpulse);
             rb2->ApplyAngularImpulse(angImpulse);
-        }
-        else if(IsRope())
-        {
-            Vec2 point1 = GetWorldAnchor1();
-            Vec2 point2 = GetWorldAnchor2();
-
-            Vec2 d = point2 - point1;
-            Vec2 n = d.Normalized();
-
-            if(d.MagnitudeSquared() < GetRope()->maxDistance * GetRope()->maxDistance)
-                return;
-
-            Vec2 relativeVel = rb2->GetVelocityAtWorldPoint(point2) - rb1->GetVelocityAtWorldPoint(point1);
-
-            float vn = math::Dot(relativeVel, n);
-
-            if(vn <= 0.0f)
-                return;
-
-            float r1n = math::Cross((point1 - rb1->GetPosition()), n);
-            float r2n = math::Cross((point2 - rb2->GetPosition()), n);
-
-            float j = -vn / (rb1->GetInverseMass() + rb2->GetInverseMass() + (r1n * r1n) * rb1->GetInverseInertia() + (r2n * r2n) * rb2->GetInverseInertia());
-
-            Vec2 impulse = n * j;
-
-            rb1->ApplyImpulseAtWorldPoint(-impulse, point1);
-            rb2->ApplyImpulseAtWorldPoint(impulse, point2);
         }
     }
 
@@ -311,24 +311,21 @@ namespace bp
             Vec2 error = point2 - point1;
             float invMassSum = rb1->GetInverseMass() + rb2->GetInverseMass();
 
-            if(invMassSum <= 0)
-                return;
-
             const float percent = 0.4f;
             const float slop = 0.005f;
 
             float errorMag = error.Magnitude();
 
-            if(errorMag < slop)
-                return;
+            Vec2 correction = Vec2::Zero();
 
-            Vec2 correction = (error / errorMag) * (errorMag - slop) * percent / invMassSum;
-
+            if(invMassSum > 0.0f && errorMag > slop)
+                correction = (error / errorMag) * (errorMag - slop) * percent / invMassSum;
+            
             rb1->Move(correction * rb1->GetInverseMass());
             rb2->Move(-correction * rb2->GetInverseMass());
 
-            float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
-            float angError = currentRelAngle - GetWeld()->referenceAngle;
+            float currentRelativeAngle = rb2->GetRotation() - rb1->GetRotation();
+            float angError = currentRelativeAngle - GetWeld()->referenceAngle;
             
             angError = math::NormalizeAngle(angError);
 
@@ -351,11 +348,11 @@ namespace bp
             Vec2 delta = point2 - point1;
             float currentDistance = delta.Magnitude();
 
-            Vec2 n;
+            Vec2 normal;
             if(currentDistance > 0.0001f)
-                n = delta / currentDistance;
+                normal = delta / currentDistance;
             else
-                n = Vec2::Right();
+                normal = Vec2::Right();
 
             float error = currentDistance - GetDistance()->distance;
             float invMassSum = rb1->GetInverseMass() + rb2->GetInverseMass();
@@ -385,22 +382,19 @@ namespace bp
             float error = math::Dot(delta, perpAxis);
             float invMassSum = rb1->GetInverseMass() + rb2->GetInverseMass();
 
-            if(invMassSum <= 0)
-                return;
-
             const float percent = 0.4f;
             const float slop = 0.005f;
 
-            if(std::abs(error) < slop)
-                return;
+            Vec2 correction = Vec2::Zero();
 
-            Vec2 correction = perpAxis * ((error - slop) * percent / invMassSum);
+            if(invMassSum > 0.0f && std::abs(error) > slop)
+                correction = perpAxis * ((error - slop) * percent / invMassSum);
 
             rb1->Move(correction * rb1->GetInverseMass());
             rb2->Move(-correction * rb2->GetInverseMass());
 
-            float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
-            float angError = currentRelAngle - GetSlider()->referenceAngle;
+            float currentRelativeAngle = rb2->GetRotation() - rb1->GetRotation();
+            float angError = currentRelativeAngle - GetSlider()->referenceAngle;
             
             angError = math::NormalizeAngle(angError);
 
@@ -425,9 +419,48 @@ namespace bp
 
             float limitCorrectionMag = (limitError > 0.0f ? limitError - slop : limitError + slop) * percent;
             Vec2 limitCorrection = worldAxis * (limitCorrectionMag / invMassSum);
-
+            
             rb1->Move(limitCorrection * rb1->GetInverseMass());
             rb2->Move(-limitCorrection * rb2->GetInverseMass());
+        }
+        else if(IsRope())
+        {
+            Vec2 point1 = GetWorldAnchor1();
+            Vec2 point2 = GetWorldAnchor2();
+
+            Vec2 delta = point2 - point1;
+            float currentDistance = delta.Magnitude();
+
+            Vec2 normal;
+            if(currentDistance > 0.0001f)
+                normal = delta / currentDistance;
+            else
+                normal = Vec2::Right();
+
+            float error = currentDistance - GetRope()->maxDistance;
+            float invMassSum = rb1->GetInverseMass() + rb2->GetInverseMass();
+
+            if(invMassSum <= 0.0f)
+                return;
+
+            const float percent = 0.4f;
+            const float slop = 0.005f;
+
+            if(std::abs(error) < slop)
+                return;
+
+            if(error < 0.0f)
+                return;
+
+            float correctionMag = (error > 0.0f ? error - slop : error + slop) * percent;
+            Vec2 correction = (delta / currentDistance) * (correctionMag / invMassSum);
+
+            rb1->Move(correction * rb1->GetInverseMass());
+            rb2->Move(-correction * rb2->GetInverseMass());
+        }
+        else if(IsSpring())
+        {
+            return;
         }
         else if(IsRevolute())
         {
@@ -437,33 +470,30 @@ namespace bp
             Vec2 error = point2 - point1;
             float invMassSum = rb1->GetInverseMass() + rb2->GetInverseMass();
 
-            if(invMassSum <= 0.0f)
-                return;
-
             const float percent = 0.4f;
             const float slop = 0.005f;
 
             float errorMag = error.Magnitude();
 
-            if(errorMag < slop)
-                return;
+            Vec2 correction = Vec2::Zero();
 
-            Vec2 correction = (error / errorMag) * (errorMag - slop) * percent / invMassSum;
+            if(invMassSum > 0.0f && errorMag > slop)
+                correction = (error / errorMag) * (errorMag - slop) * percent / invMassSum;
 
             rb1->Move(correction * rb1->GetInverseMass());
             rb2->Move(-correction * rb2->GetInverseMass());
 
-            float currentRelAngle = rb2->GetRotation() - rb1->GetRotation();
-            float relAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
+            float currentRelativeAngle = rb2->GetRotation() - rb1->GetRotation();
+            float relativeAngVel = rb2->GetAngularVelocity() - rb1->GetAngularVelocity();
 
-            float angleDiff = currentRelAngle - GetRevolute()->referenceAngle;
+            float angleDiff = currentRelativeAngle - GetRevolute()->referenceAngle;
             angleDiff = math::NormalizeAngle(angleDiff);
 
             float angError = 0.0f;
 
-            if(angleDiff <= GetRevolute()->lowerLimit && relAngVel < 0)
+            if(angleDiff <= GetRevolute()->lowerLimit && relativeAngVel < 0)
                 angError = angleDiff - GetRevolute()->lowerLimit;
-            if(angleDiff >= GetRevolute()->upperLimit && relAngVel > 0)
+            if(angleDiff >= GetRevolute()->upperLimit && relativeAngVel > 0)
                 angError = angleDiff - GetRevolute()->upperLimit;
 
             if(std::abs(angError) <= 0.0f)
@@ -500,41 +530,6 @@ namespace bp
                 return;
 
             Vec2 correction = (error / errorMag) * (errorMag - slop) * percent / invMassSum;
-
-            rb1->Move(correction * rb1->GetInverseMass());
-            rb2->Move(-correction * rb2->GetInverseMass());
-        }
-        else if(IsRope())
-        {
-            Vec2 point1 = GetWorldAnchor1();
-            Vec2 point2 = GetWorldAnchor2();
-
-            Vec2 delta = point2 - point1;
-            float currentDistance = delta.Magnitude();
-
-            Vec2 n;
-            if(currentDistance > 0.0001f)
-                n = delta / currentDistance;
-            else
-                n = Vec2::Right();
-
-            float error = currentDistance - GetRope()->maxDistance;
-            float invMassSum = rb1->GetInverseMass() + rb2->GetInverseMass();
-
-            if(invMassSum <= 0.0f)
-                return;
-
-            const float percent = 0.4f;
-            const float slop = 0.005f;
-
-            if(std::abs(error) < slop)
-                return;
-
-            if(error < 0.0f)
-                return;
-
-            float correctionMag = (error > 0.0f ? error - slop : error + slop) * percent;
-            Vec2 correction = (delta / currentDistance) * (correctionMag / invMassSum);
 
             rb1->Move(correction * rb1->GetInverseMass());
             rb2->Move(-correction * rb2->GetInverseMass());

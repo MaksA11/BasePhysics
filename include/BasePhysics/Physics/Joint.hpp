@@ -32,21 +32,21 @@ namespace bp
 
             bool IsWeld() const;
             bool IsDistance() const;
-            bool IsSpring() const;
             bool IsSlider() const;
+            bool IsRope() const;
+            bool IsSpring() const;
             bool IsRevolute() const;
             bool IsTorsionSpring() const;
-            bool IsRope() const;
 
             const WeldJoint *GetWeld() const;
             const DistanceJoint *GetDistance() const;
-            const SpringJoint *GetSpring() const;
             const SliderJoint *GetSlider() const;
+            const RopeJoint *GetRope() const;
+            const SpringJoint *GetSpring() const;
             const RevoluteJoint *GetRevolute() const;
             const TorsionSpringJoint *GetTorsionSpring() const;
-            const RopeJoint *GetRope() const;
 
-            void SolveVelocity(float deltaTime, size_t iterations);
+            void SolveVelocity(float timestep, size_t iterations);
             void SolvePosition();
 
             const Rigidbody *GetRigidbody1() const;
