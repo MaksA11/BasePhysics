@@ -22,9 +22,15 @@ namespace bp
         std::vector<Vec2> worldNormals;
         
         PolygonShape() {}
-        PolygonShape(std::vector<Vec2> vertices) : vertices(vertices)
+        PolygonShape(std::vector<Vec2> vertices, float scale = 1.0f) : vertices(vertices)
         {
             size_t n = vertices.size();
+
+            if(scale != 1.0f)
+            {
+                for(Vec2 &vert : this->vertices)
+                    vert *= scale;
+            }
 
             worldVertices.resize(n);
             worldNormals.resize(n);
